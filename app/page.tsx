@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Plus, BookOpen, Rocket, Shield, Database } from "lucide-react";
+import Link from "next/link";
 
 interface Post {
   id: string;
@@ -14,6 +15,7 @@ interface Post {
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetch("/api/posts")
@@ -24,6 +26,11 @@ export default function Home() {
       });
   }, []);
 
+  const filteredPosts = posts.filter(post => 
+    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    post.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen pt-20 px-6 max-w-5xl mx-auto">
       {/* Hero Section */}
@@ -33,7 +40,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="text-6xl font-bold mb-6 text-gradient"
         >
-          AWS Cloud Project
+          Cloud Computing Blog
         </motion.h1>
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
@@ -41,23 +48,25 @@ export default function Home() {
           transition={{ delay: 0.1 }}
           className="text-gray-400 text-xl mb-8 max-w-2xl mx-auto"
         >
-          A premium full-stack application built with Next.js, optimized for high-performance deployment on AWS infrastructure.
+          Trang web chia sẻ kiến thức về điện toán đám mây, AWS và Next.js. Hãy bắt đầu hành trình của bạn ngay hôm nay.
         </motion.p>
         
         <div className="flex justify-center gap-4">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-3 bg-blue-600 rounded-full font-semibold flex items-center gap-2 glow"
-          >
-            <Rocket size={20} /> Deploy Now
-          </motion.button>
+          <Link href="/new-post">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-3 bg-blue-600 rounded-full font-semibold flex items-center gap-2 glow"
+            >
+              <Plus size={20} /> Create New Post
+            </motion.button>
+          </Link>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="px-8 py-3 glass rounded-full font-semibold flex items-center gap-2"
           >
-            <BookOpen size={20} /> Documentation
+            <BookOpen size={20} /> Read Docs
           </motion.button>
         </div>
       </section>
@@ -83,14 +92,17 @@ export default function Home() {
 
       {/* Posts Section */}
       <section>
-        <div className="flex justify-between items-center mb-10">
-          <h2 className="text-3xl font-bold">Latest Changes</h2>
-          <motion.button 
-            whileHover={{ rotate: 90 }}
-            className="p-2 glass rounded-full"
-          >
-            <Plus />
-          </motion.button>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+          <h2 className="text-3xl font-bold">Latest Posts</h2>
+          <div className="relative w-full md:w-80">
+            <input 
+              type="text"
+              placeholder="Search posts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3 focus:outline-none focus:border-blue-500 transition-colors"
+            />
+          </div>
         </div>
 
         {loading ? (
@@ -99,20 +111,22 @@ export default function Home() {
           </div>
         ) : (
           <div className="space-y-4">
-            {posts.map((post, idx) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="p-6 glass rounded-2xl hover:bg-white/5 transition-colors cursor-pointer"
-              >
-                <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
-                <p className="text-gray-400">{post.content}</p>
-                <div className="mt-4 text-xs text-gray-500">
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </div>
-              </motion.div>
+            {filteredPosts.map((post, idx) => (
+              <Link key={post.id} href={`/post/${post.id}`}>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="p-6 glass rounded-2xl hover:bg-white/5 transition-colors cursor-pointer"
+                >
+                  <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
+                  <p className="text-gray-400 line-clamp-2">{post.content}</p>
+                  <div className="mt-4 text-xs text-gray-500 flex justify-between">
+                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                    <span className="text-blue-500 font-medium">Read more →</span>
+                  </div>
+                </motion.div>
+              </Link>
             ))}
           </div>
         )}

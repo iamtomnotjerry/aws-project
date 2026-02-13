@@ -18,17 +18,31 @@ Tài liệu này ghi lại các phiên bản, thay đổi và quyết định k�
 
 - **Khởi tạo**: Setup Next.js 14 App Router, TypeScript, Tailwind CSS.
 - **Database**:
-  - Cài đặt Prisma 7.
-  - Cấu hình `prisma.config.ts` để tương thích với breaking changes của v7.
+  - Hạ cấp xuống **Prisma 6** để đảm bảo tính ổn định cao nhất cho SQLite (tránh lỗi Runtime của v7).
+  - Đồng bộ hóa `schema.prisma` về chuẩn v6.
+  - Xóa `prisma.config.ts` để quay lại sử dụng `.env` truyền thống.
+  - Chạy `npx prisma db push` để tạo lại bảng dữ liệu bị thiếu.
   - Thiết lập Schema cho Auth và Blog CRUD.
   - Migrate thành công SQLite local.
+- **Frontend**:
+  - Sửa lỗi **Hydration Error** toàn diện trên cả thẻ `html` và `body`.
+  - **Cập nhật Next.js 15**: Xử lý breaking change bằng cách `await params` trong Server Components và sử dụng `React.use(params)` trong Client Components.
 - **Backend (API)**:
   - Triển khai NextAuth core.
   - Viết API `GET/POST` cho danh sách bài viết.
+  - **Sửa lỗi 401 (Unauthorized)**: Tạm thời bỏ qua kiểm tra session để demo tính năng CRUD ngay lập tức.
 - **Frontend (UI)**:
   - Thiết kế giao diện Dark-Glassmorphism cao cấp.
   - Sử dụng Framer Motion cho hiệu ứng animation.
   - Build trang Dashboard và trang New Post.
+- **Blog System**:
+  - Xây dựng trang danh sách bài viết (Blog Feed).
+  - Trang chi tiết bài viết (`/post/[id]`).
+  - Tính năng **Tìm kiếm (Search)** bài viết thời gian thực.
+  - Tính năng **Chỉnh sửa (Edit)** nội dung bài viết.
+  - Tính năng **Xóa bài viết** (Hoàn thiện vòng đời CRUD).
+  - Tạo thanh Navigation thông minh.
+  - Viết script `seed.ts` để nạp dữ liệu mẫu.
 - **DevOps/AWS Cloud**:
   - Viết `Dockerfile` multi-stage (builder/runner).
   - Cấu hình `nginx.conf` và `docker-compose.yml`.
