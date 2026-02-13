@@ -5,10 +5,8 @@ services:
     build: .
     ports:
       - "3000:3000"
-    environment:
-      - DATABASE_URL=file:./dev.db
-    volumes:
-      - ./prisma/dev.db:/app/prisma/dev.db
+    env_file: .env
+    # ENV will be read from the .env file on the server
 
   nginx:
     image: nginx:alpine
