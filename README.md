@@ -1,5 +1,7 @@
 # 🚀 Premium Blog CMS - AWS Cloud Deployment
 
+![Deploy Status](https://github.com/iamtomnotjerry/aws-project/actions/workflows/deploy.yml/badge.svg)
+
 A high-performance, professional Blog CMS built with **Next.js 15+**, **Prisma**, and **AWS Cloud Services**. This project demonstrates a complete 3-tier architecture deployment on the AWS Free Tier.
 
 ### 🌐 Live Demo
