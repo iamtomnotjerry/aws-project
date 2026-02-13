@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Premium Blog CMS - AWS Cloud Deployment
 
-## Getting Started
+A high-performance, professional Blog CMS built with **Next.js 15+**, **Prisma**, and **AWS Cloud Services**. This project demonstrates a complete 3-tier architecture deployment on the AWS Free Tier.
 
-First, run the development server:
+### 🌐 Live Demo
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**URL**: [http://15.134.228.130](http://15.134.228.130)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Technical Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Frontend**: Next.js 15 (App Router) with Framer Motion animations and Glassmorphism UI.
+- **Database**: AWS RDS PostgreSQL (`db.t4g.micro`).
+- **Backend/ORM**: Prisma ORM with automated migrations.
+- **Server**: AWS EC2 (`t3.micro`) running Ubuntu 24.04 LTS.
+- **Infrastructure**: Docker & Docker Compose.
+- **Reverse Proxy**: Nginx (handling Port 80 traffic).
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 Key Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [x] **Full CRUD**: Create, Read, Update, and Delete blog posts.
+- [x] **Cloud First**: Integrated directly with AWS RDS for data persistence.
+- [x] **Search System**: Real-time blog search functionality.
+- [x] **Auth System**: NextAuth.js integration ready.
+- [x] **Performance**: Optimized Standalone build mode for low-resource environments.
+- [x] **Memory Management**: Custom Swap configuration for stable production builds on Free Tier.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🛠️ Local Development
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Clone the repo**:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   git clone https://github.com/iamtomnotjerry/aws-project.git
+   ```
+
+2. **Install dependencies**:
+
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment**:
+   Create a `.env` file and add your `DATABASE_URL`.
+
+4. **Run Dev Server**:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 🚢 Deployment (AWS EC2)
+
+The project is containerized using Docker. To deploy on a fresh EC2 instance:
+
+1. **Setup Swap**: Required for memory management on `t3.micro`.
+2. **Build & Run**:
+   ```bash
+   docker compose up -d --build
+   ```
+
+---
+
+_Created with ❤️ by Antigravity AI Assistant._

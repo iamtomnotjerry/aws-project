@@ -55,9 +55,38 @@ Tài liệu này ghi lại các phiên bản, thay đổi và quyết định k�
 
 ---
 
+## [v1.1.0] - 2026-02-13
+
+**Chủ đề: AWS RDS Integration & EC2 Cloud Deployment**
+
+### ✅ Các công việc đã thực hiện
+
+- **AWS RDS (Milestone 2)**:
+  - Khởi tạo Instance PostgreSQL trên AWS RDS.
+  - Cấu hình Security Group mở cổng 5432 cho Public Access.
+  - Chuyển đổi Database Provider từ SQLite sang PostgreSQL.
+  - Thực hiện `npx prisma db push` và `npx prisma db seed` lên Cloud thành công.
+- **AWS EC2 (Milestone 3)**:
+  - Launch và cấu hình server Ubuntu 24.04 LTS.
+  - Cài đặt Docker và Docker Compose V2 (đã fix lỗi phiên bản cũ).
+  - Cấu hình Port 80 (HTTP) và Port 22 (SSH) trên Security Group.
+- **Tối ưu hóa Cloud (Crucial fixes)**:
+  - **Memory Fix**: Thiết lập 2GB Swap (sau đó giảm còn 1GB) để giải quyết lỗi treo máy khi build Next.js trên gói Free Tier (`t3.micro`).
+  - **Storage Fix**: Dọn dẹp Docker volumes và images để xử lý lỗi `ENOSPC: no space left on device`.
+  - **Build Fix**: Chuyển sang Next.js **Standalone mode**, giảm dung lượng image build từ hàng trăm MB xuống mức tối thiểu.
+  - **Code Fix**: Sửa lỗi thiếu directive `"use client"` trong trang Edit Post phát hiện khi build production.
+
+### 💡 Quyết định kỹ thuật
+
+- **Standalone Output**: Sử dụng `output: 'standalone'` trong `next.config.ts` là chìa khóa để chạy Next.js ổn định trên các server tài nguyên thấp của AWS.
+- **Swap Space**: Quyết định sử dụng Swap file thay vì nâng cấp gói (tốn phí) để giúp người dùng duy trì dự án trên Free Tier.
+
+---
+
 ## [Chưa thực hiện] - Phiên tiếp theo
 
-_Dành cho các cập nhật tiếp theo (ví dụ: Tích hợp AWS S3, CI/CD GitHub Actions...)_
+- Tích hợp CI/CD tự động bằng GitHub Actions.
+- Cấu hình tên miền (Domain) và SSL (HTTPS) bằng Let's Encrypt.
 
 ---
 
