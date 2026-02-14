@@ -5,3 +5,5 @@ node_modules
 .env
 README.md
 HISTORY.md
+certbot
+.github
