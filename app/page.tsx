@@ -28,7 +28,7 @@ export default function Home() {
           animate={{ opacity: 1, scale: 1 }}
           className="inline-block px-4 py-1.5 mb-6 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-semibold"
         >
-          ✨ New: Phase 6 S3 Integration Live
+          🚀 Welcome to my personal space
         </motion.div>
         
         <motion.h1 
@@ -36,7 +36,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="text-6xl md:text-7xl font-extrabold mb-8 tracking-tight"
         >
-          StudyMate <span className="text-gradient">Cloud Blog</span>
+          Welcome to <span className="text-gradient">Bao's World</span>
         </motion.h1>
         
         <motion.p 
@@ -45,17 +45,18 @@ export default function Home() {
           transition={{ delay: 0.1 }}
           className="text-gray-400 text-xl mb-12 max-w-2xl mx-auto leading-relaxed"
         >
-          Hành trình chinh phục AWS, Next.js và kiến trúc Cloud hiện đại qua những bài chia sẻ thực chiến.
+          Nơi mình chia sẻ về Công nghệ, Cuộc sống và những hành trình thú vị. 
+          Code hard, Play hard, and Live fully.
         </motion.p>
         
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link href="/new-post">
             <Button size="lg" glow>
-              <Plus size={22} /> Create Post
+              <Plus size={22} /> See My Stories
             </Button>
           </Link>
           <Button variant="secondary" size="lg">
-            <BookOpen size={22} /> Explorer Docs
+            <BookOpen size={22} /> About Me
           </Button>
         </div>
       </section>
@@ -64,18 +65,18 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
         <FeatureCard 
           icon={<Shield size={28} className="text-blue-500" />}
-          title="Secure Infrastructure"
-          description="Kiến trúc bảo mật HTTPS/SSL chuẩn AWS với Nginx và Let's Encrypt."
+          title="Tech Enthusiast"
+          description="Đam mê Cloud, DevOps và những công nghệ mới nhất. Luôn học hỏi và chia sẻ."
         />
         <FeatureCard 
-          icon={<Database size={28} className="text-purple-500" />}
-          title="S3 Cloud Assets"
-          description="Hình ảnh được tối ưu và lưu trữ bền vững trên đám mây Amazon S3."
+          icon={<Rocket size={28} className="text-purple-500" />}
+          title="Growth Mindset"
+          description="Không ngừng phát triển bản thân mỗi ngày qua sách, trải nghiệm và sai lầm."
         />
         <FeatureCard 
-          icon={<Rocket size={28} className="text-green-500" />}
-          title="CI/CD Pipeline"
-          description="Tự động hóa triển khai từ GitHub lên EC2 chỉ trong một nốt nhạc."
+          icon={<Database size={28} className="text-green-500" />}
+          title="Daily Life"
+          description="Những khoảnh khắc đời thường, sở thích và những chuyến đi đáng nhớ."
         />
       </div>
 

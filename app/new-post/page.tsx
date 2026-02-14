@@ -70,8 +70,8 @@ export default function NewPost() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <Card className="p-8 md:p-12">
           <header className="mb-10">
-            <h1 className="text-4xl font-bold mb-3">Create Post</h1>
-            <p className="text-gray-400">Share your cloud knowledge with the world.</p>
+            <h1 className="text-4xl font-bold mb-3">Write a New Story</h1>
+            <p className="text-gray-400">Share your journey, thoughts, and discoveries.</p>
           </header>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
