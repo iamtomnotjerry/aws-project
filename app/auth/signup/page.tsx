@@ -36,19 +36,18 @@ export default function SignUp() {
         throw new Error(data.error || data.message || "Registration failed");
       }
 
-      toast.success("Account created! Signing you in...");
+      toast.success("Account registration initiated! Please check your email to verify and complete your registration.");
 
-      // Auto login after signup
-      const loginRes = await signIn("credentials", {
-        redirect: false,
-        email: formData.email,
-        password: formData.password,
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
       });
 
-      if (loginRes?.ok) {
-        router.push("/");
-        router.refresh();
-      }
+      // Redirect to sign-in with a success message
+      setTimeout(() => {
+        router.push("/auth/signin?success=VerifyEmail");
+      }, 3000);
     } catch (error: any) {
       toast.error(error.message);
     } finally {
