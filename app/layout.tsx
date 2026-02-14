@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import AuthProvider from "@/components/AuthProvider";
 import AuthButton from "@/components/AuthButton";
 import VerificationBanner from "@/components/VerificationBanner";
+import { CustomCursor } from "@/components/ui/CustomCursor";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -30,6 +31,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className="dark scroll-smooth">
       <body className={`${inter.variable} ${outfit.variable} font-sans bg-background text-foreground antialiased selection:bg-primary/30`}>
+        <CustomCursor />
         <AuthProvider>
           <Toaster position="bottom-right" richColors />
           <div className="relative min-h-screen flex flex-col">

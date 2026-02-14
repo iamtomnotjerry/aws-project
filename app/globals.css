@@ -29,31 +29,55 @@
 }
 
 @layer base {
+  :root {
+    /* Fluid Typography Scale */
+    --text-xs: clamp(0.7rem, 0.6rem + 0.5vw, 0.8rem);
+    --text-sm: clamp(0.8rem, 0.7rem + 0.5vw, 1rem);
+    --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+    --text-lg: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+    --text-xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+    --text-2xl: clamp(2rem, 1.8rem + 1.5vw, 3rem);
+  }
+
   html {
     scroll-behavior: smooth;
+    cursor: none; /* Prepare for custom cursor */
+    @apply selection:bg-primary/30 selection:text-white;
   }
   
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white;
+    @apply bg-background text-foreground antialiased relative min-h-screen overflow-x-hidden;
+    font-size: var(--text-base);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
+  /* Premium Focus States for A11y */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary/50 ring-offset-4 ring-offset-background transition-all;
+  }
+
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight font-bold text-white;
+    @apply tracking-tightest font-black text-white leading-[1.05];
   }
 }
 
-/* Premium Utilities */
+/* Infinity Utilities */
 @utility text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-blue-400 font-extrabold;
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-primary/80 font-black;
 }
 
 @utility glass-morphism {
-  @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+  @apply backdrop-blur-[20px] bg-white/[0.03] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
 }
 
 @utility glass-card {
-  @apply glass-morphism hover:bg-white/[0.07] transition-all duration-300;
+  @apply glass-morphism relative overflow-hidden transition-all duration-500 hover:bg-white/[0.06] hover:border-white/[0.15] hover:shadow-primary/10;
+}
+
+/* Chromatic Aberration Hint */
+@utility chromatic-hint {
+  @apply relative;
+  text-shadow: 1px 0 rgba(255,0,0,0.1), -1px 0 rgba(0,255,255,0.1);
 }
 
 .premium-glow {
@@ -62,9 +86,22 @@
 
 .premium-glow::after {
   content: "";
-  @apply absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-blue-500/0 -translate-x-full transition-transform duration-1000;
+  @apply absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 -translate-x-full transition-transform duration-1000 ease-in-out;
 }
 
 .premium-glow:hover::after {
   @apply translate-x-full;
+}
+
+/* Custom Scrollbar for Premium Feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-primary/50 transition-colors;
 }
