@@ -19,6 +19,11 @@ export const viewport = {
   themeColor: "#020617",
 };
 
+import AuthProvider from "@/components/AuthProvider";
+import AuthButton from "@/components/AuthButton";
+
+// ... metadata ...
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,25 +32,24 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning={true}>
       <body className={`${inter.className} antialiased`} suppressHydrationWarning>
-        <Toaster position="top-center" richColors />
-        <nav className="fixed top-0 w-full z-50 glass py-4 px-6">
-          <div className="max-w-5xl mx-auto flex justify-between items-center">
-            <Link href="/" className="text-2xl font-bold text-gradient hover:opacity-80 transition-opacity">
-              Bao's Blog
-            </Link>
-            <div className="flex gap-6 text-sm font-medium items-center">
-              <Link href="/" className="hover:text-blue-500 transition-colors">Home</Link>
-              <Link href="/about" className="hover:text-blue-500 transition-colors">About Me</Link>
-              <Link href="/new-post" className="px-5 py-2 bg-blue-600 rounded-full hover:bg-blue-700 transition-all font-semibold">
-                Write Story
+        <AuthProvider>
+          <Toaster position="top-center" richColors />
+          <nav className="fixed top-0 w-full z-50 glass py-4 px-6">
+            <div className="max-w-5xl mx-auto flex justify-between items-center">
+              <Link href="/" className="text-2xl font-bold text-gradient hover:opacity-80 transition-opacity">
+                Bao's Blog
               </Link>
+              <div className="flex gap-6 text-sm font-medium items-center">
+                <Link href="/" className="hover:text-blue-500 transition-colors">Home</Link>
+                <AuthButton />
+              </div>
             </div>
-          </div>
-        </nav>
-        {children}
-        <footer className="py-20 text-center text-gray-600 border-t border-white/5 mt-20">
-          <p>© 2026 Bao's Blog. Built with Passion & Next.js.</p>
-        </footer>
+          </nav>
+          {children}
+          <footer className="py-20 text-center text-gray-600 border-t border-white/5 mt-20">
+            <p>© 2026 Bao's Blog. Built with Passion & Next.js.</p>
+          </footer>
+        </AuthProvider>
       </body>
     </html>
   );

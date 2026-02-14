@@ -7,8 +7,14 @@ import DeleteButton from "@/components/DeleteButton";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
 export default async function PostDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const session = await getServerSession(authOptions);
+  const isAdmin = session?.user?.role === "ADMIN";
+
   const post = await prisma.post.findUnique({
     where: { id },
     include: { author: true },
@@ -54,21 +60,23 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full">
                   <User size={14} className="text-purple-500" />
-                  {post.author?.name || "Cloud Architect"}
+                  {post.author?.name || "Bao's Blog"}
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-3 w-full md:w-auto">
-              <Link href={`/post/${post.id}/edit`} className="flex-1 md:flex-none">
-                <Button variant="secondary" className="w-full">
-                  <Edit3 size={18} /> Edit
-                </Button>
-              </Link>
-              <div className="flex-1 md:flex-none">
-                <DeleteButton id={post.id} />
+            {isAdmin && (
+              <div className="flex gap-3 w-full md:w-auto">
+                <Link href={`/post/${post.id}/edit`} className="flex-1 md:flex-none">
+                  <Button variant="secondary" className="w-full">
+                    <Edit3 size={18} /> Edit
+                  </Button>
+                </Link>
+                <div className="flex-1 md:flex-none">
+                  <DeleteButton id={post.id} />
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="prose prose-invert max-w-none">
