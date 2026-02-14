@@ -1,14 +1,31 @@
 import { ApiUtils } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
 import { postSchema } from "@/schemas/post.schema";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { NextRequest } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const cursor = searchParams.get("cursor");
+    const limit = parseInt(searchParams.get("limit") || "10");
+
     const posts = await prisma.post.findMany({
+      take: limit,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
       orderBy: { createdAt: "desc" },
-      include: { author: true },
+      include: { 
+        author: {
+          select: { name: true, image: true, role: true } as any
+        } 
+      },
     });
-    return ApiUtils.success(posts);
+
+    const nextCursor = posts.length === limit ? posts[posts.length - 1].id : null;
+
+    return ApiUtils.success({ posts, nextCursor });
   } catch (error) {
     return ApiUtils.serverError(error);
   }
@@ -16,9 +33,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const session = await getServerSession(authOptions);
     
-    // Validate request body
+    // API Level Protection
+    if (!session || (session.user as any).role !== "ADMIN") {
+      return ApiUtils.error("Unauthorized. Admin role required.", 403);
+    }
+
+    const body = await request.json();
     const validatedData = postSchema.safeParse(body);
     
     if (!validatedData.success) {
@@ -29,7 +51,8 @@ export async function POST(request: Request) {
       data: {
         ...validatedData.data,
         published: true,
-      },
+        authorId: (session.user as any).id,
+      } as any,
     });
 
     return ApiUtils.success(post, "Post created successfully", 201);

@@ -11,7 +11,7 @@ import { PostCard } from "@/components/PostCard";
 import { FeatureCard } from "@/components/FeatureCard";
 
 export default function Home() {
-  const { posts, loading, error } = usePosts();
+  const { posts, loading, loadingMore, error, hasMore, loadMore } = usePosts(6);
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredPosts = posts.filter(post => 
@@ -123,6 +123,21 @@ export default function Home() {
                 <p className="text-gray-500 text-lg">No articles found matching your search.</p>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Load More Button */}
+        {!loading && hasMore && (
+          <div className="mt-16 flex justify-center">
+            <Button 
+              variant="secondary" 
+              size="lg" 
+              onClick={loadMore} 
+              loading={loadingMore}
+              className="min-w-[200px]"
+            >
+              Tải thêm bài viết
+            </Button>
           </div>
         )}
       </section>

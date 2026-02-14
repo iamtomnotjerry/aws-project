@@ -1,6 +1,8 @@
 import { ApiUtils } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
 import { postSchema } from "@/schemas/post.schema";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(
   req: Request,
@@ -10,7 +12,11 @@ export async function GET(
     const { id } = await params;
     const post = await prisma.post.findUnique({
       where: { id },
-      include: { author: true },
+      include: { 
+        author: {
+          select: { name: true, image: true, role: true } as any
+        }
+      },
     });
     
     if (!post) return ApiUtils.error("Post not found", 404);
@@ -26,6 +32,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || (session.user as any).role !== "ADMIN") {
+      return ApiUtils.error("Unauthorized. Admin role required.", 403);
+    }
+
     const { id } = await params;
     await prisma.post.delete({
       where: { id },
@@ -41,6 +52,11 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || (session.user as any).role !== "ADMIN") {
+      return ApiUtils.error("Unauthorized. Admin role required.", 403);
+    }
+
     const { id } = await params;
     const body = await req.json();
 

@@ -2,15 +2,10 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/Card";
 import { ImageIcon } from "lucide-react";
 import Link from "next/link";
+import { Post } from "@/types";
 
 interface PostCardProps {
-  post: {
-    id: string;
-    title: string;
-    content: string;
-    coverImage?: string | null;
-    createdAt: string;
-  };
+  post: Post;
   index: number;
 }
 

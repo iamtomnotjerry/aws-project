@@ -4,15 +4,19 @@ import { ApiUtils } from "@/lib/api-response";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail } from "@/lib/resend";
 import crypto from "crypto";
+import { signupSchema } from "@/schemas/auth.schema";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, password, name } = body;
-
-    if (!email || !password) {
-      return ApiUtils.error("Missing required fields", 400);
+    
+    // 0. Use Zod validation
+    const validatedData = signupSchema.safeParse(body);
+    if (!validatedData.success) {
+      return ApiUtils.error(validatedData.error.issues[0].message, 400);
     }
+
+    const { email, password, name } = validatedData.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
