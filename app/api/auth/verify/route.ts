@@ -82,6 +82,10 @@ export async function GET(req: NextRequest) {
 
     return redirect("/auth/verify-success");
   } catch (error) {
+    // Next.js redirect() works by throwing a special error — re-throw it
+    if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+      throw error;
+    }
     console.error("Verification error:", error);
     return redirect("/auth/signin?error=VerificationFailed");
   }
