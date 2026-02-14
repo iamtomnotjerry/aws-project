@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import Image from "next/image";
-import { User, Mail, Shield, Calendar, ArrowLeft, CheckCircle } from "lucide-react";
+import { User, Mail, Shield, Calendar, ArrowLeft, CheckCircle, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -13,8 +13,10 @@ export default function ProfilePage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+        </div>
       </div>
     );
   }
@@ -27,89 +29,104 @@ export default function ProfilePage() {
   const isAdmin = user.role === "ADMIN";
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-6 relative overflow-hidden">
+    <div className="min-h-screen pt-32 pb-48 px-6 relative overflow-hidden bg-background">
       {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] -z-10" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] -z-10" />
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] -z-10" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[140px] -z-10" />
 
-      <div className="max-w-2xl mx-auto">
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors group"
+      <div className="max-w-3xl mx-auto">
+        <motion.div
+           initial={{ opacity: 0, x: -20 }}
+           animate={{ opacity: 1, x: 0 }}
+           transition={{ duration: 0.6 }}
         >
-          <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-          Back to Stories
-        </Link>
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 text-slate-400 hover:text-white mb-12 transition-all duration-300 group font-bold px-4 py-2 rounded-full hover:bg-white/5"
+          >
+            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+            Trở về Bảng tin
+          </Link>
+        </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
         >
-          <Card className="p-8 md:p-12 overflow-hidden relative">
-            <div className="absolute top-0 right-0 p-6 opacity-5">
-              <User size={160} />
+          <Card className="p-10 md:p-16 glass-card relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 opacity-[0.03] text-white">
+              <User size={300} strokeWidth={1} />
             </div>
 
-            <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-              <div className="relative w-32 h-32 rounded-3xl overflow-hidden border-2 border-white/10 shadow-2xl">
-                <Image 
-                  src={user.image || `https://ui-avatars.com/api/?name=${user.name || "User"}&background=random`}
-                  alt={user.name || "User"}
-                  fill
-                  className="object-cover"
-                />
+            <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-tr from-primary to-accent rounded-4xl blur opacity-25 group-hover:opacity-50 transition duration-500" />
+                <div className="relative w-40 h-40 rounded-3xl overflow-hidden border-2 border-white/10 shadow-2xl bg-slate-900">
+                  <Image 
+                    src={user.image || `https://ui-avatars.com/api/?name=${user.name || "User"}&background=020617&color=3b82f6&bold=true&size=200`}
+                    alt={user.name || "User"}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
               </div>
 
-              <div className="text-center md:text-left">
-                <h1 className="text-4xl font-bold mb-2 text-gradient">{user.name}</h1>
-                <div className="flex items-center justify-center md:justify-start gap-3">
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isAdmin ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'}`}>
-                    {user.role}
+              <div className="text-center md:text-left flex-1">
+                <h1 className="text-5xl font-black mb-5 tracking-tight text-white">{user.name}</h1>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-colors ${isAdmin ? 'bg-primary/20 text-primary border-primary/30' : 'bg-slate-500/10 text-slate-400 border-white/10'}`}>
+                    {isAdmin ? 'Quản trị viên' : 'Người dùng'}
                   </span>
                   {user.emailVerified && (
-                    <span className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30 uppercase tracking-tighter">
-                      <CheckCircle size={10} /> Verified
+                    <span className="flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      <CheckCircle size={12} /> Đã xác thực
                     </span>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="mt-12 grid gap-6">
-              <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
-                  <Mail size={20} />
+            <div className="mt-16 space-y-5">
+              {[
+                {
+                  label: "Địa chỉ Email",
+                  value: user.email,
+                  icon: <Mail size={22} />,
+                  bg: "bg-blue-500/10",
+                  color: "text-blue-400"
+                },
+                {
+                  label: "Cấp độ bảo mật",
+                  value: isAdmin ? "Toàn quyền quản trị (System-wide)" : "Người dùng phổ thông (Read-only)",
+                  icon: <Shield size={22} />,
+                  bg: "bg-purple-500/10",
+                  color: "text-purple-400"
+                },
+                {
+                  label: "Mã tài khoản",
+                  value: user.id,
+                  icon: <Smartphone size={22} />,
+                  bg: "bg-emerald-500/10",
+                  color: "text-emerald-400",
+                  fontMono: true
+                }
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center gap-6 p-6 glass-card !bg-white/[0.02] hover:!bg-white/[0.05] border-white/[0.03] rounded-3xl group transition-all duration-300">
+                  <div className={`w-14 h-14 rounded-2xl ${item.bg} flex items-center justify-center ${item.color} shrink-0 shadow-inner group-hover:scale-110 transition-all`}>
+                    {item.icon}
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-1">{item.label}</p>
+                    <p className={`text-slate-100 font-bold text-lg ${item.fontMono ? 'font-mono text-sm tracking-tight' : ''}`}>{item.value}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Email Address</p>
-                  <p className="text-gray-200">{user.email}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
-                  <Shield size={20} />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Security Level</p>
-                  <p className="text-gray-200">{isAdmin ? "Administrator (Full Access)" : "Regular User (Read Only)"}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400">
-                  <Calendar size={20} />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Account ID</p>
-                  <p className="text-gray-200 font-mono text-sm">{user.id}</p>
-                </div>
-              </div>
+              ))}
             </div>
 
-            <div className="mt-12 border-t border-white/5 pt-8 text-center text-gray-500 text-sm">
-              <p>Bao's Blog Member</p>
+            <div className="mt-16 pt-10 border-t border-white/[0.05] text-center">
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Thành viên Bao.Dev từ 2026</p>
             </div>
           </Card>
         </motion.div>

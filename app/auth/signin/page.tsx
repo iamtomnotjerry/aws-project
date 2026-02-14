@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import Link from "next/link";
-import { Lock, ArrowLeft, Mail } from "lucide-react";
+import { Lock, ArrowLeft, Mail, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 function SignInForm() {
@@ -22,19 +22,19 @@ function SignInForm() {
     const error = searchParams.get("error");
     
     if (success === "VerifyEmail") {
-      toast.info("Registration initiated! Please check your email to verify your account.");
+      toast.info("Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
     }
 
     if (error) {
       const errorMessages: Record<string, string> = {
-        VerificationFailed: "Verification failed. Please try again or request a new link.",
-        TokenExpired: "Verification link has expired. Please request a new one.",
-        InvalidToken: "Invalid verification link.",
-        EmailAlreadyTaken: "This email is already registered. Please sign in.",
-        MissingToken: "Verification link is incomplete.",
-        UserNotFound: "Account not found.",
+        VerificationFailed: "Xác thực thất bại. Vui lòng thử lại hoặc yêu cầu link mới.",
+        TokenExpired: "Link xác thực đã hết hạn. Vui lòng yêu cầu link mới.",
+        InvalidToken: "Link xác thực không hợp lệ.",
+        EmailAlreadyTaken: "Email này đã được đăng ký. Vui lòng đăng nhập.",
+        MissingToken: "Link xác thực không đầy đủ.",
+        UserNotFound: "Không tìm thấy tài khoản.",
       };
-      toast.error(errorMessages[error] || "An error occurred. Please try again.");
+      toast.error(errorMessages[error] || "Đã có lỗi xảy ra. Vui lòng thử lại.");
     }
   }, [searchParams]);
 
@@ -50,83 +50,81 @@ function SignInForm() {
       });
 
       if (result?.error) {
-        toast.error("Invalid credentials");
+        toast.error("Thông tin đăng nhập không chính xác");
       } else {
-        toast.success("Welcome back!");
+        toast.success("Chào mừng bạn quay trở lại!");
         router.push("/");
         router.refresh();
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("Đã xảy ra lỗi hệ thống");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-md p-8 md:p-10 border-white/10 bg-black/40 backdrop-blur-xl">
-      <Link 
-        href="/" 
-        className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-white mb-8 transition-colors group"
-      >
-        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-        Back to Home
-      </Link>
-      
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-purple-500 mb-6 shadow-lg shadow-blue-500/20">
-          <Lock className="text-white" size={32} />
-        </div>
-        <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
-        <p className="text-gray-400">Sign in to access your dashboard</p>
+    <Card className="w-full max-w-md p-10 md:p-14 glass-card relative overflow-hidden">
+      <div className="absolute -top-10 -right-10 opacity-10 rotate-12 text-primary">
+        <Lock size={150} />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-300">Email Address</label>
-          <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-            <Input 
-              type="email" 
-              placeholder="name@example.com" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="pl-12 bg-white/5 border-white/10 focus:border-blue-500/50"
-              required
-            />
+      <div className="relative z-10">
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-white mb-10 transition-colors group font-bold"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          Quay lại Trang chủ
+        </Link>
+        
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary/20 mb-8 border border-primary/20 shadow-xl shadow-primary/10">
+            <Lock className="text-primary" size={40} />
           </div>
+          <h1 className="text-4xl font-black mb-3 tracking-tight">Đăng Nhập</h1>
+          <p className="text-slate-500 font-medium">Truy cập vào bảng điều khiển cá nhân</p>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-300">Password</label>
+        <form onSubmit={handleSubmit} className="space-y-8">
           <Input 
+            label="Địa chỉ Email"
+            type="email" 
+            placeholder="name@example.com" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="bg-white/[0.03]"
+            required
+          />
+
+          <Input 
+            label="Mật khẩu"
             type="password" 
             placeholder="••••••••" 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="bg-white/5 border-white/10 focus:border-blue-500/50"
+            className="bg-white/[0.03]"
             required
           />
+
+          <Button 
+            type="submit" 
+            className="w-full h-14 text-lg" 
+            glow 
+            loading={loading}
+          >
+            Đăng Nhập <Sparkles size={18} />
+          </Button>
+        </form>
+
+        <div className="mt-10 text-center">
+          <p className="text-sm text-slate-500 font-medium">
+            Chưa có tài khoản?{" "}
+            <Link href="/auth/signup" className="text-primary hover:underline font-bold transition-all">
+              Đăng ký ngay
+            </Link>
+          </p>
         </div>
-
-        <Button 
-          type="submit" 
-          className="w-full" 
-          size="lg" 
-          glow 
-          loading={loading}
-        >
-          Sign In
-        </Button>
-      </form>
-
-      <div className="mt-8 text-center">
-        <p className="text-sm text-gray-500">
-          Don't have an account?{" "}
-          <Link href="/auth/signup" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
-            Create one
-          </Link>
-        </p>
       </div>
     </Card>
   );
@@ -134,20 +132,18 @@ function SignInForm() {
 
 export default function SignIn() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-[#020617] -z-20" />
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] -z-10" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] -z-10" />
+    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden bg-background">
+      {/* Background Decor */}
+      <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] -z-10" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/5 rounded-full blur-[140px] -z-10" />
 
       <Suspense fallback={
-        <div className="w-full max-w-md p-8 md:p-10 border-white/10 bg-black/40 backdrop-blur-xl rounded-2xl">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-white/10 rounded w-1/2 mx-auto"></div>
-            <div className="h-12 bg-white/10 rounded"></div>
-            <div className="h-12 bg-white/10 rounded"></div>
-            <div className="h-12 bg-white/10 rounded w-1/4 mx-auto"></div>
-          </div>
+        <div className="w-full max-w-md p-10 glass-card animate-pulse">
+          <div className="h-20 bg-white/5 rounded-3xl mb-10" />
+          <div className="h-10 bg-white/5 rounded-xl mb-6 w-1/2" />
+          <div className="h-14 bg-white/5 rounded-2xl mb-12" />
+          <div className="h-14 bg-white/5 rounded-2xl mb-12" />
+          <div className="h-14 bg-white/5 rounded-2xl" />
         </div>
       }>
         <SignInForm />

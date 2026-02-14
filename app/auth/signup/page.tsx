@@ -6,9 +6,8 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import Link from "next/link";
-import { UserPlus, ArrowLeft, Mail, User, Lock } from "lucide-react";
+import { UserPlus, ArrowLeft, Mail, User, Lock, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { signIn } from "next-auth/react";
 
 export default function SignUp() {
   const router = useRouter();
@@ -33,10 +32,10 @@ export default function SignUp() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || data.message || "Registration failed");
+        throw new Error(data.error || data.message || "Đăng ký thất bại");
       }
 
-      toast.success("Account registration initiated! Please check your email to verify and complete your registration.");
+      toast.success("Khởi tạo đăng ký thành công! Vui lòng kiểm tra email để xác thực và hoàn tất.");
 
       setFormData({
         name: "",
@@ -49,7 +48,7 @@ export default function SignUp() {
         router.push("/auth/signin?success=VerifyEmail");
       }, 3000);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Registration failed";
+      const message = error instanceof Error ? error.message : "Đăng ký thất bại";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -57,93 +56,82 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-[#020617] -z-20" />
-      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] -z-10" />
-      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] -z-10" />
+    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden bg-background">
+      {/* Background Decor */}
+      <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] -z-10" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-accent/5 rounded-full blur-[140px] -z-10" />
 
-      <Card className="w-full max-w-md p-8 md:p-10 border-white/10 bg-black/40 backdrop-blur-xl">
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-white mb-8 transition-colors group"
-        >
-          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          Back to Home
-        </Link>
-        
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-500 to-pink-500 mb-6 shadow-lg shadow-purple-500/20">
-            <UserPlus className="text-white" size={32} />
-          </div>
-          <h1 className="text-3xl font-bold mb-2">Create Account</h1>
-          <p className="text-gray-400">Join Bao's Blog community today</p>
+      <Card className="w-full max-w-md p-10 md:p-14 glass-card relative overflow-hidden">
+        <div className="absolute -top-10 -right-10 opacity-10 rotate-12 text-primary">
+          <UserPlus size={150} />
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Full Name</label>
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-              <Input 
-                type="text" 
-                placeholder="John Doe" 
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="pl-12 bg-white/5 border-white/10 focus:border-purple-500/50"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Email Address</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-              <Input 
-                type="email" 
-                placeholder="name@example.com" 
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="pl-12 bg-white/5 border-white/10 focus:border-purple-500/50"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-              <Input 
-                type="password" 
-                placeholder="••••••••" 
-                value={formData.password}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
-                className="pl-12 bg-white/5 border-white/10 focus:border-purple-500/50"
-                required
-              />
-            </div>
-          </div>
-
-          <Button 
-            type="submit" 
-            className="w-full bg-purple-600 hover:bg-purple-700" 
-            size="lg" 
-            glow 
-            loading={loading}
+        <div className="relative z-10">
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-white mb-10 transition-colors group font-bold"
           >
-            Create Account
-          </Button>
-        </form>
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+            Quay lại Trang chủ
+          </Link>
+          
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary/20 mb-8 border border-primary/20 shadow-xl shadow-primary/10">
+              <UserPlus className="text-primary" size={40} />
+            </div>
+            <h1 className="text-4xl font-black mb-3 tracking-tight">Tạo Tài Khoản</h1>
+            <p className="text-slate-500 font-medium">Tham gia cộng đồng Bao.Dev ngay hôm nay</p>
+          </div>
 
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
-            Already have an account?{" "}
-            <Link href="/auth/signin" className="text-purple-400 hover:text-purple-300 font-medium transition-colors">
-              Sign In
-            </Link>
-          </p>
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <Input 
+              label="Họ và Tên"
+              type="text" 
+              placeholder="Nguyễn Văn A" 
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              className="bg-white/[0.03]"
+              required
+            />
+
+            <Input 
+              label="Địa chỉ Email"
+              type="email" 
+              placeholder="name@example.com" 
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              className="bg-white/[0.03]"
+              required
+            />
+
+            <Input 
+              label="Mật khẩu"
+              type="password" 
+              placeholder="••••••••" 
+              value={formData.password}
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              className="bg-white/[0.03]"
+              required
+            />
+
+            <Button 
+              type="submit" 
+              className="w-full h-14 text-lg" 
+              glow 
+              loading={loading}
+            >
+              Đăng Ký Tài Khoản <Sparkles size={18} />
+            </Button>
+          </form>
+
+          <div className="mt-10 text-center">
+            <p className="text-sm text-slate-500 font-medium">
+              Đã có tài khoản?{" "}
+              <Link href="/auth/signin" className="text-primary hover:underline font-bold transition-all">
+                Đăng nhập ngay
+              </Link>
+            </p>
+          </div>
         </div>
       </Card>
     </div>

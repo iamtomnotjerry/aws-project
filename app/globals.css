@@ -1,46 +1,70 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #020617;
-  --color-foreground: #f8fafc;
-  --color-card: #0f172a;
-  --color-card-foreground: #f8fafc;
-  --color-popover: #0f172a;
-  --color-popover-foreground: #f8fafc;
-  --color-primary: #3b82f6;
+  /* Premium Palette - Sapphire & Deep Slate */
+  --color-background: #020617; /* Slate 950 */
+  --color-foreground: #f1f5f9; /* Slate 100 */
+  
+  --color-card: rgba(15, 23, 42, 0.6); /* Slate 900 with transparency */
+  --color-card-foreground: #f1f5f9;
+  
+  --color-primary: #3b82f6; /* Blue 500 */
+  --color-primary-hover: #2563eb; /* Blue 600 */
   --color-primary-foreground: #ffffff;
-  --color-secondary: #1e293b;
-  --color-secondary-foreground: #f8fafc;
-  --color-muted: #1e293b;
-  --color-muted-foreground: #94a3b8;
-  --color-accent: #1e293b;
-  --color-accent-foreground: #f8fafc;
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #f8fafc;
-  --color-border: #1e293b;
-  --color-input: #1e293b;
-  --color-ring: #3b82f6;
-  --radius-xl: 0.75rem;
+  
+  --color-secondary: rgba(30, 41, 59, 0.5); /* Slate 800 with transparency */
+  --color-secondary-hover: rgba(51, 65, 85, 0.6);
+  
+  --color-accent: #8b5cf6; /* Violet 500 */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-input: rgba(255, 255, 255, 0.03);
+  
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+
+  /* Standardized Spacing */
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
 }
 
 @layer base {
-  * {
-    @apply border-border;
+  html {
+    scroll-behavior: smooth;
   }
+  
   body {
-    @apply bg-background text-foreground selection:bg-primary/30;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight font-bold text-white;
   }
 }
 
-.text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-500 font-bold;
+/* Premium Utilities */
+@utility text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-blue-400 font-extrabold;
 }
 
-.glass {
-  @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+@utility glass-morphism {
+  @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
 }
 
-.glow {
-  @apply shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:shadow-[0_0_30px_rgba(59,130,246,0.7)] transition-all;
+@utility glass-card {
+  @apply glass-morphism hover:bg-white/[0.07] transition-all duration-300;
+}
+
+.premium-glow {
+  @apply relative overflow-hidden;
+}
+
+.premium-glow::after {
+  content: "";
+  @apply absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-blue-500/0 -translate-x-full transition-transform duration-1000;
+}
+
+.premium-glow:hover::after {
+  @apply translate-x-full;
 }

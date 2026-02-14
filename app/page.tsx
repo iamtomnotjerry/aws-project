@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { BookOpen, Rocket, Shield, Database, Search } from "lucide-react";
+import { BookOpen, Rocket, Shield, Database, Search, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { usePosts } from "@/hooks/use-posts";
 import { Button } from "@/components/ui/Button";
@@ -20,127 +20,151 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-6 max-w-6xl mx-auto">
-      {/* Hero Section */}
-      <section className="text-center mb-24">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="inline-block px-4 py-1.5 mb-6 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-semibold"
-        >
-          🚀 Welcome to my personal space
-        </motion.div>
-        
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-6xl md:text-7xl font-extrabold mb-8 tracking-tight"
-        >
-          Welcome to <span className="text-gradient">Bao's World</span>
-        </motion.h1>
-        
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-gray-400 text-xl mb-12 max-w-2xl mx-auto leading-relaxed"
-        >
-          Nơi mình chia sẻ về Công nghệ, Cuộc sống và những hành trình thú vị. 
-          Code hard, Play hard, and Live fully.
-        </motion.p>
-        
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link href="#posts">
-            <Button size="lg" glow>
-              <BookOpen size={22} /> See My Stories
-            </Button>
-          </Link>
-          <Button variant="secondary" size="lg">
-            <Rocket size={22} /> About Me
-          </Button>
-        </div>
-      </section>
+    <div className="min-h-screen pb-32">
+      {/* Hero Section - The "WOW" Factor */}
+      <section className="relative pt-32 pb-48 px-6 overflow-hidden">
+        {/* Background Decorative Elements */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.1)_0%,transparent_70%)]" />
+        <div className="absolute top-20 right-[10%] w-64 h-64 bg-primary/10 rounded-full blur-[100px] -z-10 animate-pulse" />
+        <div className="absolute bottom-20 left-[10%] w-96 h-96 bg-accent/5 rounded-full blur-[120px] -z-10" />
 
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
-        <FeatureCard 
-          icon={<Shield size={28} className="text-blue-500" />}
-          title="Tech Enthusiast"
-          description="Đam mê Cloud, DevOps và những công nghệ mới nhất. Luôn học hỏi và chia sẻ."
-        />
-        <FeatureCard 
-          icon={<Rocket size={28} className="text-purple-500" />}
-          title="Growth Mindset"
-          description="Không ngừng phát triển bản thân mỗi ngày qua sách, trải nghiệm và sai lầm."
-        />
-        <FeatureCard 
-          icon={<Database size={28} className="text-green-500" />}
-          title="Daily Life"
-          description="Những khoảnh khắc đời thường, sở thích và những chuyến đi đáng nhớ."
-        />
-      </div>
-
-      {/* Posts Section */}
-      <section id="posts">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
-          <div>
-            <h2 className="text-4xl font-bold mb-3 italic">Knowledge Base</h2>
-            <p className="text-gray-500">Mới nhất từ cộng đồng Cloud Engineering.</p>
-          </div>
+        <div className="max-w-7xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full glass-morphism border-white/10 text-primary text-xs font-bold uppercase tracking-widest"
+          >
+            <Sparkles size={14} className="animate-spin-slow" />
+            Sẵn sàng cho những hành trình mới
+          </motion.div>
           
-          <div className="relative w-full md:w-96 group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-500 transition-colors" size={20} />
-            <Input 
-              placeholder="Search articles by title or tags..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-14 rounded-2xl h-14 bg-white/5 border-white/5"
-            />
-          </div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-6xl md:text-8xl font-black mb-10 tracking-tighter leading-[0.9]"
+          >
+            Sáng tạo. Kết nối. <br />
+            <span className="text-gradient">Phát triển.</span>
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-slate-400 text-xl md:text-2xl mb-14 max-w-3xl mx-auto leading-relaxed font-medium"
+          >
+            Chào mừng bạn đến với blog của <span className="text-white font-bold underline decoration-primary/50 underline-offset-4">Bảo</span> — Một chuyên gia Cloud Engineering, người kể chuyện qua từng dòng code và những trải nghiệm thực chiến.
+          </motion.p>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="flex flex-col sm:flex-row justify-center gap-6"
+          >
+            <Link href="#posts">
+              <Button size="lg" glow className="min-w-[220px]">
+                Xem Bài Viết <ArrowRight size={20} />
+              </Button>
+            </Link>
+            <Link href="/about">
+              <Button variant="secondary" size="lg" className="min-w-[220px]">
+                Về Tôi <Rocket size={20} className="text-primary" />
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Features Grid - Standardized but refined */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-48">
+          <FeatureCard 
+            icon={<Shield size={32} />}
+            title="Cloud Engineering"
+            description="Phân tích hạ tầng AWS, quy trình CI/CD và các giải pháp hạ tầng tối ưu trên mây."
+          />
+          <FeatureCard 
+            icon={<Rocket size={32} />}
+            title="Đào Tạo Bản Thân"
+            description="Hành trình học hỏi không ngừng, từ kiến trúc phần mềm đến kỹ năng lãnh đạo."
+          />
+          <FeatureCard 
+            icon={<Database size={32} />}
+            title="Trải Nghiệm Sống"
+            description="Những chuyến đi, cuốn sách tâm đắc và những câu chuyện thú vị đời thường."
+          />
         </div>
 
-        {error && (
-          <div className="text-center py-20 bg-red-500/5 rounded-3xl border border-red-500/10">
-            <p className="text-red-400 mb-4">{error}</p>
-            <Button variant="secondary" onClick={() => window.location.reload()}>Retry Connection</Button>
-          </div>
-        )}
-
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="aspect-video glass rounded-3xl animate-pulse bg-white/5" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {filteredPosts.length > 0 ? (
-              filteredPosts.map((post, idx) => (
-                <PostCard key={post.id} post={post} index={idx} />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-32 glass rounded-3xl">
-                <p className="text-gray-500 text-lg">No articles found matching your search.</p>
+        {/* Posts Section */}
+        <section id="posts" className="scroll-mt-32">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-10">
+            <div className="max-w-2xl">
+              <div className="w-12 h-1.5 bg-primary mb-6 rounded-full" />
+              <h2 className="text-5xl font-black mb-4 tracking-tight">KHO KIẾN THỨC</h2>
+              <p className="text-slate-500 text-lg font-medium">Khám phá những bài viết mới nhất về Cloud, DevOps và công nghệ hiện đại.</p>
+            </div>
+            
+            <div className="w-full md:w-[450px]">
+              <div className="relative group">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary transition-colors duration-300" size={22} />
+                <Input 
+                  placeholder="Tìm kiếm bài viết, chủ đề..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-16 pr-6 rounded-2xl h-18 bg-white/5 border-white/10 hover:border-white/20 transition-all font-medium"
+                />
               </div>
-            )}
+            </div>
           </div>
-        )}
 
-        {/* Load More Button */}
-        {!loading && hasMore && (
-          <div className="mt-16 flex justify-center">
-            <Button 
-              variant="secondary" 
-              size="lg" 
-              onClick={loadMore} 
-              loading={loadingMore}
-              className="min-w-[200px]"
-            >
-              Tải thêm bài viết
-            </Button>
-          </div>
-        )}
-      </section>
+          {error && (
+            <div className="text-center py-24 glass-card rounded-4xl border-red-500/10">
+              <div className="mb-6 inline-flex p-4 bg-red-500/10 rounded-full text-red-400">
+                <Sparkles size={32} />
+              </div>
+              <p className="text-white text-xl font-bold mb-6">{error}</p>
+              <Button onClick={() => window.location.reload()}>Thử Lại Kết Nối</Button>
+            </div>
+          )}
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="aspect-video glass-morphism rounded-3xl animate-pulse bg-white/5" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              {filteredPosts.length > 0 ? (
+                filteredPosts.map((post, idx) => (
+                  <PostCard key={post.id} post={post} index={idx} />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-40 glass-card rounded-4xl opacity-50">
+                  <p className="text-slate-400 text-xl font-medium">Không tìm thấy bài viết nào phù hợp.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Load More Button - Standardized */}
+          {!loading && hasMore && filteredPosts.length > 0 && (
+            <div className="mt-24 flex justify-center">
+              <Button 
+                variant="secondary" 
+                size="lg" 
+                onClick={loadMore} 
+                loading={loadingMore}
+                className="min-w-[280px] h-16 text-lg hover:border-primary/50 transition-all"
+              >
+                Tải Thêm Bài Viết
+              </Button>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

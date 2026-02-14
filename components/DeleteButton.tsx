@@ -12,20 +12,20 @@ export default function DeleteButton({ id }: { id: string }) {
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this article? This action cannot be undone.")) return;
+    if (!confirm("Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác.")) return;
     
     setLoading(true);
     try {
       const res = await ApiService.posts.delete(id);
       if (res.success) {
-        toast.success("Post deleted successfully");
+        toast.success("Đã xóa bài viết thành công");
         router.push("/");
         router.refresh();
       } else {
-        toast.error(res.error || "Failed to delete post");
+        toast.error(res.error || "Không thể xóa bài viết");
       }
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      toast.error("Đã xảy ra lỗi hệ thống");
     } finally {
       setLoading(false);
     }
@@ -37,8 +37,9 @@ export default function DeleteButton({ id }: { id: string }) {
       size="md" 
       onClick={handleDelete}
       loading={loading}
+      className="px-10 h-14 rounded-2xl"
     >
-      <Trash2 size={18} /> Delete Article
+      <Trash2 size={18} /> Xóa bài viết
     </Button>
   );
 }
