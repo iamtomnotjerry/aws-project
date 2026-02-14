@@ -1,0 +1,90 @@
+﻿
+> aws-project@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+node.exe : Error: Cannot apply unknown utility 
+class `border-border`
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" 
+"C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (E 
+   rror: Cannot a...`border-border`:String) [  
+  ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandErr 
+   or
+ 
+    [2m[at onInvalidCandidate (D:\aws-project\
+node_modules\tailwindcss\dist\lib.js:21:1511)]
+[0m
+    [2m[at Te (D:\aws-project\node_modules\tai
+lwindcss\dist\lib.js:16:36652)][0m
+    [2m[at D:\aws-project\node_modules\tailwin
+dcss\dist\lib.js:21:355][0m
+    [2m[at Rr (D:\aws-project\node_modules\tai
+lwindcss\dist\lib.js:3:1718)][0m
+    [2m[at _ (D:\aws-project\node_modules\tail
+windcss\dist\lib.js:3:1377)][0m
+    [2m[at $e (D:\aws-project\node_modules\tai
+lwindcss\dist\lib.js:21:172)][0m
+    [2m[at un (D:\aws-project\node_modules\tai
+lwindcss\dist\lib.js:38:294)][0m
+    [2m[at async cn (D:\aws-project\node_modul
+es\tailwindcss\dist\lib.js:38:631)][0m
+    [2m[at async Xr (D:\aws-project\node_modul
+es\@tailwindcss\node\dist\index.js:10:3417)][0
+m
+    [2m[at async I (D:\aws-project\node_module
+s\@tailwindcss\postcss\dist\index.js:10:3977)]
+[0m
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: 
+D:\aws-project\app\globals.css:1:1: Cannot 
+apply unknown utility class `border-border`
+    at Input.error 
+(node_modules/postcss/lib/input.js:135:16) [D:\
+aws-project\.next\build\chunks\node_modules_fe6
+93df6._.js:4651:22]
+    at Root.error 
+(node_modules/postcss/lib/node.js:146:32) [D:\a
+ws-project\.next\build\chunks\node_modules_fe69
+3df6._.js:928:38]
+    [at Object.Once (D:\aws-project\node_module
+s\@tailwindcss\postcss\dist\index.js:10:6911)]
+    at async LazyResult.runAsync (node_modules/
+postcss/lib/lazy-result.js:293:11) [D:\aws-proj
+ect\.next\build\chunks\node_modules_fe693df6._.
+js:6206:21]
+    at async transform (turbopack:///[turbopack
+-node]/transforms/postcss.ts:70:34) [D:\aws-pro
+ject\.next\build\chunks\[root-of-the-server]__5
+1225daf._.js:146:36]
+    at async run (turbopack:///[turbopack-node]
+/ipc/evaluate.ts:92:23) [D:\aws-project\.next\b
+uild\chunks\[root-of-the-server]__974941ed._.js
+:443:31]
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component 
+Browser]
+    ./app/layout.tsx [Server Component]
+
+
+    at async transform (turbopack:///[turbopack
+-node]/transforms/postcss.ts:70:34) [D:\aws-pro
+ject\.next\build\chunks\[root-of-the-server]__5
+1225daf._.js:146:36])
+    at async run (turbopack:///[turbopack-node]
+/ipc/evaluate.ts:92:23) [D:\aws-project\.next\b
+uild\chunks\[root-of-the-server]__974941ed._.js
+:443:31])

@@ -55,6 +55,38 @@ Tài liệu này ghi lại các phiên bản, thay đổi và quyết định k�
 
 ---
 
+## [v1.2.0] - 2026-02-14
+
+**Chủ đề: AWS S3 Integration & Professional Architectural Overhaul (Level-Up)**
+
+### ✅ Các công việc đã thực hiện
+
+- **AWS S3 Core Integration (Phase 6)**:
+  - Tích hợp bộ SDK `@aws-sdk/client-s3` chuyên nghiệp.
+  - Xây dựng API Upload sử dụng **Presigned URLs** (bảo mật tối đa, client upload trực tiếp lên S3 không qua server trung gian).
+  - Cấu hình biến môi trường S3 trên cả Local và AWS EC2.
+  - Khắc phục lỗi quyền truy cập `certbot` trong Docker context bằng `.dockerignore`.
+- **Architectural Overhaul (The Level-Up Strategy)**:
+  - **Foundation Layer**: Triển khai `Zod` để chuẩn hóa toàn bộ dữ liệu đầu vào (Validation).
+  - **Logic Layer (Service & Hooks)**:
+    - Xây dựng `ApiService` tập trung hóa mọi yêu cầu mạng.
+    - Tạo các Custom Hooks chuyên dụng: `usePosts()` (quản lý tin đăng) và `useS3Upload()` (quản lý upload ảnh).
+  - **UI Layer (Atomic Design)**:
+    - Chế tạo bộ Component nguyên tử: `Button`, `Input`, `Textarea`, `Card`.
+    - Tái cấu trúc trang **Home** và **New Post** trở nên tinh gọn (giảm >50% code tại file page).
+  - **Design System**: Quy hoạch lại hệ thống màu sắc và Token bằng Tailwind v4 `@theme`.
+- **Build & Verification**:
+  - Fix triệt để các lỗi Type-mismatch giữa Zod và React Hook Form.
+  - Xác minh build production thành công 100% locally.
+
+### 💡 Quyết định kỹ thuật
+
+- **Presigned URLs**: Lựa chọn phương pháp upload trực tiếp từ client lên S3 để giảm tải CPU cho server EC2 t3.micro (quyết định tối ưu tài nguyên).
+- **Zod + Hook Form**: Sử dụng `zodResolver` là tiêu chuẩn vàng hiện nay để đảm bảo tính nhất quán giữa Schema Database và Form Frontend.
+- **Layered Architecture**: Việc tách biệt Service/Hooks giúp dự án sẵn sàng cho việc mở rộng quy mô (Scalable) mà không lo bị rối mã nguồn.
+
+---
+
 ## [v1.1.0] - 2026-02-13
 
 **Chủ đề: AWS RDS Integration & EC2 Cloud Deployment**
@@ -90,7 +122,8 @@ Tài liệu này ghi lại các phiên bản, thay đổi và quyết định k�
 ## [Chưa thực hiện] - Phiên tiếp theo
 
 - Tích hợp CI/CD tự động bằng GitHub Actions.
-- Cấu hình tên miền (Domain) và SSL (HTTPS) bằng Let's Encrypt.
+- Cấu hình tên miền- **Phase 5 (SSL/HTTPS):** Secured the domain with Let's Encrypt and Nginx.
+- **Phase 6 (AWS S3):** Integrated Amazon S3 for persistent image storage and modernized UI with post-card layouts.
 
 ---
 
