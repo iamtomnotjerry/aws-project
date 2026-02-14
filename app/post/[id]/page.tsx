@@ -1,9 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, Calendar, User, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Calendar, User, Edit3, ImageIcon } from "lucide-react";
 import DeleteButton from "@/components/DeleteButton";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 
 export default async function PostDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,41 +19,71 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <div className="min-h-screen pt-32 px-6 max-w-3xl mx-auto">
-      <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-10">
-        <ArrowLeft size={18} /> Back to feed
+    <div className="min-h-screen pt-32 pb-20 px-6 max-w-4xl mx-auto">
+      <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-10 group">
+        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+        Back to knowledge feed
       </Link>
 
-      <article className="glass p-10 rounded-3xl">
-        <div className="flex justify-between items-start mb-8">
-          <h1 className="text-4xl font-bold">{post.title}</h1>
-          <div className="flex gap-2">
-            <Link 
-              href={`/post/${post.id}/edit`}
-              className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl hover:bg-blue-500/20 transition-colors"
-            >
-              <Trash2 size={20} className="hidden" /> {/* Placeholder icon or use a pencil */}
-              <span className="font-semibold text-sm">Edit</span>
-            </Link>
-            <DeleteButton id={post.id} />
-          </div>
+      <Card className="overflow-hidden">
+        {/* Cover Image Section */}
+        <div className="relative aspect-video md:aspect-[21/9] bg-white/5 border-b border-white/5">
+          {post.coverImage ? (
+            <Image 
+              src={post.coverImage} 
+              alt={post.title} 
+              fill 
+              className="object-cover"
+              priority
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-700">
+              <ImageIcon size={64} strokeWidth={1} />
+            </div>
+          )}
         </div>
 
-        <div className="flex gap-6 text-sm text-gray-400 mb-10 border-b border-white/5 pb-6">
-          <div className="flex items-center gap-2">
-            <Calendar size={16} />
-            {new Date(post.createdAt).toLocaleDateString()}
-          </div>
-          <div className="flex items-center gap-2">
-            <User size={16} />
-            {post.author?.name || "Admin"}
-          </div>
-        </div>
+        <article className="p-8 md:p-12">
+          <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-10">
+            <div className="flex-1">
+              <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">{post.title}</h1>
+              <div className="flex flex-wrap gap-6 text-sm text-gray-400">
+                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full">
+                  <Calendar size={14} className="text-blue-500" />
+                  {new Date(post.createdAt).toLocaleDateString("vi-VN")}
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full">
+                  <User size={14} className="text-purple-500" />
+                  {post.author?.name || "Cloud Architect"}
+                </div>
+              </div>
+            </div>
 
-        <div className="text-gray-300 leading-relaxed text-lg whitespace-pre-wrap">
-          {post.content}
-        </div>
-      </article>
+            <div className="flex gap-3 w-full md:w-auto">
+              <Link href={`/post/${post.id}/edit`} className="flex-1 md:flex-none">
+                <Button variant="secondary" className="w-full">
+                  <Edit3 size={18} /> Edit
+                </Button>
+              </Link>
+              <div className="flex-1 md:flex-none">
+                <DeleteButton id={post.id} />
+              </div>
+            </div>
+          </div>
+
+          <div className="prose prose-invert max-w-none">
+            <div className="text-gray-300 leading-relaxed text-lg whitespace-pre-wrap font-medium">
+              {post.content}
+            </div>
+          </div>
+        </article>
+      </Card>
+      
+      <div className="mt-12 text-center">
+        <p className="text-gray-500 text-sm">
+          Article ID: <code className="bg-white/5 px-2 py-0.5 rounded text-xs">{post.id}</code>
+        </p>
+      </div>
     </div>
   );
 }

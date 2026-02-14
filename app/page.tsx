@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PostCard } from "@/components/PostCard";
 import { FeatureCard } from "@/components/FeatureCard";
+import { toast } from "sonner";
 
 export default function Home() {
   const { posts, loading, error } = usePosts();

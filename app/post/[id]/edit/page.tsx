@@ -3,112 +3,147 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, ImageIcon, X, Trash2 } from "lucide-react";
 import Link from "next/link";
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-}
+import Image from "next/image";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { postSchema, type PostInput } from "@/schemas/post.schema";
+import { useS3Upload } from "@/hooks/use-upload";
+import { ApiService } from "@/services/api.service";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Card } from "@/components/ui/Card";
+import { toast } from "sonner";
 
 export default function EditPost({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const { upload, uploading } = useS3Upload();
   const router = useRouter();
 
+  const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, reset } = useForm<PostInput>({
+    resolver: zodResolver(postSchema),
+  });
+
   useEffect(() => {
-    fetch(`/api/posts`)
-      .then((res) => res.json())
-      .then((posts: Post[]) => {
-        const post = posts.find((p) => p.id === id);
-        if (post) {
-          setTitle(post.title);
-          setContent(post.content);
-        }
-        setLoading(false);
-      });
-  }, [id]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-
-    try {
-      const res = await fetch(`/api/posts/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content }),
-      });
-
-      if (res.ok) {
-        router.push(`/post/${id}`);
-        router.refresh();
+    const loadPost = async () => {
+      const res = await ApiService.posts.getOne(id);
+      if (res.success) {
+        const post = res.data;
+        reset({
+          title: post.title,
+          content: post.content,
+          coverImage: post.coverImage,
+          published: post.published,
+        });
+        if (post.coverImage) setPreview(post.coverImage);
+      } else {
+        toast.error("Failed to load post data");
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setSaving(false);
+    };
+    loadPost();
+  }, [id, reset]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setPreview(URL.createObjectURL(file));
+      setValue("coverImage", "pending_upload"); // Keep schema happy
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  const onSubmit: SubmitHandler<PostInput> = async (data) => {
+    try {
+      let coverImage = data.coverImage;
+      if (imageFile) {
+        coverImage = await upload(imageFile);
+        if (!coverImage) throw new Error("Image upload failed");
+      }
+
+      const res = await ApiService.posts.update(id, { ...data, coverImage });
+      if (res.success) {
+        toast.success("Post updated successfully");
+        router.push(`/post/${id}`);
+        router.refresh();
+      } else {
+        toast.error(res.error || "Update failed");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An unexpected error occurred");
+    }
+  };
 
   return (
-    <div className="min-h-screen pt-32 px-6 max-w-2xl mx-auto">
-      <Link href={`/post/${id}`} className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-10">
-        <ArrowLeft size={20} /> Back to post
+    <div className="min-h-screen pt-32 pb-20 px-6 max-w-2xl mx-auto">
+      <Link href={`/post/${id}`} className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group">
+        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+        Back to Post
       </Link>
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="glass p-10 rounded-3xl"
-      >
-        <h1 className="text-3xl font-bold mb-8 text-gradient">Edit Post</h1>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Title</label>
-            <input 
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
-              placeholder="Enter title..."
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Content</label>
-            <textarea 
-              required
-              rows={8}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
-              placeholder="Describe the changes..."
-            />
-          </div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <Card className="p-8 md:p-12">
+          <header className="mb-10">
+            <h1 className="text-4xl font-bold mb-3">Edit Post</h1>
+            <p className="text-gray-400">Update your cloud knowledge sharing.</p>
+          </header>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            disabled={saving}
-            className="w-full py-4 bg-blue-600 rounded-xl font-bold flex items-center justify-center gap-2 glow disabled:opacity-50"
-          >
-            {saving ? "Saving Changes..." : <><Save size={20} /> Save Changes</>}
-          </motion.button>
-        </form>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <Input 
+              label="Article Title" 
+              placeholder="e.g. Master Next.js for Production"
+              error={errors.title?.message}
+              {...register("title")}
+            />
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-400">Cover Image</label>
+              {preview ? (
+                <div className="relative aspect-video rounded-2xl overflow-hidden group border border-white/10">
+                  <Image src={preview} alt="Upload Preview" fill className="object-cover" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                    <Button variant="danger" size="sm" onClick={() => { setPreview(null); setImageFile(null); setValue("coverImage", null); }}>
+                      <Trash2 size={18} /> Remove Image
+                    </Button>
+                    <label className="cursor-pointer">
+                      <Button variant="secondary" size="sm" className="pointer-events-none">
+                        Change Image
+                      </Button>
+                      <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                    </label>
+                  </div>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center aspect-video rounded-2xl border-2 border-dashed border-white/10 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all cursor-pointer group">
+                  <div className="flex flex-col items-center gap-3 text-gray-500 group-hover:text-blue-400 transition-colors">
+                    <ImageIcon size={48} strokeWidth={1.5} />
+                    <span className="font-medium">Update cover image</span>
+                  </div>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                </label>
+              )}
+            </div>
+
+            <Textarea 
+              label="Content" 
+              placeholder="Refine your story..."
+              error={errors.content?.message}
+              {...register("content")}
+            />
+
+            <Button 
+              type="submit" 
+              className="w-full" 
+              loading={isSubmitting || uploading}
+              glow
+            >
+              {uploading ? "Uploading Image..." : "Save Changes"}
+            </Button>
+          </form>
+        </Card>
       </motion.div>
     </div>
   );

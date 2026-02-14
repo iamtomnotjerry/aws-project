@@ -11,11 +11,29 @@ export const ApiService = {
       const res = await fetch("/api/posts");
       return res.json();
     },
+    getOne: async (id: string): Promise<ApiResponse> => {
+      const res = await fetch(`/api/posts/${id}`);
+      return res.json();
+    },
     create: async (data: PostInput): Promise<ApiResponse> => {
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+      });
+      return res.json();
+    },
+    update: async (id: string, data: PostInput): Promise<ApiResponse> => {
+      const res = await fetch(`/api/posts/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return res.json();
+    },
+    delete: async (id: string): Promise<ApiResponse> => {
+      const res = await fetch(`/api/posts/${id}`, {
+        method: "DELETE",
       });
       return res.json();
     },

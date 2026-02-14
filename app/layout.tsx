@@ -3,11 +3,20 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 
+import { Toaster } from "sonner";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Cloud Computing Project | AWS Next.js",
-  description: "A premium Next.js application deployed on AWS EC2 & RDS.",
+  title: "CloudDev Blog | AWS & Next.js Architecture",
+  description: "A professional engineering blog documenting AWS EC2, S3, and standard Cloud architectures.",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#020617",
 };
 
 export default function RootLayout({
@@ -18,7 +27,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning={true}>
       <body className={`${inter.className} antialiased`} suppressHydrationWarning>
-        <nav className="fixed top-0 w-full z-50 glass py-4 px-6 mb-10">
+        <Toaster position="top-center" richColors />
+        <nav className="fixed top-0 w-full z-50 glass py-4 px-6">
           <div className="max-w-5xl mx-auto flex justify-between items-center">
             <div className="text-2xl font-bold text-gradient">CloudDev</div>
             <div className="flex gap-6 text-sm font-medium items-center">

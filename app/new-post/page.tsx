@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Card } from "@/components/ui/Card";
+import { toast } from "sonner";
 
 export default function NewPost() {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -49,11 +50,14 @@ export default function NewPost() {
 
       const res = await ApiService.posts.create({ ...data, coverImage });
       if (res.success) {
+        toast.success("Article published successfully!");
         router.push("/");
         router.refresh();
+      } else {
+        toast.error(res.error || "Failed to publish article");
       }
     } catch (error) {
-      console.error("Submission failed:", error);
+      toast.error("An unexpected error occurred");
     }
   };
 

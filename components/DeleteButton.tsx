@@ -1,43 +1,44 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ApiService } from "@/services/api.service";
+import { Button } from "@/components/ui/Button";
+import { toast } from "sonner";
 
 export default function DeleteButton({ id }: { id: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this post?")) return;
+    if (!confirm("Are you sure you want to delete this article? This action cannot be undone.")) return;
     
     setLoading(true);
     try {
-      const res = await fetch(`/api/posts/${id}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
+      const res = await ApiService.posts.delete(id);
+      if (res.success) {
+        toast.success("Post deleted successfully");
         router.push("/");
         router.refresh();
+      } else {
+        toast.error(res.error || "Failed to delete post");
       }
     } catch (error) {
-      console.error(error);
+      toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <motion.button
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
+    <Button 
+      variant="danger" 
+      size="md" 
       onClick={handleDelete}
-      disabled={loading}
-      className="p-3 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500/20 transition-colors disabled:opacity-50"
+      loading={loading}
     >
-      <Trash2 size={20} />
-    </motion.button>
+      <Trash2 size={18} /> Delete Article
+    </Button>
   );
 }
