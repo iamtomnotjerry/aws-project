@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Plus, BookOpen, Rocket, Shield, Database, ImageIcon } from "lucide-react";
