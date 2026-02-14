@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import Image from "next/image";
-import { User, Mail, Shield, Calendar, ArrowLeft } from "lucide-react";
+import { User, Mail, Shield, Calendar, ArrowLeft, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -63,10 +63,15 @@ export default function ProfilePage() {
 
               <div className="text-center md:text-left">
                 <h1 className="text-4xl font-bold mb-2 text-gradient">{user.name}</h1>
-                <div className="flex items-center justify-center md:justify-start gap-4">
-                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isAdmin ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'}`}>
+                <div className="flex items-center justify-center md:justify-start gap-3">
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isAdmin ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'}`}>
                     {user.role}
                   </span>
+                  {user.emailVerified && (
+                    <span className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30 uppercase tracking-tighter">
+                      <CheckCircle size={10} /> Verified
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

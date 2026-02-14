@@ -34,7 +34,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-[#020617] text-gray-100 antialiased`}>
         <AuthProvider>
-          <Toaster position="top-center" richColors />
+          <Toaster position="bottom-right" richColors />
           <div className="relative min-h-screen flex flex-col">
             <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-black/20 backdrop-blur-xl">
               <nav className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">

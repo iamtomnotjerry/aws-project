@@ -1,13 +1,15 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { MailWarning, X, ArrowRight } from "lucide-react";
+import { MailWarning, X, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 export default function VerificationBanner() {
   const { data: session } = useSession();
   const [isVisible, setIsVisible] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
     if (session?.user && !session.user.emailVerified) {
@@ -17,6 +19,24 @@ export default function VerificationBanner() {
     }
   }, [session]);
 
+  const handleResend = async () => {
+    setIsResending(true);
+    try {
+      const res = await fetch("/api/auth/resend-verification", { method: "POST" });
+      const data = await res.json();
+      
+      if (data.success) {
+        toast.success("Verification email sent!");
+      } else {
+        toast.error(data.message || "Failed to resend email");
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -25,7 +45,7 @@ export default function VerificationBanner() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -100, opacity: 0 }}
-        className="fixed top-20 left-0 right-0 z-40 px-6 pointer-events-none"
+        className="fixed top-24 left-0 right-0 z-40 px-6 pointer-events-none"
       >
         <div className="max-w-4xl mx-auto pointer-events-auto">
           <div className="bg-gradient-to-r from-amber-500/90 to-orange-600/90 backdrop-blur-md border border-amber-400/20 rounded-2xl p-4 shadow-2xl flex items-center justify-between gap-4">
@@ -39,12 +59,27 @@ export default function VerificationBanner() {
               </div>
             </div>
             
-            <button 
-              onClick={() => setIsVisible(false)}
-              className="p-2 hover:bg-white/10 rounded-xl transition-colors text-white/60 hover:text-white"
-            >
-              <X size={18} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={handleResend}
+                disabled={isResending}
+                className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 rounded-xl transition-all text-white text-xs font-bold"
+              >
+                {isResending ? (
+                  <RefreshCw size={14} className="animate-spin" />
+                ) : (
+                  <RefreshCw size={14} />
+                )}
+                Resend
+              </button>
+              
+              <button 
+                onClick={() => setIsVisible(false)}
+                className="p-2 hover:bg-white/10 rounded-xl transition-colors text-white/60 hover:text-white"
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
         </div>
       </motion.div>

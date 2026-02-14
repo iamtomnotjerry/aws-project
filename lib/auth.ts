@@ -35,7 +35,15 @@ export const authOptions: NextAuthOptions = {
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) return null;
 
-        return user as any;
+        // Explicitly return fields matching our extended User type
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          role: user.role,
+          emailVerified: user.emailVerified,
+        };
       },
     }),
   ],

@@ -24,35 +24,34 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
     
-    // 1. Create User
-    const user = await prisma.user.create({
-      data: {
-        email,
-        name: name || email.split("@")[0],
-        password: hashedPassword,
-        image: `https://ui-avatars.com/api/?name=${name || "User"}&background=random`,
-      },
-    });
-
-    // 2. Generate Verification Token
+    // 1. & 2. Create User and Token atomically
     const token = crypto.randomUUID();
-    const expires = new Date(Date.now() + 3600000); // 1 hour from now
+    const expires = new Date(Date.now() + 3600000); // 1 hour
 
-    await prisma.verificationToken.create({
-      data: {
-        identifier: email,
-        token,
-        expires,
-      },
-    });
+    const [user] = await prisma.$transaction([
+      prisma.user.create({
+        data: {
+          email,
+          name: name || email.split("@")[0],
+          password: hashedPassword,
+          image: `https://ui-avatars.com/api/?name=${name || "User"}&background=random`,
+        },
+      }),
+      prisma.verificationToken.create({
+        data: {
+          identifier: email,
+          token,
+          expires,
+        },
+      }),
+    ]);
 
     // 3. Send Verification Email
     try {
       await sendVerificationEmail(email, token);
     } catch (emailError) {
       console.error("Failed to send verification email:", emailError);
-      // We don't want to fail the whole signup if email fails, 
-      // but we should probably log it or handle it.
+      return ApiUtils.success(user, "Account created, but verification email failed to send. You can resend it from your profile.", 201);
     }
 
     return ApiUtils.success(user, "Account created! Please check your email to verify.", 201);
