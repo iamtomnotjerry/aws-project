@@ -5,9 +5,10 @@ import GithubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import type { Adapter } from "next-auth/adapters";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+  adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -28,11 +29,20 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            password: true,
+            role: true,
+            emailVerified: true,
+          },
         });
 
-        if (!user || !(user as any).password) return null;
+        if (!user || !user.password) return null;
 
-        const isValid = await bcrypt.compare(credentials.password, (user as any).password);
+        const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) return null;
 
         return {
@@ -40,9 +50,9 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           image: user.image,
-          role: (user as any).role,
+          role: user.role,
           emailVerified: user.emailVerified,
-        } as any; // Using 'any' here as a final fallback for NextAuth type compatibility, but internal fields are verified.
+        };
       },
     }),
   ],
@@ -68,6 +78,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/auth/signin", // We'll create a custom sign-in page
+    signIn: "/auth/signin",
   },
 };

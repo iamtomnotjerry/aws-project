@@ -19,7 +19,7 @@ export function usePosts(limit = 6) {
 
     try {
       const response = await ApiService.posts.getAll(limit, cursor);
-      if (response.success) {
+      if (response.success && response.data) {
         const { posts: newPosts, nextCursor: newCursor } = response.data;
         setPosts(prev => isInitial ? newPosts : [...prev, ...newPosts]);
         setNextCursor(newCursor);

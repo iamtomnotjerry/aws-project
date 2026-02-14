@@ -30,12 +30,12 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
   useEffect(() => {
     const loadPost = async () => {
       const res = await ApiService.posts.getOne(id);
-      if (res.success) {
+      if (res.success && res.data) {
         const post = res.data;
         reset({
           title: post.title,
-          content: post.content,
-          coverImage: post.coverImage,
+          content: post.content ?? undefined,
+          coverImage: post.coverImage ?? undefined,
           published: post.published,
         });
         if (post.coverImage) setPreview(post.coverImage);
@@ -71,8 +71,9 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
       } else {
         toast.error(res.error || "Update failed");
       }
-    } catch (error: any) {
-      toast.error(error.message || "An unexpected error occurred");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "An unexpected error occurred";
+      toast.error(message);
     }
   };
 

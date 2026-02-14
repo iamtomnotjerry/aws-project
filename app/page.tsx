@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Plus, BookOpen, Rocket, Shield, Database, Search } from "lucide-react";
+import { BookOpen, Rocket, Shield, Database, Search } from "lucide-react";
 import Link from "next/link";
 import { usePosts } from "@/hooks/use-posts";
 import { Button } from "@/components/ui/Button";
@@ -50,9 +50,9 @@ export default function Home() {
         </motion.p>
         
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link href="/new-post">
+          <Link href="#posts">
             <Button size="lg" glow>
-              <Plus size={22} /> See My Stories
+              <BookOpen size={22} /> See My Stories
             </Button>
           </Link>
           <Button variant="secondary" size="lg">

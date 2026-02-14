@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
           password: pendingUser.password,
           emailVerified: new Date(),
           image: `https://ui-avatars.com/api/?name=${pendingUser.name || "User"}&background=random`,
-        } as any,
+        },
       }),
       prisma.pendingUser.delete({
         where: { token },

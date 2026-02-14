@@ -14,7 +14,7 @@ export function useS3Upload() {
     try {
       // 1. Get presigned URL
       const presignedRes = await ApiService.upload.getPresignedUrl(file.name, file.type);
-      if (!presignedRes.success) throw new Error(presignedRes.error);
+      if (!presignedRes.success || !presignedRes.data) throw new Error(presignedRes.error || "Failed to get upload URL");
 
       const { uploadUrl, publicUrl } = presignedRes.data;
 
@@ -22,8 +22,9 @@ export function useS3Upload() {
       await ApiService.upload.directUpload(uploadUrl, file);
 
       return publicUrl;
-    } catch (err: any) {
-      setError(err.message || "Upload failed");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Upload failed";
+      setError(message);
       return null;
     } finally {
       setUploading(false);

@@ -43,6 +43,11 @@ next-env.d.ts
 /app/generated/prisma
 /prisma/*.db
 /prisma/*.db-journal
+/dev.db
+/dev.db-journal
 
 # AWS keys
 *.csv
+
+# Debug scripts
+debug-*.ts

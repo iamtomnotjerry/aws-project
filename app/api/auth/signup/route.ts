@@ -28,36 +28,26 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
     
-    // 1. Check for existing User OR PendingUser
-    const pendingUser = await prisma.pendingUser.findUnique({
-      where: { email },
-    });
-
     const token = crypto.randomUUID();
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
-    // 2. Create or Update PendingUser record
-    if (pendingUser) {
-      await prisma.pendingUser.update({
-        where: { email },
-        data: {
-          name: name || email.split("@")[0],
-          password: hashedPassword,
-          token,
-          expires,
-        },
-      });
-    } else {
-      await prisma.pendingUser.create({
-        data: {
-          email,
-          name: name || email.split("@")[0],
-          password: hashedPassword,
-          token,
-          expires,
-        },
-      });
-    }
+    // Create or update PendingUser record (upsert = atomic find + update/create)
+    await prisma.pendingUser.upsert({
+      where: { email },
+      update: {
+        name: name || email.split("@")[0],
+        password: hashedPassword,
+        token,
+        expires,
+      },
+      create: {
+        email,
+        name: name || email.split("@")[0],
+        password: hashedPassword,
+        token,
+        expires,
+      },
+    });
 
     // 3. Send Verification Email
     try {

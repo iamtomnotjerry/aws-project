@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/Card";
 import { ImageIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Post } from "@/types";
 
 interface PostCardProps {
@@ -20,10 +21,12 @@ export const PostCard = ({ post, index }: PostCardProps) => {
         <Card className="hover:bg-white/5 transition-all group h-full flex flex-col">
           <div className="relative aspect-video bg-white/5 overflow-hidden">
             {post.coverImage ? (
-              <img
+              <Image
                 src={post.coverImage}
                 alt={post.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-700">

@@ -48,8 +48,9 @@ export default function SignUp() {
       setTimeout(() => {
         router.push("/auth/signin?success=VerifyEmail");
       }, 3000);
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Registration failed";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

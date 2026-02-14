@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
       include: { 
         author: {
-          select: { name: true, image: true, role: true } as any
+          select: { name: true, image: true, role: true }
         } 
       },
     });
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
     
     // API Level Protection
-    if (!session || (session.user as any).role !== "ADMIN") {
+    if (!session || session.user.role !== "ADMIN") {
       return ApiUtils.error("Unauthorized. Admin role required.", 403);
     }
 
@@ -51,8 +51,8 @@ export async function POST(request: Request) {
       data: {
         ...validatedData.data,
         published: true,
-        authorId: (session.user as any).id,
-      } as any,
+        authorId: session.user.id,
+      },
     });
 
     return ApiUtils.success(post, "Post created successfully", 201);

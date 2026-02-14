@@ -14,7 +14,7 @@ export async function GET(
       where: { id },
       include: { 
         author: {
-          select: { name: true, image: true, role: true } as any
+          select: { name: true, image: true, role: true }
         }
       },
     });
@@ -33,7 +33,7 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== "ADMIN") {
+    if (!session || session.user.role !== "ADMIN") {
       return ApiUtils.error("Unauthorized. Admin role required.", 403);
     }
 
@@ -53,7 +53,7 @@ export async function PATCH(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== "ADMIN") {
+    if (!session || session.user.role !== "ADMIN") {
       return ApiUtils.error("Unauthorized. Admin role required.", 403);
     }
 

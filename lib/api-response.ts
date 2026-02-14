@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export type ApiResponse<T = any> = {
+export type ApiResponse<T = unknown> = {
   success: boolean;
   data?: T;
   error?: string;
@@ -22,7 +22,7 @@ export class ApiUtils {
     );
   }
 
-  static serverError(error: any) {
+  static serverError(error: unknown) {
     console.error("[API_ERROR]:", error);
     return NextResponse.json(
       { success: false, error: "Internal Server Error" },
