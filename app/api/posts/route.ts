@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       },
     });
 
-    return ApiUtils.success(post, 201);
+    return ApiUtils.success(post, "Post created successfully", 201);
   } catch (error) {
     return ApiUtils.serverError(error);
   }

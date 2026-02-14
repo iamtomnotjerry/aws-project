@@ -8,9 +8,9 @@ export type ApiResponse<T = any> = {
 };
 
 export class ApiUtils {
-  static success<T>(data: T, status = 200) {
+  static success<T>(data: T, message?: string, status = 200) {
     return NextResponse.json(
-      { success: true, data },
+      { success: true, data, message },
       { status }
     );
   }
