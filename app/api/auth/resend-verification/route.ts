@@ -1,24 +1,19 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { ApiUtils } from "@/lib/api-response";
 import { sendVerificationEmail } from "@/lib/resend";
 import crypto from "crypto";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const body = await req.json();
+    const email = body?.email;
 
-    if (!session || !session.user?.email) {
-      return ApiUtils.error("Unauthorized", 401);
+    if (!email || typeof email !== "string") {
+      return ApiUtils.error("Email is required", 400);
     }
 
-    const email = session.user.email;
-
-    // 1. Check if user is already verified
-    // 1. Check for PendingUser first (New flow)
-    const pendingUser = await prisma.pendingUser.findUnique({
+    // 1. Check for PendingUser (new verify-then-create flow)
+    const pendingUser = await (prisma as any).pendingUser.findUnique({
       where: { email },
     });
 
@@ -26,7 +21,7 @@ export async function POST(req: Request) {
       const token = crypto.randomUUID();
       const expires = new Date(Date.now() + 3600000); // 1 hour
 
-      await prisma.pendingUser.update({
+      await (prisma as any).pendingUser.update({
         where: { email },
         data: { token, expires },
       });
@@ -35,20 +30,21 @@ export async function POST(req: Request) {
       return ApiUtils.success(null, "A new verification link has been sent to your email.");
     }
 
-    // 2. Fallback for already verified users or old flow
+    // 2. Check if user exists and is already verified
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
     if (!user) {
-      return ApiUtils.error("Email not found", 404);
+      // Don't reveal whether the email exists
+      return ApiUtils.success(null, "If an account exists, a verification link has been sent.");
     }
 
     if (user.emailVerified) {
       return ApiUtils.error("Email is already verified", 400);
     }
-    
-    // Create traditional verification token for legacy flow
+
+    // 3. Legacy flow — user exists but not verified
     const token = crypto.randomUUID();
     const expires = new Date(Date.now() + 3600000);
 

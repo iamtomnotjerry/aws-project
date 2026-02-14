@@ -14,7 +14,7 @@ export async function GET(
       where: { id },
       include: { 
         author: {
-          select: { name: true, image: true, role: true }
+          select: { name: true, image: true, role: true } as any
         }
       },
     });

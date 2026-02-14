@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
       include: { 
         author: {
-          select: { name: true, image: true, role: true }
+          select: { name: true, image: true, role: true } as any
         } 
       },
     });

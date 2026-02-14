@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { ApiUtils } from "@/lib/api-response";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail } from "@/lib/resend";
@@ -32,7 +31,7 @@ export async function POST(req: Request) {
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
     // Create or update PendingUser record (upsert = atomic find + update/create)
-    await prisma.pendingUser.upsert({
+    await (prisma as any).pendingUser.upsert({
       where: { email },
       update: {
         name: name || email.split("@")[0],

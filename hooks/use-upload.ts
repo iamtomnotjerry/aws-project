@@ -11,6 +11,14 @@ export function useS3Upload() {
   const upload = async (file: File): Promise<string | null> => {
     setUploading(true);
     setError(null);
+
+    // Client-side validation: Max 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File size exceeds 5MB limit");
+      setUploading(false);
+      return null;
+    }
+
     try {
       // 1. Get presigned URL
       const presignedRes = await ApiService.upload.getPresignedUrl(file.name, file.type);

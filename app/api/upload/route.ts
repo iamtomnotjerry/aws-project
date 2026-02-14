@@ -18,6 +18,11 @@ export async function POST(request: Request) {
       return ApiUtils.error("Filename and contentType are required", 400);
     }
 
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!ALLOWED_TYPES.includes(contentType)) {
+      return ApiUtils.error("Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.", 400);
+    }
+
     const key = `uploads/${session.user.email}/${Date.now()}-${filename}`;
     const bucketName = process.env.AWS_S3_BUCKET_NAME;
 

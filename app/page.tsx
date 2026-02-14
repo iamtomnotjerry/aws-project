@@ -56,7 +56,7 @@ export default function Home() {
             </Button>
           </Link>
           <Button variant="secondary" size="lg">
-            <BookOpen size={22} /> About Me
+            <Rocket size={22} /> About Me
           </Button>
         </div>
       </section>

@@ -19,8 +19,22 @@ function SignInForm() {
 
   useEffect(() => {
     const success = searchParams.get("success");
+    const error = searchParams.get("error");
+    
     if (success === "VerifyEmail") {
       toast.info("Registration initiated! Please check your email to verify your account.");
+    }
+
+    if (error) {
+      const errorMessages: Record<string, string> = {
+        VerificationFailed: "Verification failed. Please try again or request a new link.",
+        TokenExpired: "Verification link has expired. Please request a new one.",
+        InvalidToken: "Invalid verification link.",
+        EmailAlreadyTaken: "This email is already registered. Please sign in.",
+        MissingToken: "Verification link is incomplete.",
+        UserNotFound: "Account not found.",
+      };
+      toast.error(errorMessages[error] || "An error occurred. Please try again.");
     }
   }, [searchParams]);
 

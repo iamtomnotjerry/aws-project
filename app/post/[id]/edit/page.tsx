@@ -120,7 +120,10 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
                 <label className="flex flex-col items-center justify-center aspect-video rounded-2xl border-2 border-dashed border-white/10 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all cursor-pointer group">
                   <div className="flex flex-col items-center gap-3 text-gray-500 group-hover:text-blue-400 transition-colors">
                     <ImageIcon size={48} strokeWidth={1.5} />
-                    <span className="font-medium">Update cover image</span>
+                    <div className="text-center">
+                      <p className="font-medium">Update cover image</p>
+                      <p className="text-xs opacity-60">Max 5MB</p>
+                    </div>
                   </div>
                   <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                 </label>

@@ -109,7 +109,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="mt-12 border-t border-white/5 pt-8 text-center text-gray-500 text-sm">
-              <p>Member since February 2026</p>
+              <p>Bao's Blog Member</p>
             </div>
           </Card>
         </motion.div>

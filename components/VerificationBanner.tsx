@@ -22,7 +22,11 @@ export default function VerificationBanner() {
   const handleResend = async () => {
     setIsResending(true);
     try {
-      const res = await fetch("/api/auth/resend-verification", { method: "POST" });
+      const res = await fetch("/api/auth/resend-verification", { 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: session?.user?.email })
+      });
       const data = await res.json();
       
       if (data.success) {

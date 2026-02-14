@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // 1. Find PendingUser by token
-    const pendingUser = await prisma.pendingUser.findUnique({
+    const pendingUser = await (prisma as any).pendingUser.findUnique({
       where: { token },
     });
 
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     // 2. Handle PendingUser Flow
     const hasExpired = new Date(pendingUser.expires) < new Date();
     if (hasExpired) {
-      await prisma.pendingUser.delete({ where: { token } });
+      await (prisma as any).pendingUser.delete({ where: { token } });
       return redirect("/auth/signin?error=TokenExpired");
     }
 
@@ -60,13 +60,13 @@ export async function GET(req: NextRequest) {
     });
 
     if (emailTaken) {
-      await prisma.pendingUser.delete({ where: { token } });
+      await (prisma as any).pendingUser.delete({ where: { token } });
       return redirect("/auth/signin?error=EmailAlreadyTaken");
     }
 
     // Promote PendingUser to User
     await prisma.$transaction([
-      prisma.user.create({
+      (prisma.user.create as any)({
         data: {
           email: pendingUser.email,
           name: pendingUser.name,
@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
           image: `https://ui-avatars.com/api/?name=${pendingUser.name || "User"}&background=random`,
         },
       }),
-      prisma.pendingUser.delete({
+      (prisma as any).pendingUser.delete({
         where: { token },
       }),
     ]);

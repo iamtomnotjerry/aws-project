@@ -23,7 +23,6 @@ import AuthProvider from "@/components/AuthProvider";
 import AuthButton from "@/components/AuthButton";
 import VerificationBanner from "@/components/VerificationBanner";
 
-// ... metadata ...
 
 export default function RootLayout({
   children,

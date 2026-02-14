@@ -45,3 +45,8 @@ We follow a layered architecture to separate concerns:
 
 - **Zero-Downtime**: All changes must pass build checks before being pushed to production.
 - **Docker-First**: Local environment must mirror production using Docker.
+
+## 6. Authentication Pattern
+
+- **Verify-then-Create**: We use a `PendingUser` flow. Users are NOT created in the `User` table until their email is verified. This prevents spam and unverified accounts in the main database.
+- **Session Types**: Session is extended to include `id`, `role`, and `emailVerified`. Always use these typed fields instead of generic ones.
