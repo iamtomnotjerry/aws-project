@@ -12,7 +12,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
   const confirmLink = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}`;
 
   await resend.emails.send({
-    from: 'Bao\'s Blog <onboarding@resend.dev>',
+    from: 'Bao\'s Blog <no-reply@studymate.io.vn>',
     to: email,
     subject: 'Confirm your email - Bao\'s Blog',
     html: `
