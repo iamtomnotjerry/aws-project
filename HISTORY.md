@@ -66,6 +66,10 @@ Tài liệu này ghi lại các phiên bản, thay đổi và quyết định k�
   - Cấu hình Security Group mở cổng 5432 cho Public Access.
   - Chuyển đổi Database Provider từ SQLite sang PostgreSQL.
   - Thực hiện `npx prisma db push` và `npx prisma db seed` lên Cloud thành công.
+- ### Phase 5: Automation & Security
+- **CI/CD:** Configured GitHub Actions for automatic deployment.
+- **SSL/HTTPS:** Successfully secured the site `studymate.io.vn` using Let's Encrypt (Certbot) and Nginx reverse proxy.
+- **Domain:** Configured root domain and `www` subdomain at Vietnix.
 - **AWS EC2 (Milestone 3)**:
   - Launch và cấu hình server Ubuntu 24.04 LTS.
   - Cài đặt Docker và Docker Compose V2 (đã fix lỗi phiên bản cũ).
