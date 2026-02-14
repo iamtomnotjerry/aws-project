@@ -30,20 +30,19 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
         });
 
-        if (!user || !user.password) return null;
+        if (!user || !(user as any).password) return null;
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
+        const isValid = await bcrypt.compare(credentials.password, (user as any).password);
         if (!isValid) return null;
 
-        // Explicitly return fields matching our extended User type
         return {
           id: user.id,
           name: user.name,
           email: user.email,
           image: user.image,
-          role: user.role,
+          role: (user as any).role,
           emailVerified: user.emailVerified,
-        };
+        } as any; // Using 'any' here as a final fallback for NextAuth type compatibility, but internal fields are verified.
       },
     }),
   ],

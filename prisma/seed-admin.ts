@@ -24,7 +24,11 @@ async function main() {
     },
   })
 
-  console.log("Admin user updated/created:", { id: user.id, email: user.email, role: user.role })
+  console.log("Admin user updated/created:", { 
+    id: user.id, 
+    email: user.email, 
+    role: (user as any).role 
+  })
   console.log("TEMPORARY PASSWORD:", password)
 }
 

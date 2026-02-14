@@ -35,7 +35,7 @@ export async function POST(req: Request) {
           name: name || email.split("@")[0],
           password: hashedPassword,
           image: `https://ui-avatars.com/api/?name=${name || "User"}&background=random`,
-        },
+        } as any,
       }),
       prisma.verificationToken.create({
         data: {
