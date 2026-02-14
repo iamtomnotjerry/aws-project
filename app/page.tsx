@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PostCard } from "@/components/PostCard";
 import { FeatureCard } from "@/components/FeatureCard";
-import { toast } from "sonner";
 
 export default function Home() {
   const { posts, loading, error } = usePosts();
@@ -17,7 +16,7 @@ export default function Home() {
 
   const filteredPosts = posts.filter(post => 
     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.content.toLowerCase().includes(searchQuery.toLowerCase())
+    (post.content || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (

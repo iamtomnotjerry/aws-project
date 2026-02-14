@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, ImageIcon, X, Trash2 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postSchema, type PostInput } from "@/schemas/post.schema";
@@ -103,7 +102,7 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
               <label className="block text-sm font-medium text-gray-400">Cover Image</label>
               {preview ? (
                 <div className="relative aspect-video rounded-2xl overflow-hidden group border border-white/10">
-                  <Image src={preview} alt="Upload Preview" fill className="object-cover" />
+                  <img src={preview} alt="Upload Preview" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                     <Button variant="danger" size="sm" onClick={() => { setPreview(null); setImageFile(null); setValue("coverImage", null); }}>
                       <Trash2 size={18} /> Remove Image
