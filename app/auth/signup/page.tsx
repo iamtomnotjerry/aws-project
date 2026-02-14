@@ -33,7 +33,7 @@ export default function SignUp() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Registration failed");
+        throw new Error(data.error || data.message || "Registration failed");
       }
 
       toast.success("Account created! Signing you in...");

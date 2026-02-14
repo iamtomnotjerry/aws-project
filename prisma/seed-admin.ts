@@ -1,23 +1,31 @@
 
 import { PrismaClient, Role } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
   const email = 'talama112335@gmail.com'
+  const password = 'admin-password-2026' // The user should change this after first login
+  const hashedPassword = await bcrypt.hash(password, 12)
   
   const user = await prisma.user.upsert({
     where: { email },
-    update: { role: Role.ADMIN },
+    update: { 
+      role: Role.ADMIN,
+      password: hashedPassword 
+    },
     create: {
       email,
-      name: 'Admin Bao',
+      name: 'Bao Admin',
       role: Role.ADMIN,
-      image: 'https://ui-avatars.com/api/?name=Admin+Bao&background=0D8ABC&color=fff'
+      password: hashedPassword,
+      image: 'https://ui-avatars.com/api/?name=Bao+Admin&background=0D8ABC&color=fff'
     },
   })
 
-  console.log({ user })
+  console.log("Admin user updated/created:", { id: user.id, email: user.email, role: user.role })
+  console.log("TEMPORARY PASSWORD:", password)
 }
 
 main()

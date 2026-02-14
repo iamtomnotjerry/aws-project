@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
@@ -29,11 +30,11 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
         });
 
-        if (!user) return null;
+        if (!user || !user.password) return null;
 
-        // In a real app, verify password hash here.
-        // For this demo/personal blog, we trust the DB record if it exists
-        // or you can implement bcrypt comparison if you seeded passwords.
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) return null;
+
         return user as any;
       },
     }),

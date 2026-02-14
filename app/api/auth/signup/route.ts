@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { ApiUtils } from "@/lib/api-response";
-// In a real app, you would hash passwords!
-// import { hash } from "bcryptjs"; 
+import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
@@ -21,14 +20,13 @@ export async function POST(req: Request) {
       return ApiUtils.error("User already exists", 409);
     }
 
-    // Demo: Storing password as-is (BAD PRACTICE for production, but okay for this specific demo scope where hashing isn't set up yet)
-    // REAL WORLD: const hashedPassword = await hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 12);
     
     const user = await prisma.user.create({
       data: {
         email,
         name: name || email.split("@")[0],
-        // password: hashedPassword, // Schema needs password field if using credentials
+        password: hashedPassword,
         image: `https://ui-avatars.com/api/?name=${name || "User"}&background=random`,
       },
     });
