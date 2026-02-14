@@ -26,6 +26,10 @@
   /* Standardized Spacing */
   --spacing-18: 4.5rem;
   --spacing-22: 5.5rem;
+
+  /* Custom Letter Spacing (Tracking) */
+  --tracking-tightest: -0.05em;
+  --letter-spacing-tightest: -0.05em;
 }
 
 @layer base {
