@@ -28,37 +28,46 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
     
-    // 1. & 2. Create User and Token atomically
+    // 1. Check for existing User OR PendingUser
+    const pendingUser = await prisma.pendingUser.findUnique({
+      where: { email },
+    });
+
     const token = crypto.randomUUID();
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
-    const [user] = await prisma.$transaction([
-      prisma.user.create({
+    // 2. Create or Update PendingUser record
+    if (pendingUser) {
+      await prisma.pendingUser.update({
+        where: { email },
+        data: {
+          name: name || email.split("@")[0],
+          password: hashedPassword,
+          token,
+          expires,
+        },
+      });
+    } else {
+      await prisma.pendingUser.create({
         data: {
           email,
           name: name || email.split("@")[0],
           password: hashedPassword,
-          image: `https://ui-avatars.com/api/?name=${name || "User"}&background=random`,
-        } as any,
-      }),
-      prisma.verificationToken.create({
-        data: {
-          identifier: email,
           token,
           expires,
         },
-      }),
-    ]);
+      });
+    }
 
     // 3. Send Verification Email
     try {
       await sendVerificationEmail(email, token);
     } catch (emailError) {
       console.error("Failed to send verification email:", emailError);
-      return ApiUtils.success(user, "Account created, but verification email failed to send. You can resend it from your profile.", 201);
+      return ApiUtils.success(null, "Account registration successful, but verification email failed to send. Please try again later.", 201);
     }
 
-    return ApiUtils.success(user, "Account created! Please check your email to verify.", 201);
+    return ApiUtils.success(null, "Account initiated! Please check your email to verify and complete your registration.", 201);
   } catch (error) {
     return ApiUtils.serverError(error);
   }
