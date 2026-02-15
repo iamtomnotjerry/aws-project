@@ -7,7 +7,7 @@ export interface User {
   email?: string | null;
   image?: string | null;
   role: Role;
-  emailVerified?: Date | null;
+  emailVerified?: Date | string | null;
 }
 
 export interface Post {
@@ -17,12 +17,15 @@ export interface Post {
   coverImage?: string | null;
   published: boolean;
   authorId?: string | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+export interface PostWithAuthor extends Post {
   author?: User | null;
-  createdAt: string | Date;
-  updatedAt: string | Date;
 }
 
 export interface PaginatedPosts {
-  posts: Post[];
+  posts: PostWithAuthor[];
   nextCursor: string | null;
 }

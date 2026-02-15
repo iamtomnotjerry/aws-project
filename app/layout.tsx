@@ -56,6 +56,12 @@ export default function RootLayout({
                       </Link>
                     </Magnetic>
                     <Magnetic strength={0.2}>
+                      <Link href="/posts" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all duration-300 relative group py-2">
+                        Bài viết
+                        <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
+                      </Link>
+                    </Magnetic>
+                    <Magnetic strength={0.2}>
                       <Link href="/about" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all duration-300 relative group py-2">
                         Giới thiệu
                         <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />

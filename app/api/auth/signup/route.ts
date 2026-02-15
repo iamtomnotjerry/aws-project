@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
     // Create or update PendingUser record (upsert = atomic find + update/create)
-    await (prisma as any).pendingUser.upsert({
+    await prisma.pendingUser.upsert({
       where: { email },
       update: {
         name: name || email.split("@")[0],

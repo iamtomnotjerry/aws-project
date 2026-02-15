@@ -9,9 +9,10 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ReadingProgress } from "./ui/ReadingProgress";
 import { Magnetic } from "./ui/Magnetic";
+import { PostWithAuthor } from "@/types";
 
 interface PostDetailClientProps {
-  post: any;
+  post: PostWithAuthor;
   isAdmin: boolean;
   DeleteButton: React.ReactNode;
 }

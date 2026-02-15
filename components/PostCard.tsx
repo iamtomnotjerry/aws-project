@@ -3,10 +3,10 @@ import { Card } from "@/components/ui/Card";
 import { ImageIcon, Calendar, ArrowRight, User, Clock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { Post } from "@/types";
+import { PostWithAuthor } from "@/types";
 
 interface PostCardProps {
-  post: Post;
+  post: PostWithAuthor;
   index: number;
   featured?: boolean;
 }
@@ -54,26 +54,26 @@ export const PostCard = ({ post, index, featured = false }: PostCardProps) => {
                 </div>
               </div>
 
-              <h2 className="text-4xl lg:text-5xl font-black mb-8 tracking-tightest leading-[1.1] group-hover:text-primary transition-colors duration-500">
+              <h2 className="text-4xl lg:text-7xl font-black mb-10 tracking-tightest leading-[0.9] group-hover:text-primary transition-colors duration-700 italic uppercase">
                 {post.title}
               </h2>
               
-              <p className="text-slate-400 text-lg lg:text-xl line-clamp-3 mb-10 leading-relaxed font-medium">
+              <p className="text-slate-500 text-lg lg:text-2xl line-clamp-3 mb-12 leading-relaxed font-medium italic opacity-80 group-hover:opacity-100 transition-opacity">
                 {post.content}
               </p>
 
               <div className="flex items-center justify-between mt-auto pt-10 border-t border-white/[0.05]">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.05] flex items-center justify-center text-slate-400">
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-center text-slate-500">
                     <User size={18} />
                   </div>
                   <div>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Tác giả</p>
-                    <p className="text-white text-sm font-bold">Bao's Admin</p>
+                    <p className="text-[10px] text-slate-600 font-black uppercase tracking-widest">Tác giả</p>
+                    <p className="text-white text-sm font-black italic">{post.author?.name || "Bảo Nguyễn"}</p>
                   </div>
                 </div>
-                <span className="text-primary font-black text-sm flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
-                  Đọc ngay <ArrowRight size={20} />
+                <span className="text-primary font-black text-[11px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-4 transition-all duration-500">
+                  ĐỌC BÀI VIẾT <ArrowRight size={20} />
                 </span>
               </div>
             </div>
@@ -85,34 +85,32 @@ export const PostCard = ({ post, index, featured = false }: PostCardProps) => {
 
   return (
     <Link href={`/post/${post.id}`}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: (index % 6) * 0.1, duration: 0.6 }}
-      >
-        <Card className="group h-full flex flex-col glass-card border-white/[0.03] hover:border-primary/20 hover:shadow-primary/5">
-          <div className="relative aspect-[16/10] overflow-hidden bg-slate-900">
+    <div className="h-full">
+        <div className="group h-full flex flex-col bg-slate-900/40 backdrop-blur-md border border-white/[0.04] hover:border-primary/30 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 rounded-[2.5rem] overflow-hidden relative">
+          {/* Subtle Glow Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+          
+          <div className="relative aspect-[16/10] overflow-hidden bg-slate-950">
             {post.coverImage ? (
               <Image
                 src={post.coverImage}
                 alt={post.title}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover group-hover:scale-110 transition-all duration-700"
+                className="object-cover group-hover:scale-110 transition-all duration-1000 ease-out"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-700">
+              <div className="w-full h-full flex items-center justify-center text-slate-800">
                 <ImageIcon size={48} strokeWidth={1} />
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 property-padding via-slate-950/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
           </div>
 
-          <div className="p-10 flex-1 flex flex-col">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-white/[0.03] rounded-full text-[10px] font-bold text-slate-400 uppercase tracking-widest border border-white/[0.05]">
-                <Calendar size={10} />
+          <div className="p-10 flex-1 flex flex-col relative">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="flex items-center gap-2 px-4 py-1.5 bg-white/[0.03] rounded-full text-[10px] font-black text-slate-500 uppercase tracking-widest border border-white/[0.05] group-hover:border-primary/20 group-hover:text-primary/70 transition-colors">
+                <Calendar size={12} />
                 {new Date(post.createdAt).toLocaleDateString("vi-VN", {
                   day: "2-digit",
                   month: "2-digit",
@@ -121,22 +119,25 @@ export const PostCard = ({ post, index, featured = false }: PostCardProps) => {
               </div>
             </div>
 
-            <h3 className="text-2xl font-black mb-4 group-hover:text-primary transition-colors duration-300 line-clamp-2 leading-tight tracking-tight">
+            <h3 className="text-2xl font-black mb-6 group-hover:text-primary transition-colors duration-500 line-clamp-2 leading-tight tracking-tightest italic">
               {post.title}
             </h3>
             
-            <p className="text-slate-400 line-clamp-2 mb-10 text-lg flex-1 leading-relaxed font-medium">
+            <p className="text-slate-500 line-clamp-2 mb-12 text-lg flex-1 leading-relaxed font-medium italic opacity-80 group-hover:opacity-100 transition-opacity">
               {post.content}
             </p>
 
-            <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/[0.05]">
-              <span className="text-primary font-black text-sm flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
-                Khám phá <ArrowRight size={18} />
+            <div className="flex items-center justify-between mt-auto pt-8 border-t border-white/[0.04]">
+              <span className="text-primary font-black text-[11px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-4 transition-all duration-500">
+                KHÁM PHÁ <ArrowRight size={18} />
               </span>
+              <div className="w-8 h-8 rounded-full bg-white/[0.02] border border-white/[0.05] flex items-center justify-center text-slate-600 group-hover:bg-primary group-hover:text-slate-950 transition-all duration-500">
+                <Sparkles size={14} />
+              </div>
             </div>
           </div>
-        </Card>
-      </motion.div>
+        </div>
+    </div>
     </Link>
   );
 };

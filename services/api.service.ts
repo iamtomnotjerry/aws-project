@@ -1,6 +1,6 @@
 import { ApiResponse } from "@/lib/api-response";
 import { PostInput } from "@/schemas/post.schema";
-import { Post, PaginatedPosts } from "@/types";
+import { PostWithAuthor, PaginatedPosts } from "@/types";
 
 interface PresignedUrlResponse {
   uploadUrl: string;
@@ -21,11 +21,11 @@ export const ApiService = {
       const res = await fetch(url.toString());
       return res.json();
     },
-    getOne: async (id: string): Promise<ApiResponse<Post>> => {
+    getOne: async (id: string): Promise<ApiResponse<PostWithAuthor>> => {
       const res = await fetch(`/api/posts/${id}`);
       return res.json();
     },
-    create: async (data: PostInput): Promise<ApiResponse<Post>> => {
+    create: async (data: PostInput): Promise<ApiResponse<PostWithAuthor>> => {
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -33,7 +33,7 @@ export const ApiService = {
       });
       return res.json();
     },
-    update: async (id: string, data: PostInput): Promise<ApiResponse<Post>> => {
+    update: async (id: string, data: PostInput): Promise<ApiResponse<PostWithAuthor>> => {
       const res = await fetch(`/api/posts/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

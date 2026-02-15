@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import DeleteButton from "@/components/DeleteButton";
 import { PostDetailClient } from "@/components/PostDetailClient";
-
+import { PostWithAuthor } from "@/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -14,7 +14,7 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
   const post = await prisma.post.findUnique({
     where: { id },
     include: { author: true },
-  });
+  }) as PostWithAuthor | null;
 
   if (!post) {
     notFound();

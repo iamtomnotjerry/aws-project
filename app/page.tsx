@@ -12,16 +12,7 @@ import { SpotlightCard } from "@/components/SpotlightCard";
 import { Magnetic } from "@/components/ui/Magnetic";
 
 export default function Home() {
-  const { posts, loading, loadingMore, error, hasMore, loadMore } = usePosts(10);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const filteredPosts = posts.filter(post => 
-    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (post.content || "").toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const featuredPost = filteredPosts[0];
-  const regularPosts = filteredPosts.slice(1);
+  const { posts, loading, loadingMore, error, hasMore, loadMore } = usePosts(6);
 
   return (
     <div className="min-h-screen pb-48">
@@ -182,75 +173,62 @@ export default function Home() {
 
         {/* Posts Section - Asymmetrical Grid */}
         <section id="posts" className="scroll-mt-40">
-          <div className="flex flex-col mb-32">
+          <div className="flex flex-col mb-24">
             <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-primary/10 rounded-full text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-8 w-fit">
               <BookOpen size={12} /> Bài viết mới nhất
             </div>
             <div className="flex flex-col md:flex-row justify-between items-end gap-12">
-              <h2 className="text-6xl md:text-8xl font-black tracking-tightest leading-none italic uppercase">
-                BẢNG TIN <br /> <span className="text-gradient not-italic">KIẾN THỨC.</span>
+              <h2 className="text-6xl md:text-8xl font-black tracking-tightest leading-none italic uppercase drop-shadow-2xl">
+                BÀI <span className="text-gradient not-italic">VIẾT.</span>
               </h2>
               
-              <div className="w-full md:w-[500px]">
-                <div className="relative group">
-                  <Search className="absolute left-7 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-primary transition-colors duration-300" size={24} />
-                  <Input 
-                    placeholder="Tìm kiếm trí tuệ..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-18 pr-8 rounded-3xl h-20 bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.06] transition-all font-black"
-                  />
-                </div>
+              <div className="hidden md:block">
+                <Magnetic strength={0.1}>
+                  <Link href="/posts">
+                    <Button variant="secondary" className="px-10 h-16 rounded-2xl border-white/10 hover:border-primary/30 transition-all font-black italic tracking-widest text-[11px] uppercase">
+                      Khám phá tất cả <ArrowRight size={16} className="ml-2" />
+                    </Button>
+                  </Link>
+                </Magnetic>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-20">
             {loading ? (
               <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-12">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="aspect-video glass-morphism rounded-4xl animate-pulse bg-white/5" />
                 ))}
               </div>
-            ) : filteredPosts.length > 0 ? (
+            ) : posts.length > 0 ? (
               <>
-                {/* Featured Post - Large Layout */}
-                {featuredPost && (
-                  <div className="md:col-span-12 mb-10">
-                    <PostCard post={featuredPost} index={0} featured />
-                  </div>
-                )}
+                {/* Highlighted Posts Preview (3-4 posts) */}
+                <div className="md:col-span-12">
+                  <PostCard post={posts[0]} index={0} featured />
+                </div>
                 
-                {/* Regular Posts - Asymmetrical */}
-                {regularPosts.map((post, idx) => (
-                  <div key={post.id} className={idx % 3 === 0 ? "md:col-span-8" : "md:col-span-4"}>
+                {posts.slice(1, 4).map((post, idx) => (
+                  <div key={post.id} className="md:col-span-4">
                     <PostCard post={post} index={idx + 1} />
                   </div>
                 ))}
               </>
             ) : (
               <div className="col-span-full text-center py-64 glass-card rounded-[3rem] border-white/[0.03] opacity-50">
-                <p className="text-slate-500 text-2xl font-black uppercase tracking-widest italic">Kho kiến thức đang được cập nhật...</p>
+                <p className="text-slate-500 text-2xl font-black uppercase tracking-widest italic">Kho kiến thức đang được hoàn thiện...</p>
               </div>
             )}
           </div>
 
-          {/* Load More Button - Infinity Design */}
-          {!loading && hasMore && filteredPosts.length > 0 && (
-            <div className="mt-40 flex justify-center">
-              <Magnetic strength={0.1}>
-                <Button 
-                  variant="secondary" 
-                  size="lg" 
-                  onClick={loadMore} 
-                  loading={loadingMore}
-                  className="min-w-[320px] h-20 text-xl font-black tracking-tighter hover:bg-primary/10 hover:text-primary transition-all rounded-3xl border-white/[0.08]"
-                >
-                  MỞ RỘNG TẦM NHÌN <ArrowRight size={24} />
-                </Button>
-              </Magnetic>
-            </div>
-          )}
+          {/* Mobile View All CTA */}
+          <div className="md:hidden flex justify-center mt-12">
+            <Link href="/posts" className="w-full">
+              <Button variant="secondary" className="w-full h-18 rounded-2xl border-white/10 font-black italic">
+                XEM TẤT CẢ <ArrowRight size={18} className="ml-2" />
+              </Button>
+            </Link>
+          </div>
         </section>
       </div>
     </div>

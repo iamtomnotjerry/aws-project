@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // 1. Find PendingUser by token
-    const pendingUser = await (prisma as any).pendingUser.findUnique({
+    const pendingUser = await prisma.pendingUser.findUnique({
       where: { token },
     });
 
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
 
     // Promote PendingUser to User
     await prisma.$transaction([
-      (prisma.user.create as any)({
+      prisma.user.create({
         data: {
           email: pendingUser.email,
           name: pendingUser.name,
@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
           image: `https://ui-avatars.com/api/?name=${pendingUser.name || "User"}&background=random`,
         },
       }),
-      (prisma as any).pendingUser.delete({
+      prisma.pendingUser.delete({
         where: { token },
       }),
     ]);

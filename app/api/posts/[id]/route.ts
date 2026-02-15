@@ -14,8 +14,15 @@ export async function GET(
       where: { id },
       include: { 
         author: {
-          select: { name: true, image: true, role: true } as any
-        }
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            role: true,
+            emailVerified: true
+          }
+        } as any
       },
     });
     
