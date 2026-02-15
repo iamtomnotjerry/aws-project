@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { BookOpen, Rocket, Shield, Database, Search, ArrowRight, Sparkles } from "lucide-react";
+import { Heart, Users, GraduationCap, Briefcase, Activity, ArrowRight, Sparkles, BookOpen, Rocket, Search, Home as HomeIcon } from "lucide-react";
 import Link from "next/link";
 import { usePosts } from "@/hooks/use-posts";
 import { Button } from "@/components/ui/Button";
@@ -25,54 +25,56 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pb-48">
-      {/* Hero Section - The "WOW" Factor */}
-      <section className="relative pt-40 pb-64 px-6 overflow-hidden">
+      {/* Hero Section - The Personal Entry */}
+      <section className="relative pt-24 pb-24 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 mb-12 rounded-full glass-morphism border-white/[0.08] text-primary text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/10"
+            className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full glass-morphism border-white/[0.08] text-primary text-[9px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/10"
           >
-            <Sparkles size={14} className="animate-pulse" />
-            Nơi Công Nghệ Hội Tụ Đam Mê
+            <Sparkles size={12} className="animate-pulse" />
+            Hành Trình Tìm Kiếm Sự Cân Bằng & Ý Nghĩa
           </motion.div>
           
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-7xl md:text-[10rem] font-black mb-12 tracking-tightest leading-[0.85] italic"
+            className="text-6xl md:text-[8rem] font-black mb-10 tracking-tighter leading-none italic"
           >
-            HƠN CẢ <br />
-            <span className="text-gradient not-italic">MÃ NGUỒN.</span>
+            <div className="mb-4">CUỘC SỐNG</div>
+            <div className="mt-8">
+              <span className="text-gradient not-italic">CỦA BẢO.</span>
+            </div>
           </motion.h1>
           
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-slate-400 text-xl md:text-2xl mb-16 max-w-2xl mx-auto leading-relaxed font-medium chromatic-hint"
+            className="text-slate-500 text-lg md:text-xl mb-12 max-w-3xl mx-auto leading-relaxed font-medium chromatic-hint italic"
           >
-            Chào mừng bạn đến với <span className="text-white font-black italic">Bao.Dev</span> — Nơi những dòng code khô khan trở thành những câu chuyện công nghệ đầy cảm hứng.
+            Nơi tôi lưu giữ những mảnh ghép giá trị nhất trong hành trình trưởng thành. Từ trí tuệ, sự nghiệp, tình bạn cho đến những rung cảm tâm hồn và mái ấm gia đình.
           </motion.p>
           
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="flex flex-col sm:flex-row justify-center gap-8"
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="flex flex-wrap justify-center gap-6"
           >
             <Magnetic strength={0.2}>
-              <Link href="#posts">
-                <Button size="lg" glow className="min-w-[240px] h-18 text-lg rounded-2xl shadow-2xl shadow-primary/20">
-                  Khám Phá Bài Viết <ArrowRight size={20} />
+              <Link href="#pillars">
+                <Button size="lg" className="min-w-[240px] h-18 text-xl font-black italic tracking-tightest rounded-2xl group shadow-2xl shadow-primary/20" glow>
+                  KẾT NỐI NGAY <ArrowRight size={20} className="group-hover:translate-x-3 transition-transform duration-500" />
                 </Button>
               </Link>
             </Magnetic>
             <Magnetic strength={0.2}>
               <Link href="/about">
                 <Button variant="secondary" size="lg" className="min-w-[240px] h-18 text-lg rounded-2xl border-white/10 hover:border-primary/50">
-                  Về Tác Giả <Rocket size={20} className="text-primary" />
+                  Về Bản Thân <Users size={20} className="text-primary" />
                 </Button>
               </Link>
             </Magnetic>
@@ -80,34 +82,100 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Features Grid - Spotlight Version */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-64">
-          <div className="md:col-span-4">
-            <SpotlightCard>
-              <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-8 border border-primary/20">
-                <Shield size={28} />
+      <div id="pillars" className="max-w-7xl mx-auto px-6 relative scroll-mt-32">
+        {/* Soft Background Glows */}
+        <div className="absolute -top-64 -left-64 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[200px] -z-10" />
+        <div className="absolute top-1/2 -right-64 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[180px] -z-10" />
+
+        {/* Life Pillars Grid - 6 Cells Balanced */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-32">
+          {/* 1. Học Tập (Learning) */}
+          <div className="md:col-span-4 h-full">
+            <SpotlightCard className="h-full bg-violet-500/[0.02]">
+              <div className="w-16 h-16 rounded-2xl bg-violet-500/10 flex items-center justify-center text-violet-400 mb-8 border border-violet-500/20 shadow-xl shadow-violet-500/10">
+                <GraduationCap size={32} />
               </div>
-              <h3 className="text-2xl font-black mb-4 tracking-tight">Cloud Engineering</h3>
-              <p className="text-slate-500 font-medium leading-relaxed">Kiến trúc hạ tầng vững chắc, bảo mật và tối ưu hóa trên mọi đám mây.</p>
+              <h3 className="text-2xl font-black mb-4 tracking-tight uppercase italic text-white line-clamp-1">
+                Học <span className="text-violet-400 not-italic">TẬP.</span>
+              </h3>
+              <p className="text-slate-500 font-medium leading-relaxed italic">
+                Kiến thức là đại dương bao la. Tôi dành trọn tâm huyết để học hỏi những điều mới mẻ, từ công nghệ đến triết lý sống.
+              </p>
             </SpotlightCard>
           </div>
-          <div className="md:col-span-4 mt-12 md:mt-24">
-            <SpotlightCard>
-              <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-8 border border-primary/20">
-                <Rocket size={28} />
+
+          {/* 2. Công Việc (Work) */}
+          <div className="md:col-span-4 h-full">
+            <SpotlightCard className="h-full border-primary/20 bg-primary/[0.01]">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-8 border border-primary/20 shadow-xl shadow-primary/10">
+                <Briefcase size={32} />
               </div>
-              <h3 className="text-2xl font-black mb-4 tracking-tight">Tech Mastery</h3>
-              <p className="text-slate-500 font-medium leading-relaxed">Hành trình chinh phục những công nghệ mới nhất và hiện đại nhất.</p>
+              <h3 className="text-2xl font-black mb-4 tracking-tight uppercase italic text-white line-clamp-1">
+                Công <span className="text-primary not-italic">VIỆC.</span>
+              </h3>
+              <p className="text-slate-500 font-medium leading-relaxed italic">
+                Nơi đam mê lập trình trở thành những sản phẩm thực tế. Tôi luôn theo đuổi sự hoàn hảo và chuyên nghiệp trong từng dòng mã.
+              </p>
             </SpotlightCard>
           </div>
-          <div className="md:col-span-4">
-            <SpotlightCard>
-              <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-8 border border-primary/20">
-                <Database size={28} />
+
+          {/* 3. Bạn Bè (Friends) */}
+          <div className="md:col-span-4 h-full">
+            <SpotlightCard className="h-full bg-cyan-500/[0.02]">
+              <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-8 border border-cyan-500/20 shadow-xl shadow-cyan-500/10">
+                <Users size={32} />
               </div>
-              <h3 className="text-2xl font-black mb-4 tracking-tight">Real-world Insight</h3>
-              <p className="text-slate-500 font-medium leading-relaxed">Những bài học xương máu từ các dự án thực tế quy mô lớn.</p>
+              <h3 className="text-2xl font-black mb-4 tracking-tight uppercase italic text-white line-clamp-1">
+                Bạn <span className="text-cyan-400 not-italic">BÈ.</span>
+              </h3>
+              <p className="text-slate-500 font-medium leading-relaxed italic">
+                Kết nối và sẻ chia những khoảnh khắc quý giá. Những người đồng hành tuyệt vời giúp cuộc sống của tôi thêm phần ý nghĩa.
+              </p>
+            </SpotlightCard>
+          </div>
+
+          {/* 4. Sức Khỏe (Health) */}
+          <div className="md:col-span-4 h-full">
+            <SpotlightCard className="h-full bg-emerald-500/[0.02]">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-8 border border-emerald-500/20 shadow-xl shadow-emerald-500/10">
+                <Activity size={32} />
+              </div>
+              <h3 className="text-2xl font-black mb-4 tracking-tight uppercase italic text-white line-clamp-1">
+                Sức <span className="text-emerald-400 not-italic">KHỎE.</span>
+              </h3>
+              <p className="text-slate-500 font-medium leading-relaxed italic">
+                Thân thể khỏe mạnh là ngôi đền của tâm hồn. Rèn luyện mỗi ngày để duy trì năng lượng tích cực nhất.
+              </p>
+            </SpotlightCard>
+          </div>
+
+          {/* 5. Tình Yêu (Love) */}
+          <div className="md:col-span-4 h-full">
+            <SpotlightCard className="h-full bg-rose-500/[0.02]">
+              <div className="w-16 h-16 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-400 mb-8 border border-rose-500/20 shadow-xl shadow-rose-500/10">
+                <Heart size={32} />
+              </div>
+              <h3 className="text-2xl font-black mb-4 tracking-tight uppercase italic text-white line-clamp-1">
+                Tình <span className="text-rose-400 not-italic">YÊU.</span>
+              </h3>
+              <p className="text-slate-500 font-medium leading-relaxed italic">
+                Rung cảm từ trái tim, sự sẻ chia và thấu hiểu. Là nguồn động lực lớn lao để tôi hoàn thiện bản thân mình.
+              </p>
+            </SpotlightCard>
+          </div>
+
+          {/* 6. Gia Đình (Family) */}
+          <div className="md:col-span-4 h-full">
+            <SpotlightCard className="h-full bg-amber-500/[0.02]">
+              <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 mb-8 border border-amber-500/20 shadow-xl shadow-amber-500/10">
+                <HomeIcon size={32} />
+              </div>
+              <h3 className="text-2xl font-black mb-4 tracking-tight uppercase italic text-white line-clamp-1">
+                Gia <span className="text-amber-400 not-italic">ĐÌNH.</span>
+              </h3>
+              <p className="text-slate-500 font-medium leading-relaxed italic">
+                Nơi tình yêu bắt đầu và không bao giờ kết thúc. Điểm tựa vững chắc nhất sau những bộn bề của cuộc sống.
+              </p>
             </SpotlightCard>
           </div>
         </div>

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { User, Mail, Shield, Calendar, ArrowLeft, CheckCircle, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { Magnetic } from "@/components/ui/Magnetic";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -30,9 +31,10 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen pt-32 pb-48 px-6 relative overflow-hidden bg-background">
-      {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] -z-10" />
+      {/* Infinity Glow Decor */}
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[160px] -z-10 animate-pulse" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[140px] -z-10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-slate-950/20 -z-20" />
 
       <div className="max-w-3xl mx-auto">
         <motion.div
@@ -74,7 +76,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="text-center md:text-left flex-1">
-                <h1 className="text-5xl font-black mb-5 tracking-tight text-white">{user.name}</h1>
+                <h1 className="text-6xl font-black mb-6 tracking-tightest text-white italic leading-none">{user.name}</h1>
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
                   <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-colors ${isAdmin ? 'bg-primary/20 text-primary border-primary/30' : 'bg-slate-500/10 text-slate-400 border-white/10'}`}>
                     {isAdmin ? 'Quản trị viên' : 'Người dùng'}
@@ -113,20 +115,22 @@ export default function ProfilePage() {
                   fontMono: true
                 }
               ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-6 p-6 glass-card !bg-white/[0.02] hover:!bg-white/[0.05] border-white/[0.03] rounded-3xl group transition-all duration-300">
-                  <div className={`w-14 h-14 rounded-2xl ${item.bg} flex items-center justify-center ${item.color} shrink-0 shadow-inner group-hover:scale-110 transition-all`}>
-                    {item.icon}
+                <Magnetic key={idx} strength={0.1}>
+                  <div className="flex items-center gap-8 p-8 glass-card !bg-white/[0.01] hover:!bg-white/[0.04] border-white/[0.03] rounded-[2.5rem] group transition-all duration-500">
+                    <div className={`w-16 h-16 rounded-2xl ${item.bg} flex items-center justify-center ${item.color} shrink-0 shadow-2xl shadow-black/80 group-hover:scale-110 transition-all duration-500`}>
+                      {item.icon}
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-600 font-black uppercase tracking-[0.3em] mb-2">{item.label}</p>
+                      <p className={`text-slate-100 font-black text-xl italic ${item.fontMono ? 'font-mono text-xs tracking-tightest not-italic opacity-60' : ''}`}>{item.value}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-1">{item.label}</p>
-                    <p className={`text-slate-100 font-bold text-lg ${item.fontMono ? 'font-mono text-sm tracking-tight' : ''}`}>{item.value}</p>
-                  </div>
-                </div>
+                </Magnetic>
               ))}
             </div>
 
             <div className="mt-16 pt-10 border-t border-white/[0.05] text-center">
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Thành viên Bao.Dev từ 2026</p>
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Thành viên BẢO.NGUYỄN từ 2026</p>
             </div>
           </Card>
         </motion.div>

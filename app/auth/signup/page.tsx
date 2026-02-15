@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import Link from "next/link";
-import { UserPlus, ArrowLeft, Mail, User, Lock, Sparkles } from "lucide-react";
+import { UserPlus, ArrowLeft, Mail, Lock, Sparkles, User, ShieldCheck } from "lucide-react";
+import { Magnetic } from "@/components/ui/Magnetic";
 import { toast } from "sonner";
 
 export default function SignUp() {
@@ -57,9 +58,10 @@ export default function SignUp() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden bg-background">
-      {/* Background Decor */}
-      <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] -z-10" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-accent/5 rounded-full blur-[140px] -z-10" />
+      {/* Infinity Glow Decor */}
+      <div className="absolute top-[-20%] right-[-20%] w-[1000px] h-[1000px] bg-primary/15 rounded-full blur-[180px] -z-10 animate-pulse" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[800px] h-[800px] bg-accent/5 rounded-full blur-[160px] -z-10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-slate-950/40 -z-20" />
 
       <Card className="w-full max-w-md p-10 md:p-14 glass-card relative overflow-hidden">
         <div className="absolute -top-10 -right-10 opacity-10 rotate-12 text-primary">
@@ -80,7 +82,7 @@ export default function SignUp() {
               <UserPlus className="text-primary" size={40} />
             </div>
             <h1 className="text-4xl font-black mb-3 tracking-tight">Tạo Tài Khoản</h1>
-            <p className="text-slate-500 font-medium">Tham gia cộng đồng Bao.Dev ngay hôm nay</p>
+            <p className="text-slate-500 font-medium">Tham gia cộng đồng Bảo Nguyễn ngay hôm nay</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -114,14 +116,16 @@ export default function SignUp() {
               required
             />
 
+            <Magnetic strength={0.2}>
             <Button 
               type="submit" 
-              className="w-full h-14 text-lg" 
+              className="w-full h-16 text-xl font-black italic tracking-tightest rounded-2xl group shadow-2xl shadow-primary/20" 
               glow 
               loading={loading}
             >
-              Đăng Ký Tài Khoản <Sparkles size={18} />
+              BẮT ĐẦU HÀNH TRÌNH <Sparkles size={20} className="group-hover:animate-pulse" />
             </Button>
+          </Magnetic>
           </form>
 
           <div className="mt-10 text-center">

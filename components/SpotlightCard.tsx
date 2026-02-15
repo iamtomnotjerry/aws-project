@@ -1,15 +1,19 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React from "react";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
-import { Card } from "@/components/ui/Card";
 
 interface SpotlightCardProps {
   children: React.ReactNode;
   className?: string;
+  glowColor?: string;
 }
 
-export const SpotlightCard = ({ children, className = "" }: SpotlightCardProps) => {
+export const SpotlightCard = ({ 
+  children, 
+  className = "",
+  glowColor = "rgba(139, 92, 246, 0.15)" // Default violet glow
+}: SpotlightCardProps) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -19,7 +23,6 @@ export const SpotlightCard = ({ children, className = "" }: SpotlightCardProps) 
     clientY,
   }: React.MouseEvent) {
     let { left, top } = currentTarget.getBoundingClientRect();
-
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
   }
@@ -27,20 +30,33 @@ export const SpotlightCard = ({ children, className = "" }: SpotlightCardProps) 
   return (
     <div
       onMouseMove={handleMouseMove}
-      className={`group relative glass-card p-10 rounded-4xl transition-all duration-500 overflow-hidden ${className}`}
+      className={`group relative bg-slate-900/40 backdrop-blur-3xl p-10 rounded-[3rem] border border-white/5 transition-all duration-700 overflow-hidden ${className}`}
     >
+      {/* Premium Texture Layer */}
+      <div className="absolute inset-0 opacity-[0.4] pointer-events-none mix-blend-soft-light overflow-hidden">
+        <svg className="h-full w-full">
+          <filter id="noiseFilter">
+            <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+        </svg>
+      </div>
+
+      {/* Dynamic Spotlight Glow */}
       <motion.div
-        className="pointer-events-none absolute -inset-px rounded-4xl opacity-0 transition duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-px rounded-[3rem] opacity-0 transition duration-500 group-hover:opacity-100"
         style={{
           background: useMotionTemplate`
             radial-gradient(
-              450px circle at ${mouseX}px ${mouseY}px,
-              rgba(59, 130, 246, 0.15),
+              650px circle at ${mouseX}px ${mouseY}px,
+              ${glowColor},
               transparent 80%
             )
           `,
         }}
       />
+      
+      {/* Content Layer */}
       <div className="relative z-10">
         {children}
       </div>

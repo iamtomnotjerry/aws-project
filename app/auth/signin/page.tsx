@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import Link from "next/link";
-import { Lock, ArrowLeft, Mail, Sparkles } from "lucide-react";
+import { Lock, ArrowLeft, Mail, Sparkles, UserPlus } from "lucide-react";
+import { Magnetic } from "@/components/ui/Magnetic";
 import { toast } from "sonner";
 
 function SignInForm() {
@@ -107,14 +108,16 @@ function SignInForm() {
             required
           />
 
-          <Button 
-            type="submit" 
-            className="w-full h-14 text-lg" 
-            glow 
-            loading={loading}
-          >
-            Đăng Nhập <Sparkles size={18} />
-          </Button>
+          <Magnetic strength={0.2}>
+            <Button 
+              type="submit" 
+              className="w-full h-16 text-xl font-black italic tracking-tightest rounded-2xl group shadow-2xl shadow-primary/20" 
+              glow 
+              loading={loading}
+            >
+              ĐĂNG NHẬP <Sparkles size={20} className="group-hover:animate-pulse" />
+            </Button>
+          </Magnetic>
         </form>
 
         <div className="mt-10 text-center">
@@ -133,9 +136,10 @@ function SignInForm() {
 export default function SignIn() {
   return (
     <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden bg-background">
-      {/* Background Decor */}
-      <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] -z-10" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/5 rounded-full blur-[140px] -z-10" />
+      {/* Infinity Glow Decor */}
+      <div className="absolute top-[-20%] left-[-20%] w-[1000px] h-[1000px] bg-primary/15 rounded-full blur-[180px] -z-10 animate-pulse" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[800px] h-[800px] bg-accent/5 rounded-full blur-[160px] -z-10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-slate-950/40 -z-20" />
 
       <Suspense fallback={
         <div className="w-full max-w-md p-10 glass-card animate-pulse">
