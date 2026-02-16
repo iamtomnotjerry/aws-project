@@ -3,7 +3,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import { LogIn, LogOut, User, PenTool, LayoutDashboard, ChevronDown } from "lucide-react";
+import { LogIn, LogOut, User, PenTool, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";

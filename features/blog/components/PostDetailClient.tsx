@@ -7,8 +7,8 @@ import Link from "next/link";
 import { ArrowLeft, User, Calendar, Clock, ImageIcon, Edit3, Share2 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { ReadingProgress } from "./ui/ReadingProgress";
-import { Magnetic } from "./ui/Magnetic";
+import { ReadingProgress } from "@/components/ui/ReadingProgress";
+import { Magnetic } from "@/components/ui/Magnetic";
 import { PostWithAuthor } from "@/types";
 
 interface PostDetailClientProps {

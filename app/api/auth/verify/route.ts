@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     // 2. Handle PendingUser Flow
     const hasExpired = new Date(pendingUser.expires) < new Date();
     if (hasExpired) {
-      await (prisma as any).pendingUser.delete({ where: { token } });
+      await prisma.pendingUser.delete({ where: { token } });
       return redirect("/auth/signin?error=TokenExpired");
     }
 
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (emailTaken) {
-      await (prisma as any).pendingUser.delete({ where: { token } });
+      await prisma.pendingUser.delete({ where: { token } });
       return redirect("/auth/signin?error=EmailAlreadyTaken");
     }
 

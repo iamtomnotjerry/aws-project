@@ -22,7 +22,7 @@ export async function GET(
             role: true,
             emailVerified: true
           }
-        } as any
+        }
       },
     });
     

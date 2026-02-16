@@ -2,13 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import Link from "next/link";
-import { UserPlus, ArrowLeft, Mail, Lock, Sparkles, User, ShieldCheck } from "lucide-react";
-import { Magnetic } from "@/components/ui/Magnetic";
+import { ArrowLeft, Command, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export default function SignUp() {
   const router = useRouter();
@@ -33,23 +30,19 @@ export default function SignUp() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || data.message || "Đăng ký thất bại");
+        throw new Error(data.error || data.message || "Sign up failed");
       }
 
-      toast.success("Khởi tạo đăng ký thành công! Vui lòng kiểm tra email để xác thực và hoàn tất.");
-
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-      });
-
-      // Redirect to sign-in with a success message
+      toast.success("Account created. Please check your email.");
+      
+      setFormData({ name: "", email: "", password: "" });
+      
       setTimeout(() => {
         router.push("/auth/signin?success=VerifyEmail");
-      }, 3000);
+      }, 1500);
+
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Đăng ký thất bại";
+      const message = error instanceof Error ? error.message : "An unexpected error occurred";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -57,87 +50,85 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden bg-background">
-      {/* Infinity Glow Decor */}
-      <div className="absolute top-[-20%] right-[-20%] w-[1000px] h-[1000px] bg-primary/15 rounded-full blur-[180px] -z-10 animate-pulse" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[800px] h-[800px] bg-accent/5 rounded-full blur-[160px] -z-10" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-slate-950/40 -z-20" />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-6">
+      <Link 
+        href="/" 
+        className="absolute top-8 left-8 text-subtle hover:text-foreground transition-colors text-sm font-medium flex items-center gap-2"
+      >
+        <ArrowLeft size={16} />
+        Back
+      </Link>
 
-      <Card className="w-full max-w-md p-10 md:p-14 glass-card relative overflow-hidden">
-        <div className="absolute -top-10 -right-10 opacity-10 rotate-12 text-primary">
-          <UserPlus size={150} />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="w-full max-w-[400px]"
+      >
+        <div className="mb-8 text-center">
+          <div className="w-12 h-12 bg-white rounded-xl mx-auto flex items-center justify-center text-black mb-6 shadow-xl shadow-white/10">
+            <Command size={24} />
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-2">Create your account</h1>
+          <p className="text-subtle text-sm">Join the workspace to start collaborating.</p>
         </div>
 
-        <div className="relative z-10">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-white mb-10 transition-colors group font-bold"
-          >
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-            Quay lại Trang chủ
-          </Link>
-          
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary/20 mb-8 border border-primary/20 shadow-xl shadow-primary/10">
-              <UserPlus className="text-primary" size={40} />
-            </div>
-            <h1 className="text-4xl font-black mb-3 tracking-tight">Tạo Tài Khoản</h1>
-            <p className="text-slate-500 font-medium">Tham gia cộng đồng Bảo Nguyễn ngay hôm nay</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <Input 
-              label="Họ và Tên"
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-medium text-subtle uppercase tracking-wider ml-1">Full Name</label>
+            <input 
               type="text" 
-              placeholder="Nguyễn Văn A" 
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
-              className="bg-white/[0.03]"
+              className="w-full bg-[#131418] border border-[#2E2F33] rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-[#45464F]"
+              placeholder="Bao Nguyen"
               required
             />
+          </div>
 
-            <Input 
-              label="Địa chỉ Email"
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-medium text-subtle uppercase tracking-wider ml-1">Email</label>
+            <input 
               type="email" 
-              placeholder="name@example.com" 
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
-              className="bg-white/[0.03]"
+              className="w-full bg-[#131418] border border-[#2E2F33] rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-[#45464F]"
+              placeholder="name@example.com"
               required
             />
+          </div>
 
-            <Input 
-              label="Mật khẩu"
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-medium text-subtle uppercase tracking-wider ml-1">Password</label>
+            <input 
               type="password" 
-              placeholder="••••••••" 
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
-              className="bg-white/[0.03]"
+              className="w-full bg-[#131418] border border-[#2E2F33] rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-[#45464F]"
+              placeholder="••••••••"
               required
             />
-
-            <Magnetic strength={0.2}>
-            <Button 
-              type="submit" 
-              className="w-full h-16 text-xl font-black italic tracking-tightest rounded-2xl group shadow-2xl shadow-primary/20" 
-              glow 
-              loading={loading}
-            >
-              BẮT ĐẦU HÀNH TRÌNH <Sparkles size={20} className="group-hover:animate-pulse" />
-            </Button>
-          </Magnetic>
-          </form>
-
-          <div className="mt-10 text-center">
-            <p className="text-sm text-slate-500 font-medium">
-              Đã có tài khoản?{" "}
-              <Link href="/auth/signin" className="text-primary hover:underline font-bold transition-all">
-                Đăng nhập ngay
-              </Link>
-            </p>
           </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-white text-black h-10 rounded-lg text-sm font-medium hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
+          >
+            {loading && <Loader2 size={14} className="animate-spin" />}
+            Create Account
+          </button>
+        </form>
+
+        <div className="mt-8 text-center">
+          <p className="text-sm text-subtle">
+            Already have an account?{" "}
+            <Link href="/auth/signin" className="text-foreground hover:underline font-medium">
+              Sign In
+            </Link>
+          </p>
         </div>
-      </Card>
+      </motion.div>
     </div>
   );
 }

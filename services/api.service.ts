@@ -14,11 +14,11 @@ interface PresignedUrlResponse {
 export const ApiService = {
   posts: {
     getAll: async (limit?: number, cursor?: string): Promise<ApiResponse<PaginatedPosts>> => {
-      const url = new URL("/api/posts", window.location.origin);
-      if (limit) url.searchParams.set("limit", limit.toString());
-      if (cursor) url.searchParams.set("cursor", cursor);
+      const params = new URLSearchParams();
+      if (limit) params.set("limit", limit.toString());
+      if (cursor) params.set("cursor", cursor);
       
-      const res = await fetch(url.toString());
+      const res = await fetch(`/api/posts?${params.toString()}`);
       return res.json();
     },
     getOne: async (id: string): Promise<ApiResponse<PostWithAuthor>> => {

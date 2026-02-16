@@ -3,12 +3,12 @@ import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { Toaster } from "sonner";
-import AuthProvider from "@/components/AuthProvider";
-import AuthButton from "@/components/AuthButton";
-import VerificationBanner from "@/components/VerificationBanner";
+import AuthProvider from "@/features/auth/components/AuthProvider";
+import AuthButton from "@/features/auth/components/AuthButton";
+import VerificationBanner from "@/features/auth/components/VerificationBanner";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { motion } from "framer-motion"; // Added this line as per instruction
+
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });

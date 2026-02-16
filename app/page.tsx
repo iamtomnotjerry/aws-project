@@ -7,8 +7,8 @@ import Link from "next/link";
 import { usePosts } from "@/hooks/use-posts";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { PostCard } from "@/components/PostCard";
-import { SpotlightCard } from "@/components/SpotlightCard";
+import { PostCard } from "@/features/blog/components/PostCard";
+import { SpotlightCard } from "@/features/core/components/SpotlightCard";
 import { Magnetic } from "@/components/ui/Magnetic";
 
 export default function Home() {
@@ -205,12 +205,12 @@ export default function Home() {
               <>
                 {/* Highlighted Posts Preview (3-4 posts) */}
                 <div className="md:col-span-12">
-                  <PostCard post={posts[0]} index={0} featured />
+                  <PostCard post={posts[0]} featured />
                 </div>
                 
                 {posts.slice(1, 4).map((post, idx) => (
                   <div key={post.id} className="md:col-span-4">
-                    <PostCard post={post} index={idx + 1} />
+                    <PostCard post={post} />
                   </div>
                 ))}
               </>

@@ -1,23 +1,33 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { Search, ArrowLeft, BookOpen, Sparkles, Filter } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Search, ArrowLeft, BookOpen, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { usePosts } from "@/hooks/use-posts";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { PostCard } from "@/components/PostCard";
+import { PostCard } from "@/features/blog/components/PostCard";
+
+const CATEGORIES = ["Tất cả", "Công nghệ", "Cuộc sống", "Sự nghiệp", "Cảm hứng"];
 import { Magnetic } from "@/components/ui/Magnetic";
 
 export default function PostsPage() {
   const { posts, loading, loadingMore, error, hasMore, loadMore } = usePosts(12);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("Tất cả");
 
-  const filteredPosts = posts.filter(post => 
-    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (post.content || "").toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPosts = useMemo(() => {
+    return posts.filter(post => {
+      const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (post.content || "").toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesCategory = activeCategory === "Tất cả" || 
+                             (post.content || "").toLowerCase().includes(activeCategory.toLowerCase());
+      
+      return matchesSearch && matchesCategory;
+    });
+  }, [posts, searchQuery, activeCategory]);
 
   return (
     <div className="min-h-screen pb-48 pt-32 bg-slate-950 selection:bg-primary/30">
@@ -79,11 +89,12 @@ export default function PostsPage() {
           transition={{ delay: 0.4 }}
           className="flex flex-wrap gap-4 mb-20"
         >
-          {["Tất cả", "Công nghệ", "Cuộc sống", "Sự nghiệp", "Cảm hứng"].map((cat) => (
+          {CATEGORIES.map((cat) => (
             <button 
               key={cat}
+              onClick={() => setActiveCategory(cat)}
               className={`px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest border transition-all ${
-                cat === "Tất cả" 
+                cat === activeCategory 
                 ? "bg-primary text-slate-950 border-primary shadow-xl shadow-primary/20" 
                 : "bg-white/[0.02] text-slate-500 border-white/[0.05] hover:border-white/20 hover:text-white"
               }`}
@@ -126,7 +137,7 @@ export default function PostsPage() {
                   }
                 }}
               >
-                <PostCard post={post} index={idx} />
+                <PostCard post={post} />
               </motion.div>
             ))
           ) : (
@@ -158,19 +169,3 @@ export default function PostsPage() {
   );
 }
 
-const ArrowRight = ({ size, className }: { size: number, className?: string }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="3" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M5 12h14" />
-    <path d="m12 5 7 7-7 7" />
-  </svg>
-);

@@ -1,111 +1,110 @@
 @import "tailwindcss";
 
 @theme {
-  /* Premium Palette - Sapphire & Deep Slate */
-  --color-background: #020617; /* Slate 950 */
-  --color-foreground: #f1f5f9; /* Slate 100 */
+  /* Linear "Warm Dark" Palette */
+  --color-background: #0B0C0E; /* Nearly Black, slightly warm */
+  --color-foreground: #EEEEF0; /* Off-white */
   
-  --color-card: rgba(15, 23, 42, 0.6); /* Slate 900 with transparency */
-  --color-card-foreground: #f1f5f9;
+  --color-card: #131418; /* Slightly lighter than bg */
+  --color-card-foreground: #EEEEF0;
   
-  --color-primary: #3b82f6; /* Blue 500 */
-  --color-primary-hover: #2563eb; /* Blue 600 */
+  --color-primary: #5E6AD2; /* Linear Purple-Blue */
+  --color-primary-hover: #4e5ac0;
   --color-primary-foreground: #ffffff;
   
-  --color-secondary: rgba(30, 41, 59, 0.5); /* Slate 800 with transparency */
-  --color-secondary-hover: rgba(51, 65, 85, 0.6);
+  --color-secondary: #1F2025; /* Dark Grey for secondary elements */
+  --color-secondary-hover: #292A30;
   
-  --color-accent: #8b5cf6; /* Violet 500 */
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-input: rgba(255, 255, 255, 0.03);
+  --color-accent: #F2C94C; /* Gold/Yellow accent for subtlety */
   
+  --color-border: #2E2F33; /* The "Linear" Border Color */
+  --color-input: #191A1F;
+  --color-input-border: #2E2F33;
+  
+  --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
   --radius-3xl: 1.5rem;
-  --radius-4xl: 2rem;
 
-  /* Standardized Spacing */
+  /* Refined Spacing */
   --spacing-18: 4.5rem;
   --spacing-22: 5.5rem;
 
-  /* Custom Letter Spacing (Tracking) */
-  --tracking-tightest: -0.05em;
-  --letter-spacing-tightest: -0.05em;
+  /* Typography */
+  --tracking-tightest: -0.01em; /* Less aggressive than before */
+  --letter-spacing-tightest: -0.01em;
 }
 
 @layer base {
   :root {
-    /* Fluid Typography Scale */
-    --text-xs: clamp(0.7rem, 0.6rem + 0.5vw, 0.8rem);
-    --text-sm: clamp(0.8rem, 0.7rem + 0.5vw, 1rem);
-    --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
-    --text-lg: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
-    --text-xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
-    --text-2xl: clamp(2rem, 1.8rem + 1.5vw, 3rem);
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
   }
 
   html {
     scroll-behavior: smooth;
-    cursor: none; /* Prepare for custom cursor */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     @apply selection:bg-primary/30 selection:text-white;
   }
   
   body {
-    @apply bg-background text-foreground antialiased relative min-h-screen overflow-x-hidden;
-    font-size: var(--text-base);
+    @apply bg-background text-foreground antialiased min-h-screen overflow-x-hidden;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Premium Focus States for A11y */
+  /* Linear Input Styles */
+  input, textarea {
+    @apply bg-transparent outline-none transition-all duration-200 placeholder:text-zinc-600;
+  }
+
+  /* Focus rings - Linear Style (Subtle Blue Glow) */
   :focus-visible {
-    @apply outline-none ring-2 ring-primary/50 ring-offset-4 ring-offset-background transition-all;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tightest font-black text-white leading-[1.05];
+    @apply outline-none ring-1 ring-primary/50 ring-offset-0;
   }
 }
 
-/* Infinity Utilities */
-@utility text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-primary/80 font-black;
+/* Linear Utilities */
+@utility glass-panel {
+  @apply bg-[#131418]/80 backdrop-blur-md border border-[#2E2F33] shadow-xl;
 }
 
-@utility glass-morphism {
-  @apply backdrop-blur-[20px] bg-white/[0.03] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
+@utility linear-card {
+  @apply bg-[#131418] border border-[#2E2F33] rounded-xl transition-all duration-200 hover:border-[#45464F];
 }
 
-@utility glass-card {
-  @apply glass-morphism relative overflow-hidden transition-all duration-500 hover:bg-white/[0.06] hover:border-white/[0.15] hover:shadow-primary/10;
+@utility text-subtle {
+  @apply text-[#8A8F98]; /* Linear Grey */
 }
 
-/* Chromatic Aberration Hint */
-@utility chromatic-hint {
-  @apply relative;
-  text-shadow: 1px 0 rgba(255,0,0,0.1), -1px 0 rgba(0,255,255,0.1);
+@utility border-subtle {
+  @apply border-[#2E2F33];
 }
 
-.premium-glow {
-  @apply relative overflow-hidden;
-}
-
-.premium-glow::after {
-  content: "";
-  @apply absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 -translate-x-full transition-transform duration-1000 ease-in-out;
-}
-
-.premium-glow:hover::after {
-  @apply translate-x-full;
-}
-
-/* Custom Scrollbar for Premium Feel */
+/* Custom Scrollbar - Minimal */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-background;
+  @apply bg-transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-primary/50 transition-colors;
+  @apply bg-[#2E2F33] rounded-full hover:bg-[#45464F] transition-colors;
+}
+@utility glass-card {
+  @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.05] shadow-2xl transition-all duration-500 hover:border-white/[0.1] hover:bg-white/[0.05];
+}
+
+@utility glass-morphism {
+  @apply bg-[#131418]/60 backdrop-blur-xl border border-[#2E2F33] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+}
+
+@utility text-gradient {
+  @apply bg-gradient-to-r from-white via-white/80 to-white/40 bg-clip-text text-transparent;
 }

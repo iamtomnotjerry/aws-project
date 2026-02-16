@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     // 1. Check for PendingUser (new verify-then-create flow)
-    const pendingUser = await (prisma as any).pendingUser.findUnique({
+    const pendingUser = await prisma.pendingUser.findUnique({
       where: { email },
     });
 
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       const token = crypto.randomUUID();
       const expires = new Date(Date.now() + 3600000); // 1 hour
 
-      await (prisma as any).pendingUser.update({
+      await prisma.pendingUser.update({
         where: { email },
         data: { token, expires },
       });

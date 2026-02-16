@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
             role: true,
             emailVerified: true
           }
-        } as any
+        }
       },
     });
 

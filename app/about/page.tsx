@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Sparkles, MapPin, GraduationCap, Code2, Database, Layers, Dumbbell, Cpu, Heart, User, Zap } from "lucide-react";
 import Link from "next/link";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { SpotlightCard } from "@/components/SpotlightCard";
+import { SpotlightCard } from "@/features/core/components/SpotlightCard";
 
 // --- Data Definitions (Human-Centric Content) ---
 
@@ -16,6 +16,13 @@ const BIO_DATA = {
   fullEducation: "Đại học Công nghệ Thông tin (UIT)",
   role: "Software Developer @ f17team",
   mantra: "Học hỏi mỗi ngày để trở thành phiên bản tốt hơn của chính mình.",
+};
+
+// Color mapping to avoid dynamic Tailwind classes (which get purged in production)
+const COLOR_MAP: Record<string, { bg: string; text: string; border: string }> = {
+  emerald: { bg: "bg-emerald-500/10", text: "text-emerald-400", border: "border-emerald-500/20" },
+  violet: { bg: "bg-violet-500/10", text: "text-violet-400", border: "border-violet-500/20" },
+  rose: { bg: "bg-rose-500/10", text: "text-rose-400", border: "border-rose-500/20" },
 };
 
 const GROWTH_CARDS = [
@@ -44,6 +51,8 @@ const GROWTH_CARDS = [
 
 // --- Animation Variants ---
 
+const EASE_OUT_EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -57,7 +66,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as any },
+    transition: { duration: 0.8, ease: EASE_OUT_EXPO },
   },
 };
 
@@ -198,26 +207,29 @@ export default function AboutPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {GROWTH_CARDS.map((card, i) => (
-              <motion.div key={i} variants={itemVariants}>
-                <Magnetic strength={0.1}>
-                  <SpotlightCard 
-                    className="p-12 border-white/5 hover:border-white/10 group h-full" 
-                    glowColor={card.glow}
-                  >
-                    <div className={`w-20 h-20 rounded-2xl bg-${card.color}-500/10 flex items-center justify-center text-${card.color}-400 mb-10 border border-${card.color}-500/20 shadow-2xl shadow-black/80 group-hover:scale-110 transition-all duration-700`}>
-                      {card.icon}
-                    </div>
-                    <h3 className="text-3xl font-black mb-6 tracking-tight uppercase italic text-white">
-                      {card.title.split('.')[0]} <span className={`text-${card.color}-400 not-italic`}>{card.title.split('.')[1] || '.'}</span>
-                    </h3>
-                    <p className="text-slate-500 text-lg font-medium leading-[1.7] italic">
-                      {card.desc}
-                    </p>
-                  </SpotlightCard>
-                </Magnetic>
-              </motion.div>
-            ))}
+            {GROWTH_CARDS.map((card, i) => {
+              const colors = COLOR_MAP[card.color];
+              return (
+                <motion.div key={i} variants={itemVariants}>
+                  <Magnetic strength={0.1}>
+                    <SpotlightCard 
+                      className="p-12 border-white/5 hover:border-white/10 group h-full" 
+                      glowColor={card.glow}
+                    >
+                      <div className={`w-20 h-20 rounded-2xl ${colors.bg} flex items-center justify-center ${colors.text} mb-10 border ${colors.border} shadow-2xl shadow-black/80 group-hover:scale-110 transition-all duration-700`}>
+                        {card.icon}
+                      </div>
+                      <h3 className="text-3xl font-black mb-6 tracking-tight uppercase italic text-white">
+                        {card.title.split('.')[0]} <span className={`${colors.text} not-italic`}>{card.title.split('.')[1] || '.'}</span>
+                      </h3>
+                      <p className="text-slate-500 text-lg font-medium leading-[1.7] italic">
+                        {card.desc}
+                      </p>
+                    </SpotlightCard>
+                  </Magnetic>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
 

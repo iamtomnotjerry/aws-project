@@ -3,15 +3,13 @@
 import { useState, useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import Link from "next/link";
-import { Lock, ArrowLeft, Mail, Sparkles, UserPlus } from "lucide-react";
-import { Magnetic } from "@/components/ui/Magnetic";
+import { ArrowLeft, Command, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
-function SignInForm() {
+function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -19,23 +17,9 @@ function SignInForm() {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    const success = searchParams.get("success");
     const error = searchParams.get("error");
-    
-    if (success === "VerifyEmail") {
-      toast.info("Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
-    }
-
     if (error) {
-      const errorMessages: Record<string, string> = {
-        VerificationFailed: "Xác thực thất bại. Vui lòng thử lại hoặc yêu cầu link mới.",
-        TokenExpired: "Link xác thực đã hết hạn. Vui lòng yêu cầu link mới.",
-        InvalidToken: "Link xác thực không hợp lệ.",
-        EmailAlreadyTaken: "Email này đã được đăng ký. Vui lòng đăng nhập.",
-        MissingToken: "Link xác thực không đầy đủ.",
-        UserNotFound: "Không tìm thấy tài khoản.",
-      };
-      toast.error(errorMessages[error] || "Đã có lỗi xảy ra. Vui lòng thử lại.");
+       toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại.");
     }
   }, [searchParams]);
 
@@ -51,107 +35,102 @@ function SignInForm() {
       });
 
       if (result?.error) {
-        toast.error("Thông tin đăng nhập không chính xác");
+        toast.error("Email hoặc mật khẩu không đúng.");
       } else {
-        toast.success("Chào mừng bạn quay trở lại!");
+        toast.success("Đăng nhập thành công.");
         router.push("/");
         router.refresh();
       }
     } catch (error) {
-      toast.error("Đã xảy ra lỗi hệ thống");
+      toast.error("Lỗi hệ thống.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-md p-10 md:p-14 glass-card relative overflow-hidden">
-      <div className="absolute -top-10 -right-10 opacity-10 rotate-12 text-primary">
-        <Lock size={150} />
-      </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-6">
+      <Link 
+        href="/" 
+        className="absolute top-8 left-8 text-subtle hover:text-foreground transition-colors text-sm font-medium flex items-center gap-2"
+      >
+        <ArrowLeft size={16} />
+        Back
+      </Link>
 
-      <div className="relative z-10">
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-white mb-10 transition-colors group font-bold"
-        >
-          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          Quay lại Trang chủ
-        </Link>
-        
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary/20 mb-8 border border-primary/20 shadow-xl shadow-primary/10">
-            <Lock className="text-primary" size={40} />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="w-full max-w-[400px]"
+      >
+        <div className="mb-8 text-center">
+          <div className="w-12 h-12 bg-white rounded-xl mx-auto flex items-center justify-center text-black mb-6 shadow-xl shadow-white/10">
+            <Command size={24} />
           </div>
-          <h1 className="text-4xl font-black mb-3 tracking-tight">Đăng Nhập</h1>
-          <p className="text-slate-500 font-medium">Truy cập vào bảng điều khiển cá nhân</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-2">Welcome back</h1>
+          <p className="text-subtle text-sm">Enter your credentials to access the workspace.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <Input 
-            label="Địa chỉ Email"
-            type="email" 
-            placeholder="name@example.com" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="bg-white/[0.03]"
-            required
-          />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-medium text-subtle uppercase tracking-wider ml-1">Email</label>
+            <input 
+              type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-[#131418] border border-[#2E2F33] rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-[#45464F]"
+              placeholder="name@example.com"
+              required
+            />
+          </div>
 
-          <Input 
-            label="Mật khẩu"
-            type="password" 
-            placeholder="••••••••" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="bg-white/[0.03]"
-            required
-          />
+          <div className="space-y-1.5">
+             <div className="flex items-center justify-between ml-1">
+                <label className="text-[11px] font-medium text-subtle uppercase tracking-wider">Password</label>
+                <Link href="#" className="text-[11px] text-primary hover:underline">Forgot?</Link>
+             </div>
+            <input 
+              type="password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-[#131418] border border-[#2E2F33] rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-[#45464F]"
+              placeholder="••••••••"
+              required
+            />
+          </div>
 
-          <Magnetic strength={0.2}>
-            <Button 
-              type="submit" 
-              className="w-full h-16 text-xl font-black italic tracking-tightest rounded-2xl group shadow-2xl shadow-primary/20" 
-              glow 
-              loading={loading}
-            >
-              ĐĂNG NHẬP <Sparkles size={20} className="group-hover:animate-pulse" />
-            </Button>
-          </Magnetic>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-white text-black h-10 rounded-lg text-sm font-medium hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading && <Loader2 size={14} className="animate-spin" />}
+            Sign In
+          </button>
         </form>
 
-        <div className="mt-10 text-center">
-          <p className="text-sm text-slate-500 font-medium">
-            Chưa có tài khoản?{" "}
-            <Link href="/auth/signup" className="text-primary hover:underline font-bold transition-all">
-              Đăng ký ngay
+        <div className="mt-8 text-center">
+          <p className="text-sm text-subtle">
+            Don't have an account?{" "}
+            <Link href="/auth/signup" className="text-foreground hover:underline font-medium">
+              Create Account
             </Link>
           </p>
         </div>
+      </motion.div>
+      
+      <div className="absolute bottom-6 text-[10px] text-[#2E2F33] font-mono">
+        SECURED BY LINEAR AUTH
       </div>
-    </Card>
+    </div>
   );
 }
 
 export default function SignIn() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden bg-background">
-      {/* Infinity Glow Decor */}
-      <div className="absolute top-[-20%] left-[-20%] w-[1000px] h-[1000px] bg-primary/15 rounded-full blur-[180px] -z-10 animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[800px] h-[800px] bg-accent/5 rounded-full blur-[160px] -z-10" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-slate-950/40 -z-20" />
-
-      <Suspense fallback={
-        <div className="w-full max-w-md p-10 glass-card animate-pulse">
-          <div className="h-20 bg-white/5 rounded-3xl mb-10" />
-          <div className="h-10 bg-white/5 rounded-xl mb-6 w-1/2" />
-          <div className="h-14 bg-white/5 rounded-2xl mb-12" />
-          <div className="h-14 bg-white/5 rounded-2xl mb-12" />
-          <div className="h-14 bg-white/5 rounded-2xl" />
-        </div>
-      }>
-        <SignInForm />
-      </Suspense>
-    </div>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="animate-spin text-subtle" size={24} /></div>}>
+      <SignInContent />
+    </Suspense>
   );
 }
