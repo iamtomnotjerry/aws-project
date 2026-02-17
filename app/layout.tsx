@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
 import { Toaster } from "sonner";
 import AuthProvider from "@/features/auth/components/AuthProvider";
-import AuthButton from "@/features/auth/components/AuthButton";
 import VerificationBanner from "@/features/auth/components/VerificationBanner";
 import { CustomCursor } from "@/components/ui/CustomCursor";
+import Header from "@/components/ui/Header";
+import Link from "next/link";
 import { Magnetic } from "@/components/ui/Magnetic";
 
 
@@ -37,42 +37,7 @@ export default function RootLayout({
         <AuthProvider>
           <Toaster position="bottom-right" richColors />
           <div className="relative min-h-screen flex flex-col">
-            {/* Header Duy nhất và Nhất quán */}
-            <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.05] bg-background/60 backdrop-blur-xl">
-              <nav className="max-w-7xl mx-auto px-6 h-22 flex items-center justify-between">
-                <Link href="/" className="group flex items-center gap-2">
-                  
-                  <span className="text-2xl font-black tracking-tight text-white group-hover:text-primary transition-colors duration-300">
-                    BẢO<span className="text-primary">.NGUYỄN</span>
-                  </span>
-                </Link>
-
-                <div className="flex items-center gap-10">
-                  <div className="hidden md:flex items-center gap-10">
-                    <Magnetic strength={0.2}>
-                      <Link href="/" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all duration-300 relative group py-2">
-                        Trang chủ
-                        <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
-                      </Link>
-                    </Magnetic>
-                    <Magnetic strength={0.2}>
-                      <Link href="/posts" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all duration-300 relative group py-2">
-                        Bài viết
-                        <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
-                      </Link>
-                    </Magnetic>
-                    <Magnetic strength={0.2}>
-                      <Link href="/about" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all duration-300 relative group py-2">
-                        Giới thiệu
-                        <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
-                      </Link>
-                    </Magnetic>
-                  </div>
-                  <div className="h-6 w-px bg-white/10 hidden md:block" />
-                  <AuthButton />
-                </div>
-              </nav>
-            </header>
+            <Header />
 
             <VerificationBanner />
 

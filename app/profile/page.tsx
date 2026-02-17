@@ -64,8 +64,8 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-background pt-32 pb-24 px-6 md:px-0 relative overflow-hidden">
       {/* Cinematic Background */}
-      <div className="absolute top-0 left-1/4 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[250px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[200px] -z-10 pointer-events-none" />
+      <div className="absolute top-0 -left-20 md:left-1/4 w-[400px] md:w-[1000px] h-[400px] md:h-[1000px] bg-primary/5 rounded-full blur-[100px] md:blur-[250px] -z-10 pointer-events-none" />
+      <div className="absolute bottom-0 -right-20 md:right-1/4 w-[300px] md:w-[800px] h-[300px] md:h-[800px] bg-accent/5 rounded-full blur-[80px] md:blur-[200px] -z-10 pointer-events-none" />
 
       <div className="max-w-2xl mx-auto relative z-10">
         <div className="flex items-center justify-between mb-12 px-1">

@@ -75,8 +75,8 @@ export default function Home() {
 
       <div id="pillars" className="max-w-7xl mx-auto px-6 relative scroll-mt-32">
         {/* Soft Background Glows */}
-        <div className="absolute -top-64 -left-64 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[200px] -z-10" />
-        <div className="absolute top-1/2 -right-64 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[180px] -z-10" />
+        <div className="absolute -top-32 md:-top-64 -left-32 md:-left-64 w-[500px] md:w-[1000px] h-[500px] md:h-[1000px] bg-primary/5 rounded-full blur-[100px] md:blur-[200px] -z-10" />
+        <div className="absolute top-1/2 -right-32 md:-right-64 w-[400px] md:w-[800px] h-[400px] md:h-[800px] bg-accent/5 rounded-full blur-[90px] md:blur-[180px] -z-10" />
 
         {/* Life Pillars Grid - 6 Cells Balanced */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-32">

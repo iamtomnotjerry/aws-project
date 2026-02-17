@@ -5,6 +5,7 @@ import { motion, useSpring, useMotionValue, AnimatePresence } from "framer-motio
 
 export const CustomCursor = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const cursorRef = useRef<HTMLDivElement>(null);
   
   const mouseX = useMotionValue(-100);
@@ -30,9 +31,20 @@ export const CustomCursor = () => {
       setIsHovered(!!isInteractive);
     };
 
+    const checkTouch = () => {
+      setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
+    };
+
+    checkTouch();
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchstart", checkTouch);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchstart", checkTouch);
+    };
   }, [mouseX, mouseY]);
+
+  if (isTouchDevice) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999]">

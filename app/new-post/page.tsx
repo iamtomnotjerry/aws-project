@@ -76,8 +76,8 @@ export default function NewPost() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center relative overflow-hidden">
       {/* Cinematic Background */}
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[250px] -z-10 pointer-events-none" />
-      <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[200px] -z-10 pointer-events-none" />
+      <div className="absolute top-0 -right-20 md:right-0 w-[400px] md:w-[800px] h-[400px] md:h-[800px] bg-primary/5 rounded-full blur-[100px] md:blur-[250px] -z-10 pointer-events-none" />
+      <div className="absolute top-1/2 -left-20 md:left-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-accent/5 rounded-full blur-[80px] md:blur-[200px] -z-10 pointer-events-none" />
 
       {/* Navbar - Floating Glass Layer */}
       <nav className="w-full max-w-4xl px-8 py-6 flex items-center justify-between sticky top-0 z-50 bg-background/50 backdrop-blur-xl border-b border-white/[0.05]">

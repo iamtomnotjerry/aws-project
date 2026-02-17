@@ -53,8 +53,8 @@ function SignInContent() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-6 relative overflow-hidden">
       {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[250px] -z-10 pointer-events-none" />
-      <div className="absolute -bottom-64 -left-64 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[220px] -z-10 pointer-events-none" />
+      <div className="absolute top-0 -right-20 md:right-0 w-[400px] md:w-[1000px] h-[400px] md:h-[1000px] bg-primary/5 rounded-full blur-[100px] md:blur-[250px] -z-10 pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 md:-bottom-64 md:-left-64 w-[300px] md:w-[800px] h-[300px] md:h-[800px] bg-accent/5 rounded-full blur-[80px] md:blur-[220px] -z-10 pointer-events-none" />
 
       <div className="absolute top-8 left-8 z-20">
         <Magnetic strength={0.2}>
