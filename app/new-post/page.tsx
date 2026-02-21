@@ -80,26 +80,26 @@ export default function NewPost() {
       <div className="absolute top-1/2 -left-20 md:left-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-accent/5 rounded-full blur-[80px] md:blur-[200px] -z-10 pointer-events-none" />
 
       {/* Navbar - Floating Glass Layer */}
-      <nav className="w-full max-w-4xl px-8 py-6 flex items-center justify-between sticky top-0 z-50 bg-background/50 backdrop-blur-xl border-b border-white/[0.05]">
-        <div className="flex items-center gap-6">
+      <nav className="w-full max-w-4xl px-4 md:px-8 py-4 md:py-6 flex items-center justify-between sticky top-0 z-50 bg-background/50 backdrop-blur-xl border-b border-white/[0.05]">
+        <div className="flex items-center gap-4 md:gap-6">
           <Magnetic strength={0.2}>
             <Link 
               href="/" 
-              className="w-10 h-10 rounded-full border border-white/5 bg-white/[0.02] flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-all duration-500"
+              className="w-9 h-9 md:w-10 md:h-10 rounded-full border border-white/5 bg-white/[0.02] flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-all duration-500"
             >
               <ArrowLeft size={18} />
             </Link>
           </Magnetic>
-          <div className="hidden md:flex flex-col">
-            <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">TRẠM SÁNG TẠO</span>
-            <span className="text-xs font-bold text-slate-400 italic">Bản thảo chưa lưu</span>
+          <div className="flex flex-col">
+            <span className="text-[8px] md:text-[9px] font-black text-primary uppercase tracking-[0.3em]">SÁNG TẠO</span>
+            <span className="text-[10px] md:text-xs font-bold text-slate-400 italic">Bản thảo</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
            <button 
             type="button" 
-            className="text-[10px] font-black text-slate-500 hover:text-white transition-all uppercase tracking-[0.2em] px-4 py-2"
+            className="hidden sm:block text-[10px] font-black text-slate-500 hover:text-white transition-all uppercase tracking-[0.2em] px-4 py-2"
            >
              Lưu nháp
            </button>
@@ -107,11 +107,11 @@ export default function NewPost() {
             onClick={handleSubmit(onSubmit)} 
             disabled={isSubmitting || uploading}
             size="sm"
-            className="h-10 px-6 rounded-xl font-black italic tracking-tightest group"
+            className="h-9 md:h-10 px-4 md:px-6 rounded-xl font-black italic tracking-tightest group"
             glow
            >
              {(isSubmitting || uploading) ? <Loader2 className="animate-spin" size={16} /> : (
-               <span className="flex items-center gap-2">XUẤT BẢN <Send size={14} className="group-hover:translate-x-1 transition-transform" /></span>
+               <span className="flex items-center gap-2 text-[10px] md:text-xs">XUẤT BẢN <Send size={14} className="group-hover:translate-x-1 transition-transform" /></span>
              )}
            </Button>
         </div>
@@ -124,14 +124,14 @@ export default function NewPost() {
         className="w-full max-w-4xl px-8 pt-16 pb-32 relative z-10"
       >
         {/* Editorial Header */}
-        <div className="mb-16 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 rounded-full bg-white/[0.03] border border-white/[0.08] text-primary text-[9px] font-black uppercase tracking-[0.2em]">
+        <div className="mb-12 md:mb-16 text-center md:text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 md:mb-6 rounded-full bg-white/[0.03] border border-white/[0.08] text-primary text-[9px] font-black uppercase tracking-[0.2em]">
             <Edit3 size={10} /> Chế độ tập trung
           </div>
-          <h1 className="text-6xl font-black tracking-tightest leading-none italic uppercase mb-4">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tightest leading-none italic uppercase mb-4">
             VIẾT <span className="text-gradient not-italic">LỊCH SỬ.</span>
           </h1>
-          <p className="text-slate-500 font-medium italic">Chia sẻ những mảnh ghép tri thức của bạn với thế giới.</p>
+          <p className="text-slate-500 text-sm md:text-base font-medium italic px-4 md:px-0">Chia sẻ những mảnh ghép tri thức của bạn với thế giới.</p>
         </div>
 
         {/* Cover Image Upload Area */}
@@ -192,8 +192,8 @@ export default function NewPost() {
             </div>
             <textarea
               {...register("title")}
-              placeholder="TIÊU ĐỀ BÀI VIẾT (VÍ DỤ: TƯƠNG LAI CỦA AI...)"
-              className="w-full bg-transparent text-5xl md:text-7xl font-black italic uppercase tracking-tightest placeholder:text-slate-800 resize-none overflow-hidden outline-none border-none focus:ring-0 p-0 leading-[0.9] transition-all"
+              placeholder="TIÊU ĐỀ BÀI VIẾT..."
+              className="w-full bg-transparent text-4xl md:text-7xl font-black italic uppercase tracking-tightest placeholder:text-slate-800 resize-none overflow-hidden outline-none border-none focus:ring-0 p-0 leading-[1.1] md:leading-[0.9] transition-all"
               rows={1}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;

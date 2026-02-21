@@ -33,6 +33,14 @@ export const SpotlightCard = ({
     mouseY.set(clientY - top);
   }
 
+  const spotlightBackground = useMotionTemplate`
+    radial-gradient(
+      650px circle at ${mouseX}px ${mouseY}px,
+      ${glowColor},
+      transparent 80%
+    )
+  `;
+
   return (
     <div
       onMouseMove={handleMouseMove}
@@ -55,13 +63,7 @@ export const SpotlightCard = ({
         <motion.div
           className="pointer-events-none absolute -inset-px rounded-[3rem] opacity-0 transition duration-500 group-hover:opacity-100"
           style={{
-            background: useMotionTemplate`
-              radial-gradient(
-                650px circle at ${mouseX}px ${mouseY}px,
-                ${glowColor},
-                transparent 80%
-              )
-            `,
+            background: spotlightBackground,
           }}
         />
       )}

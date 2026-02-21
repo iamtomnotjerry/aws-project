@@ -62,18 +62,18 @@ export default function ProfilePage() {
   const user = session.user;
 
   return (
-    <div className="min-h-screen bg-background pt-32 pb-24 px-6 md:px-0 relative overflow-hidden">
+    <div className="min-h-screen bg-background pt-24 md:pt-32 pb-16 md:pb-24 px-4 md:px-0 relative overflow-hidden">
       {/* Cinematic Background */}
       <div className="absolute top-0 -left-20 md:left-1/4 w-[400px] md:w-[1000px] h-[400px] md:h-[1000px] bg-primary/5 rounded-full blur-[100px] md:blur-[250px] -z-10 pointer-events-none" />
       <div className="absolute bottom-0 -right-20 md:right-1/4 w-[300px] md:w-[800px] h-[300px] md:h-[800px] bg-accent/5 rounded-full blur-[80px] md:blur-[200px] -z-10 pointer-events-none" />
 
       <div className="max-w-2xl mx-auto relative z-10">
-        <div className="flex items-center justify-between mb-12 px-1">
+        <div className="flex items-center justify-between mb-8 md:mb-12 px-1">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 mb-3 rounded-full bg-white/[0.03] border border-white/[0.08] text-primary text-[9px] font-black uppercase tracking-[0.2em]">
               <Sparkles size={10} /> Trung tâm điều khiển
             </div>
-            <h1 className="text-4xl font-black tracking-tightest leading-none italic uppercase">HỒ SƠ <span className="text-gradient not-italic">CỦA BẠN.</span></h1>
+            <h1 className="text-3xl md:text-4xl font-black tracking-tightest leading-none italic uppercase">HỒ SƠ <span className="text-gradient not-italic">CỦA BẠN.</span></h1>
           </div>
           <Magnetic strength={0.2}>
             <div className="w-12 h-12 rounded-2xl border border-white/5 bg-white/[0.03] flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer">

@@ -35,9 +35,9 @@ export const StandardPostCard = ({ post }: StandardPostCardProps) => {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 property-padding via-slate-950/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
           </div>
 
-          <div className="p-10 flex-1 flex flex-col relative">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="flex items-center gap-2 px-4 py-1.5 bg-white/[0.03] rounded-full text-[10px] font-black text-slate-500 uppercase tracking-widest border border-white/[0.05] group-hover:border-primary/20 group-hover:text-primary/70 transition-colors">
+          <div className="p-6 md:p-10 flex-1 flex flex-col relative">
+            <div className="flex items-center gap-3 mb-6 md:mb-8">
+              <div className="flex items-center gap-2 px-3 md:px-4 py-1.5 bg-white/[0.03] rounded-full text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest border border-white/[0.05] group-hover:border-primary/20 group-hover:text-primary/70 transition-colors">
                 <Calendar size={12} />
                 {new Date(post.createdAt).toLocaleDateString("vi-VN", {
                   day: "2-digit",
@@ -47,16 +47,16 @@ export const StandardPostCard = ({ post }: StandardPostCardProps) => {
               </div>
             </div>
 
-            <h3 className="text-2xl font-black mb-6 group-hover:text-primary transition-colors duration-500 line-clamp-2 leading-tight tracking-tightest italic">
+            <h3 className="text-xl md:text-2xl font-black mb-4 md:mb-6 group-hover:text-primary transition-colors duration-500 line-clamp-2 leading-tight tracking-tightest italic">
               {post.title}
             </h3>
             
-            <p className="text-slate-500 line-clamp-2 mb-12 text-lg flex-1 leading-relaxed font-medium italic opacity-80 group-hover:opacity-100 transition-opacity">
+            <p className="text-slate-500 line-clamp-2 mb-8 md:mb-12 text-base md:text-lg flex-1 leading-relaxed font-medium italic opacity-80 group-hover:opacity-100 transition-opacity">
               {post.content}
             </p>
 
-            <div className="flex items-center justify-between mt-auto pt-8 border-t border-white/[0.04]">
-              <span className="text-primary font-black text-[11px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-4 transition-all duration-500">
+            <div className="flex items-center justify-between mt-auto pt-6 md:pt-8 border-t border-white/[0.04]">
+              <span className="text-primary font-black text-[10px] md:text-[11px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-4 transition-all duration-500">
                 KHÁM PHÁ <ArrowRight size={18} />
               </span>
               <div className="w-8 h-8 rounded-full bg-white/[0.02] border border-white/[0.05] flex items-center justify-center text-slate-600 group-hover:bg-primary group-hover:text-slate-950 transition-all duration-500">

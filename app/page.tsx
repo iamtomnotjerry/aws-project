@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-48">
       {/* Hero Section - The Personal Entry */}
-      <section className="relative pt-24 pb-24 px-6 overflow-hidden">
+      <section className="relative pt-12 md:pt-24 pb-16 md:pb-24 px-4 md:px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -32,10 +32,10 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-6xl md:text-[8rem] font-black mb-10 tracking-tighter leading-none italic"
+            className="text-5xl md:text-[8rem] font-black mb-8 md:mb-10 tracking-tighter leading-[0.9] md:leading-none italic"
           >
-            <div className="mb-4">CUỘC SỐNG</div>
-            <div className="mt-8">
+            <div className="mb-2 md:mb-4">CUỘC SỐNG</div>
+            <div className="mt-4 md:mt-8">
               <span className="text-gradient not-italic">CỦA BẢO.</span>
             </div>
           </motion.h1>
@@ -44,7 +44,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-slate-500 text-lg md:text-xl mb-12 max-w-3xl mx-auto leading-relaxed font-medium chromatic-hint italic"
+            className="text-slate-500 text-lg md:text-xl mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed font-medium chromatic-hint italic px-4 md:px-0"
           >
             Nơi tôi lưu giữ những mảnh ghép giá trị nhất trong hành trình trưởng thành. Từ trí tuệ, sự nghiệp, tình bạn cho đến những rung cảm tâm hồn và mái ấm gia đình.
           </motion.p>
@@ -56,15 +56,15 @@ export default function Home() {
             className="flex flex-wrap justify-center gap-6"
           >
             <Magnetic strength={0.2}>
-              <Link href="#pillars">
-                <Button size="lg" className="min-w-[240px] h-18 text-xl font-black italic tracking-tightest rounded-2xl group shadow-2xl shadow-primary/20" glow>
+              <Link href="#pillars" className="w-full md:w-auto">
+                <Button size="lg" className="w-full md:min-w-[240px] h-16 md:h-18 text-xl font-black italic tracking-tightest rounded-2xl group shadow-2xl shadow-primary/20" glow>
                   KẾT NỐI NGAY <ArrowRight size={20} className="group-hover:translate-x-3 transition-transform duration-500" />
                 </Button>
               </Link>
             </Magnetic>
             <Magnetic strength={0.2}>
-              <Link href="/about">
-                <Button variant="secondary" size="lg" className="min-w-[240px] h-18 text-lg rounded-2xl border-white/10 hover:border-primary/50">
+              <Link href="/about" className="w-full md:w-auto">
+                <Button variant="secondary" size="lg" className="w-full md:min-w-[240px] h-16 md:h-18 text-lg rounded-2xl border-white/10 hover:border-primary/50">
                   Về Bản Thân <Users size={20} className="text-primary" />
                 </Button>
               </Link>

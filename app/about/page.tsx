@@ -72,7 +72,7 @@ const itemVariants = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen pt-32 pb-48 px-6 relative bg-slate-950 overflow-hidden selection:bg-primary/30">
+    <div className="min-h-screen pt-24 md:pt-32 pb-32 md:pb-48 px-4 md:px-6 relative bg-slate-950 overflow-hidden selection:bg-primary/30">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-[1200px] h-[1200px] bg-primary/5 rounded-full blur-[250px] -z-10 animate-pulse-slow pointer-events-none" />
       <div className="absolute -bottom-64 -left-64 w-[1000px] h-[1000px] bg-accent/5 rounded-full blur-[220px] -z-10 pointer-events-none" />
@@ -108,7 +108,7 @@ export default function AboutPage() {
                 </div>
               </div>
               
-              <h1 className="text-[5rem] md:text-[11rem] font-black tracking-tightest leading-[0.85] italic mb-10">
+              <h1 className="text-[3.5rem] md:text-[11rem] font-black tracking-tightest leading-[0.9] md:leading-[0.85] italic mb-8 md:mb-10">
                 MÌNH LÀ <br />
                 <span className="text-gradient not-italic">NGUYỄN ĐÌNH BẢO.</span>
               </h1>
@@ -144,8 +144,8 @@ export default function AboutPage() {
                   </div>
                 </div>
                 
-                <div className="text-4xl md:text-5xl text-white font-black leading-tight italic tracking-tightest">
-                  <span className="text-primary italic text-6xl md:text-8xl block mb-6">Xin chào,</span>
+                <div className="text-3xl md:text-5xl text-white font-black leading-tight italic tracking-tightest">
+                  <span className="text-primary italic text-5xl md:text-8xl block mb-4 md:mb-6">Xin chào,</span>
                   Mình là <span className="text-gradient not-italic underline decoration-white/10 underline-offset-[12px]">{BIO_DATA.name}</span>. Mình sinh ra và lớn lên tại {BIO_DATA.location}, hiện đang là sinh viên ngành {BIO_DATA.education} tại UIT.
                 </div>
                 
@@ -236,19 +236,19 @@ export default function AboutPage() {
         {/* Final CTA */}
         <motion.div 
           variants={itemVariants}
-          className="relative py-40 rounded-[5rem] overflow-hidden border border-white/5 bg-white/[0.01] text-center"
+          className="relative py-24 md:py-40 rounded-3xl md:rounded-[5rem] overflow-hidden border border-white/5 bg-white/[0.01] text-center"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none opacity-50" />
-          <div className="relative z-10 px-6">
-            <h2 className="text-6xl md:text-[8rem] font-black italic uppercase tracking-tightest mb-12 leading-[0.9]">
+          <div className="relative z-10 px-4 md:px-6">
+            <h2 className="text-5xl md:text-[8rem] font-black italic uppercase tracking-tightest mb-8 md:mb-12 leading-[0.9]">
               HÃY <span className="text-gradient not-italic">KẾT NỐI.</span>
             </h2>
-            <p className="text-slate-500 text-2xl font-medium italic mb-20 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-slate-500 text-lg md:text-2xl font-medium italic mb-12 md:mb-20 max-w-3xl mx-auto leading-relaxed px-4">
               Dù là một dự án mới, một chia sẻ về công nghệ hay đơn giản chỉ là một lời chào, mình luôn sẵn lòng lắng nghe.
             </p>
             <Magnetic strength={0.2}>
-              <Link href="mailto:your-email@example.com" className="inline-block">
-                <button className="px-20 py-10 bg-white text-slate-950 text-2xl font-black uppercase tracking-tightest italic rounded-[2.5rem] hover:bg-primary hover:text-white transition-all duration-700 shadow-2xl shadow-white/5">
+              <Link href="mailto:your-email@example.com" className="inline-block w-full md:w-auto">
+                <button className="w-full md:px-20 py-8 md:py-10 bg-white text-slate-950 text-xl md:text-2xl font-black uppercase tracking-tightest italic rounded-2xl md:rounded-[2.5rem] hover:bg-primary hover:text-white transition-all duration-700 shadow-2xl shadow-white/5">
                    GỬI TIN NHẮN CHO BẢO
                 </button>
               </Link>

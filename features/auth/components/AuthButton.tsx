@@ -22,7 +22,7 @@ export default function AuthButton() {
         onClick={() => signIn()}
         className="flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-primary transition-all duration-300"
       >
-        <LogIn size={18} /> Đăng nhập
+        <LogIn size={18} /> <span className="hidden sm:inline">Đăng nhập</span>
       </button>
     );
   }
@@ -34,7 +34,7 @@ export default function AuthButton() {
     <div className="relative">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 p-1 pr-3 rounded-full bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.08] transition-all duration-300 focus:outline-none group"
+        className="flex items-center gap-2 md:gap-3 p-1 pr-2 md:pr-3 rounded-full bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.08] transition-all duration-300 focus:outline-none group"
       >
         <div className="relative w-8 h-8 rounded-full overflow-hidden border border-white/10 group-hover:border-primary/50 transition-colors">
           <Image 

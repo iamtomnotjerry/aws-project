@@ -38,26 +38,26 @@ export const FeaturedPostCard = ({ post }: FeaturedPostCardProps) => {
             <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-slate-950/60 to-transparent" />
           </div>
 
-          <div className="lg:w-2/5 p-12 lg:p-16 flex flex-col justify-center relative">
-            <div className="absolute top-0 right-0 p-8 opacity-5">
-              <Sparkles size={120} />
+          <div className="lg:w-2/5 p-6 md:p-12 lg:p-16 flex flex-col justify-center relative">
+            <div className="absolute top-0 right-0 p-4 md:p-8 opacity-5">
+              <Sparkles size={80} className="md:w-[120px] md:h-[120px]" />
             </div>
             
-            <div className="flex items-center gap-4 mb-10">
-              <div className="px-4 py-1.5 bg-primary/20 rounded-full text-[10px] font-black text-primary uppercase tracking-[0.2em] border border-primary/20">
+            <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-10">
+              <div className="px-3 md:px-4 py-1.5 bg-primary/20 rounded-full text-[9px] md:text-[10px] font-black text-primary uppercase tracking-[0.2em] border border-primary/20">
                 Nổi bật
               </div>
-              <div className="h-px w-10 bg-white/10" />
-              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-2">
+              <div className="h-px w-8 md:w-10 bg-white/10" />
+              <div className="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-2">
                 <Clock size={12} /> 5 phút đọc
               </div>
             </div>
 
-            <h2 className="text-4xl lg:text-7xl font-black mb-10 tracking-tightest leading-[0.9] group-hover:text-primary transition-colors duration-700 italic uppercase">
+            <h2 className="text-3xl md:text-4xl lg:text-7xl font-black mb-6 md:mb-10 tracking-tightest leading-[1] md:leading-[0.9] group-hover:text-primary transition-colors duration-700 italic uppercase">
               {post.title}
             </h2>
             
-            <p className="text-slate-500 text-lg lg:text-2xl line-clamp-3 mb-12 leading-relaxed font-medium italic opacity-80 group-hover:opacity-100 transition-opacity">
+            <p className="text-slate-500 text-base md:text-lg lg:text-2xl line-clamp-2 md:line-clamp-3 mb-8 md:mb-12 leading-relaxed font-medium italic opacity-80 group-hover:opacity-100 transition-opacity">
               {post.content}
             </p>
 
