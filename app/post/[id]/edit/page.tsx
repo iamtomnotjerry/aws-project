@@ -51,7 +51,6 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
     if (file) {
       setImageFile(file);
       setPreview(URL.createObjectURL(file));
-      setValue("coverImage", "pending_upload"); // Keep schema happy
     }
   };
 

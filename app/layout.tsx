@@ -102,6 +102,7 @@ export default function RootLayout({
             </footer>
           </div>
         </AuthProvider>
+        
       </body>
     </html>
   );

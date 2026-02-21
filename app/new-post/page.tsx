@@ -15,12 +15,8 @@ import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { SpotlightCard } from "@/features/core/components/SpotlightCard";
 
-const schema = z.object({
-  title: z.string().min(1, "Tiêu đề không được để trống"),
-  content: z.string().min(1, "Nội dung bài viết không được để trống"),
-});
-
-type PostInput = z.infer<typeof schema>;
+import { postSchema, type PostInput } from "@/schemas/post.schema";
+import { ApiService } from "@/services/api.service";
 
 export default function NewPost() {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -28,8 +24,8 @@ export default function NewPost() {
   const { upload, uploading } = useS3Upload();
   const router = useRouter();
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<PostInput>({
-    resolver: zodResolver(schema),
+  const { register, handleSubmit, formState: { errors, isSubmitting }, setValue } = useForm<PostInput>({
+    resolver: zodResolver(postSchema),
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,32 +40,31 @@ export default function NewPost() {
   const removeImage = () => {
     setImageFile(null);
     setPreview(null);
+    setValue("coverImage", null);
   };
 
   const onSubmit: SubmitHandler<PostInput> = async (data) => {
     try {
-      let imageUrl = "";
+      let coverImageUrl = "";
       if (imageFile) {
-        imageUrl = (await upload(imageFile)) ?? "";
+        const uploadedUrl = await upload(imageFile);
+        if (!uploadedUrl) throw new Error("Upload failed");
+        coverImageUrl = uploadedUrl;
       }
 
-      const res = await fetch("/api/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: data.title,
-          content: data.content,
-          image: imageUrl || null,
-        }),
+      const res = await ApiService.posts.create({
+        ...data,
+        coverImage: coverImageUrl || null,
       });
 
-      if (!res.ok) throw new Error("Thất bại khi tạo bài viết");
+      if (!res.success) throw new Error(res.error || "Thất bại khi tạo bài viết");
 
       toast.success("Bài viết đã được xuất bản thành công!");
       router.push("/");
       router.refresh();
-    } catch (error) {
-      toast.error("Không thể xuất bản bài viết. Vui lòng thử lại.");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Không thể xuất bản bài viết";
+      toast.error(message);
     }
   };
 
