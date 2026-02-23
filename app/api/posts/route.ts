@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   try {
     // 1. Rate Limiting Protection (GET requests - e.g. 100 per 10s)
     const ip = req.headers.get("x-forwarded-for") || "anonymous";
-    const rl = rateLimit(`get_posts_${ip}`, { limit: 100, windowMs: 10000 });
+    const rl = await rateLimit(`get_posts_${ip}`, { limit: 100, windowMs: 10000 });
     if (!rl.success) {
       return ApiUtils.error("Too Many Requests", 429, { ip });
     }
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   try {
     // 1. Rate Limiting Protection (POST requests - e.g. 5 per 10s)
     const ip = req.headers.get("x-forwarded-for") || "anonymous";
-    const rl = rateLimit(`create_post_${ip}`, { limit: 5, windowMs: 10000 });
+    const rl = await rateLimit(`create_post_${ip}`, { limit: 5, windowMs: 10000 });
     if (!rl.success) {
       return ApiUtils.error("Too Many Requests. Please slow down.", 429, { ip });
     }

@@ -21,6 +21,10 @@ Tài liệu này ghi lại các phiên bản, thay đổi và quyết định k�
   - Đại tu `app/page.tsx`, di chuyển logic bắt dữ liệu (Fetch Data) 100% sang SSR qua App Router Next.js 15.
   - Tách các tương tác động (Framer Motion, Glassmorphism) ra lớp ngoài bằng `HomePageClient.tsx`. Lợi ích: Tăng tốc LCP, bảo đảm SEO.
   - Khắc phục class rác CSS (`property-padding`) giúp UI tương thích mượt mà màn hình điện thoại (<768px).
+- **High-End Optimization (Phase 2)**:
+  - **React Compiler**: Bật tính năng thực nghiệm (Experimental) React Compiler trên `next.config.ts`, loại bỏ khái niệm "re-render" dư thừa, đưa DOM lên chuẩn mượt 60 FPS mà không cần sử dụng `useMemo`/`useCallback` thủ công ở code nhánh.
+  - **Graceful Error Handling**: Xây dựng 2 pháo đài bắt lỗi `app/error.tsx` (Route-level) và `app/global-error.tsx` (Root-level) với giao diện Glassmorphism độc đáo tương tự hệ thống. Tránh tình trạng server sập làm hiển thị text thô cho user.
+  - **DDoS/Rate-Limit Protection (Distributed)**: Thay thế hoàn toàn thuật toán Token Bucket lưu trên Map RAM sang kiến trúc **ioredis**, giúp cấu hình giới hạn Rate Limit của các server Next.js trong container ECS được đồng bộ chéo.
 - **DevOps (AWS ECS Fargate CI/CD)**:
   - Viết lại quy trình `.github/workflows/deploy-ecs.yml`, đẩy Docker lên ECR.
   - Cấu tạo Pipeline cập nhật container Zero-Downtime thông qua cấu trúc Load Balancer của AWS.

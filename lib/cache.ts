@@ -4,7 +4,7 @@ import Redis from "ioredis";
 // Instantiate the Redis client safely. 
 // Uses process.env.REDIS_URL in production, otherwise falls back to a dummy/memory client locally if missing.
 const redisUrl = process.env.REDIS_URL;
-const redis = redisUrl ? new Redis(redisUrl) : null;
+export const redis = redisUrl ? new Redis(redisUrl) : null;
 const memoryFallback = new Map<string, { data: string; expiresAt: number }>();
 
 if (!redisUrl) {
