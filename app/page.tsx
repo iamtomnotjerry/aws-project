@@ -2,6 +2,10 @@ import { PostService } from "@/services/post.service";
 import HomePageClient from "./HomePageClient";
 import { logger } from "@/lib/logger";
 
+// Force dynamic rendering - prevents Next.js from pre-rendering at build time.
+// This is required because the page fetches data from the database at runtime.
+export const dynamic = 'force-dynamic';
+
 /**
  * Server Component (RSC) for Homepage.
  * Fetches data on the server, benefiting from Redis caching instantly.
