@@ -25,6 +25,7 @@ export async function POST(request: Request) {
 
     const key = `uploads/${session.user.email}/${Date.now()}-${filename}`;
     const bucketName = process.env.AWS_S3_BUCKET_NAME;
+    const cloudFrontDomain = process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN;
 
     const command = new PutObjectCommand({
       Bucket: bucketName,
@@ -35,9 +36,14 @@ export async function POST(request: Request) {
     // Generate a presigned URL that expires in 60 seconds
     const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 60 });
 
+    // Use CloudFront CDN domain if available for faster global image delivery
+    const finalPublicUrl = cloudFrontDomain 
+      ? `https://${cloudFrontDomain}/${key}`
+      : `https://${bucketName}.s3.${process.env.AWS_REGION || "ap-southeast-2"}.amazonaws.com/${key}`;
+
     return ApiUtils.success({
       uploadUrl: signedUrl,
-      publicUrl: `https://${bucketName}.s3.${process.env.AWS_REGION || "ap-southeast-2"}.amazonaws.com/${key}`,
+      publicUrl: finalPublicUrl,
     });
   } catch (error) {
     return ApiUtils.serverError(error);

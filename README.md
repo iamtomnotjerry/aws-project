@@ -48,6 +48,7 @@ A high-performance, professional Blog CMS built with **Next.js 15+**, **Prisma**
 
 3. **Configure Environment**:
    Create a `.env` file and add your `DATABASE_URL`.
+   _Note_: To enable image edge-caching, also provide `NEXT_PUBLIC_CLOUDFRONT_DOMAIN` (e.g., d111111abcdef8.cloudfront.net) alongside AWS S3 variables.
 
 4. **Run Dev Server**:
    ```bash
