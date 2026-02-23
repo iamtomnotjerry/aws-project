@@ -25,7 +25,11 @@ export async function generateMetadata(
     ? post.content.replace(/<[^>]*>/g, "").slice(0, 160)
     : "Đọc bài viết trên Bao's Blog";
 
-  const ogImage = post.coverImage || DEFAULT_OG_IMAGE;
+  const ogImageUrl = new URL(`${SITE_URL}/api/og`);
+  ogImageUrl.searchParams.set("title", post.title);
+  if (post.author?.name) ogImageUrl.searchParams.set("author", post.author.name);
+  if (post.coverImage) ogImageUrl.searchParams.set("cover", post.coverImage);
+  const ogImage = ogImageUrl.toString();
 
   return {
     title: `${post.title} | Bao's Blog`,
