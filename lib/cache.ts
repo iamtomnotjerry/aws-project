@@ -4,11 +4,22 @@ import Redis from "ioredis";
 // Instantiate the Redis client safely. 
 // Uses process.env.REDIS_URL in production, otherwise falls back to a dummy/memory client locally if missing.
 const redisUrl = process.env.REDIS_URL;
-export const redis = redisUrl ? new Redis(redisUrl) : null;
+export const redis = redisUrl ? new Redis(redisUrl, {
+  connectTimeout: 3000,
+  maxRetriesPerRequest: 1,
+  retryStrategy(times) {
+    if (times > 2) return null; // Stop retrying after 2 attempts
+    return Math.min(times * 50, 2000);
+  }
+}) : null;
 const memoryFallback = new Map<string, { data: string; expiresAt: number }>();
 
 if (!redisUrl) {
   logger.warn("REDIS_URL is strictly required for Production! Using memory fallback locally.");
+} else if (redis) {
+  redis.on('error', (err) => {
+    logger.error('Redis connection error. Will fallback to memory cache if request fails:', err);
+  });
 }
 
 export class CacheService {
