@@ -26,6 +26,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   posts         Post[]
+  comments      Comment[]
+  likes         Like[]
 }
 
 model Account {
@@ -71,11 +73,49 @@ model Post {
   published  Boolean  @default(false)
   authorId   String?
   author     User?    @relation(fields: [authorId], references: [id])
+  comments   Comment[]
+  likes      Like[]
+  
+  // Denormalized aggregates for high-scale performance
+  likesCount    Int      @default(0)
+  commentsCount Int      @default(0)
+
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   @@index([authorId])
   @@index([createdAt])
+  @@index([published, createdAt]) // Composite index for feed queries
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  postId    String
+  userId    String
+  parentId  String?
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+  @@index([userId])
+  @@index([parentId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
 }
 
 model PendingUser {

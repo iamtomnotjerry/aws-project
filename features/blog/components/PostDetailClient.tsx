@@ -5,14 +5,16 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, User, Calendar, Clock, ImageIcon, Edit3, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ReadingProgress } from "@/components/ui/ReadingProgress";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { PostWithAuthor } from "@/types";
+import { LikeButton } from "./LikeButton";
+import { CommentSection } from "./comments/CommentSection";
 
 interface PostDetailClientProps {
-  post: PostWithAuthor;
+  post: any;
   isAdmin: boolean;
   DeleteButton: React.ReactNode;
 }
@@ -55,50 +57,50 @@ export const PostDetailClient = ({ post, isAdmin, DeleteButton }: PostDetailClie
         
         <motion.div 
           style={{ opacity: headerOpacity }}
-          className="absolute inset-0 flex flex-col justify-end pb-32"
+          className="absolute inset-0 flex flex-col justify-end pb-24"
         >
           <div className="max-w-5xl mx-auto px-6 w-full">
-            <Magnetic strength={0.1}>
+            <Magnetic strength={0.05}>
               <Link 
                 href="/" 
-                className="inline-flex items-center gap-3 text-primary font-black uppercase tracking-[0.2em] text-[10px] mb-12 hover:gap-5 transition-all w-fit"
+                className="inline-flex items-center gap-2 text-primary font-bold uppercase tracking-widest text-[10px] mb-8 hover:translate-x-1 transition-transform w-fit"
               >
-                <ArrowLeft size={16} /> Trở lại hành trình
+                <ArrowLeft size={14} /> Back to Blog
               </Link>
             </Magnetic>
             
             <motion.h1 
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-6xl md:text-[7rem] font-black mb-12 tracking-tightest leading-[0.9] italic"
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="text-5xl md:text-7xl font-bold mb-10 tracking-tight leading-[1.1]"
             >
               {post.title}
             </motion.h1>
 
-            <div className="flex flex-wrap gap-12 items-center">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20 shadow-2xl shadow-primary/20">
-                  <User size={24} />
+            <div className="flex flex-wrap gap-8 items-center text-slate-400">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+                  <User size={18} className="text-primary" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Kiến tạo bởi</p>
-                  <p className="text-white text-lg font-black">{post.author?.name || "Bao's Admin"}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">Author</p>
+                  <p className="text-white text-sm font-bold">{post.author?.name || "Bao's Admin"}</p>
                 </div>
               </div>
 
-              <div className="hidden md:block w-px h-12 bg-white/10" />
+              <div className="w-px h-8 bg-white/5" />
 
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-white/[0.03] flex items-center justify-center text-slate-400 border border-white/[0.05]">
-                  <Calendar size={24} />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+                  <Calendar size={18} />
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Thời điểm</p>
-                  <p className="text-white text-lg font-black uppercase">
-                    {new Date(post.createdAt).toLocaleDateString("vi-VN", {
-                      day: "2-digit",
-                      month: "long",
+                  <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">Published</p>
+                  <p className="text-white text-sm font-bold">
+                    {new Date(post.createdAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
                       year: "numeric"
                     })}
                   </p>
@@ -137,6 +139,8 @@ export const PostDetailClient = ({ post, isAdmin, DeleteButton }: PostDetailClie
                     {DeleteButton}
                   </div>
                 )}
+
+                <CommentSection postId={post.id} />
               </Card>
             </motion.div>
           </div>
@@ -149,34 +153,54 @@ export const PostDetailClient = ({ post, isAdmin, DeleteButton }: PostDetailClie
               transition={{ delay: 0.4, duration: 0.8 }}
               className="sticky top-32 space-y-12"
             >
-              <div className="p-10 glass-card rounded-[2.5rem] border-white/[0.04] bg-white/[0.01]">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] mb-10 text-primary italic">Siêu dữ liệu</h4>
-                
-                <div className="space-y-10">
-                  <div className="group">
-                    <p className="text-[10px] text-slate-600 font-black uppercase tracking-widest mb-3 group-hover:text-primary transition-colors">Định danh cốt lõi</p>
-                    <div className="p-4 bg-black/40 rounded-2xl border border-white/[0.05] font-mono text-[10px] text-slate-400 break-all select-all">
+              <div className="space-y-8 rounded-3xl border border-white/[0.05] bg-white/[0.02] p-8 backdrop-blur-xl">
+                <section>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-6 flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-primary" />
+                    Engagement
+                  </p>
+                  <LikeButton 
+                    postId={post.id} 
+                    initialLikes={post.likes} 
+                    initialIsLiked={post.isLiked}
+                  />
+                </section>
+
+                <div className="h-px bg-white/5" />
+
+                <section className="space-y-6">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 mb-3">Copy Resource ID</p>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(post.id);
+                        toast.success("ID copied to clipboard");
+                      }}
+                      className="w-full text-left p-4 bg-black/20 rounded-xl border border-white/[0.05] font-mono text-[10px] text-slate-500 hover:bg-white/[0.03] transition-colors overflow-hidden text-ellipsis whitespace-nowrap"
+                    >
                       {post.id}
-                    </div>
+                    </button>
                   </div>
 
-                  <div className="group">
-                    <p className="text-[10px] text-slate-600 font-black uppercase tracking-widest mb-6">Lan tỏa giá trị</p>
-                    <div className="flex gap-4">
-                      <Magnetic strength={0.2}>
-                        <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center text-slate-400 hover:bg-primary/20 hover:text-primary transition-all cursor-pointer">
-                          <Share2 size={20} />
-                        </div>
-                      </Magnetic>
-                      {/* Add more social icons if needed */}
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">Spread the Word</p>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        toast.success("Link copied!");
+                      }}
+                      className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary hover:opacity-80 transition-opacity"
+                    >
+                      <Share2 size={14} />
+                      Share
+                    </button>
                   </div>
-                </div>
+                </section>
               </div>
 
-              <div className="p-10 border-l-2 border-primary/20 italic">
-                <p className="text-slate-500 text-sm leading-relaxed">
-                  "Mỗi dòng code đều mang trong mình một sứ mệnh. Đừng chỉ viết code, hãy kiến tạo tương lai."
+              <div className="px-6 py-4 border-l border-primary/20">
+                <p className="text-slate-500 text-xs leading-relaxed italic opacity-80">
+                  "Every line of code is a mission. Don't just build, create the future."
                 </p>
               </div>
             </motion.div>

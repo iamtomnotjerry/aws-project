@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-02-23] - Mobile Supremacy & Content Protection
+
+### Added
+
+- **Content Protection System**: Implemented global text-selection disabling (CSS) and blocked right-click/shortcuts (Ctrl+C, Ctrl+U) to protect intellectual property.
+- **Mobile-First Responsive Audit**: Project-wide overhaul of all major layouts (Home, About, Profile, New Post).
+- **Navigation Polish**: Refined mobile drawer, header spacing, and logo visibility.
+
+### Changed
+
+- **Standardized Image Upload**: Unified `NewPost` and `EditPost` to use the global `ApiService` and `postSchema`, fixing a property mismatch bug (`image` vs `coverImage`).
+- **Typography Hyper-Optimization**: Scaled down "Heroic" scales (11rem/8rem) to responsive breakpoints, ensuring 100% readability on all devices.
+- **Footer Re-Architecting**: Transformed the complex editorial footer into a responsive stacked layout for mobile.
+
+### Fixed
+
+- **Mobile Hook Stability**: Resolved "Invalid Hook Call" error in `SpotlightCard` for touch devices.
+- **Zod URL Validation**: Fixed edge-case validation failure during image upload transitions.
+
 ## [2026-02-15] - Full Project Audit & Humanization (Infinity Tier)
 
 ### Added

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { logger } from "./logger";
+
 export type ApiResponse<T = unknown> = {
   success: boolean;
   data?: T;
@@ -15,15 +17,20 @@ export class ApiUtils {
     );
   }
 
-  static error(error: string, status = 400) {
+  static error(error: string, status = 400, context?: Record<string, any>) {
+    if (status >= 500) {
+      logger.error(`API Error: ${error}`, undefined, context);
+    } else {
+      logger.warn(`API Warning: ${error}`, context);
+    }
     return NextResponse.json(
       { success: false, error },
       { status }
     );
   }
 
-  static serverError(error: unknown) {
-    console.error("[API_ERROR]:", error);
+  static serverError(error: unknown, context?: Record<string, any>) {
+    logger.error("Internal Server Error caught by ApiUtils", error, context);
     return NextResponse.json(
       { success: false, error: "Internal Server Error" },
       { status: 500 }

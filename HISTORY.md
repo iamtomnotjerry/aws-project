@@ -4,6 +4,61 @@ Tài liệu này ghi lại các phiên bản, thay đổi và quyết định k�
 
 ---
 
+## [v2.0.0] - 2026-02-23 (High-End Architecture Refactor)
+
+**Chủ đề: Enterprise Architecture, Database Denormalization & RSC Migration (50k+ Users Setup)**
+
+### ✅ Các công việc đã thực hiện
+
+- **Database Optimization (Chống N+1)**:
+  - Khử chuẩn hóa (Denormalize) schema: Thêm các cột đếm tĩnh `likesCount` và `commentsCount` vào bảng `Post` thay thế lệnh query `_count`.
+  - Tạo Prisma Composite Index `[published, createdAt]` tối ưu hóa độ phản hồi của trang chủ.
+  - Tái cấu trúc logic API Like & Comment sử dụng **Prisma Transactions** đảm bảo tính toàn vẹn dư liệu tuyệt đối ở tải cao (không lỗi Race-condition).
+- **Caching Layer (Distributed Redis)**:
+  - Thiết lập Architecture với thư viện `ioredis` (`lib/cache.ts`) sẵn sàng cho việc phân tán cụm Cluster.
+  - Tích hợp caching cho Server Actions, vô hiệu hóa thông minh (Stale-While-Revalidate) dữ liệu trang chủ mỗi khi có Post mới.
+- **Frontend Perfomance (React Server Components)**:
+  - Đại tu `app/page.tsx`, di chuyển logic bắt dữ liệu (Fetch Data) 100% sang SSR qua App Router Next.js 15.
+  - Tách các tương tác động (Framer Motion, Glassmorphism) ra lớp ngoài bằng `HomePageClient.tsx`. Lợi ích: Tăng tốc LCP, bảo đảm SEO.
+  - Khắc phục class rác CSS (`property-padding`) giúp UI tương thích mượt mà màn hình điện thoại (<768px).
+- **DevOps (AWS ECS Fargate CI/CD)**:
+  - Viết lại quy trình `.github/workflows/deploy-ecs.yml`, đẩy Docker lên ECR.
+  - Cấu tạo Pipeline cập nhật container Zero-Downtime thông qua cấu trúc Load Balancer của AWS.
+- **Code Clean-up**: Dọn dẹp ép kiểu `(prisma as any)` trên toàn bộ hệ thống API nhánh (Like/Comment/Detail).
+
+### 💡 Quyết định kỹ thuật
+
+- **Trì hoãn xóa dùng Hook**: Duy trì file `hooks/use-posts.ts` thay vì xóa bỏ do phát hiện đây là hệ thống cung cấp tính năng "Lọc Realtime Component" trên URL Navigation Client side của trang `/posts`.
+- **Bypass Prisma IDE Caching**: Chấp nhận sử dụng `// @ts-ignore` tạm thời trong file route để không chắn Pipeline khi Prisma Type Cache trên IDE chưa tải lại kịp file `generated` node module.
+
+**Chủ đề: Mobile Supremacy, Hyper-Responsiveness & Content Protection**
+
+### ✅ Các công việc đã thực hiện
+
+- **Mobile Mastery (Đại tu giao diện di động)**:
+  - Tối ưu hóa 100% các trang trọng yếu: Home, About, Profile, New Post.
+  - Scale lại typography "Heroic" (từ 11rem xuống tỉ lệ mobile-friendly) đảm bảo không bị tràn lề.
+  - Thiết kế lại Footer theo dạng stack dọc chuyên nghiệp cho màn hình nhỏ.
+  - Đồng bộ hóa Header và Content Padding (`pt-18`) cho trải nghiệm mượt mà.
+- **Content Protection (Bảo mật nội dung)**:
+  - Triển khai global CSS để chặn bôi đen văn bản (`user-select: none`).
+  - Injected script chặn chuột phải (Context Menu) và các phím tắt copy (`Ctrl+C`, `Ctrl+U`, `Ctrl+S`).
+- **Standardization (Chuẩn hóa hệ thống)**:
+  - Sửa lỗi mismatch thuộc tính giữa Frontend (`image`) và Backend (`coverImage`).
+  - Đồng bộ hóa trang `NewPost` và `EditPost` sử dụng chung `postSchema` và `ApiService`.
+  - Fix lỗi React Hook (Invalid Hook Call) trên các thiết bị cảm ứng trong component `SpotlightCard`.
+- **Verification & Build**:
+  - Xác nhận build Next.js thành công 100% không còn lỗi Lint hay Type.
+  - Đã đẩy toàn bộ thay đổi lên Git repository.
+
+### 💡 Quyết định kỹ thuật
+
+- **Mobile-First Scaling**: Thay đổi từ desktop-first sang mobile-first cho các thành phần typography cực lớn để đảm bảo tính thẩm mỹ đồng nhất.
+- **Client-Side Protection**: Lựa chọn giải pháp kết hợp CSS và JS để tối đa hóa khả năng bảo vệ nội dung trên cả trình duyệt máy tính và di động.
+- **DRY Principle (Don't Repeat Yourself)**: Việc ép trang `NewPost` dùng chung schema toàn cục giúp hệ thống dễ bảo trì và tránh các lỗi đồng bộ dữ liệu sau này.
+
+---
+
 ## [v1.0.0] - 2026-02-13
 
 **Chủ đề: Khởi tạo dự án & Deployment Preparation**

@@ -54,10 +54,12 @@ export default function Header() {
 
           {/* Mobile Menu Toggle */}
           <button 
+            aria-expanded={isMobileMenuOpen}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center text-slate-400"
           >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {isMobileMenuOpen ? <X aria-hidden="true" size={20} /> : <Menu aria-hidden="true" size={20} />}
           </button>
         </div>
       </nav>
@@ -85,10 +87,11 @@ export default function Header() {
                   BAO<span className="text-primary not-italic">.DEV</span>
                 </span>
                 <button 
+                  aria-label="Close mobile menu drawer"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center text-slate-400"
                 >
-                  <X size={20} />
+                  <X aria-hidden="true" size={20} />
                 </button>
               </div>
 

@@ -1,69 +1,67 @@
 import { ApiUtils } from "@/lib/api-response";
-import { prisma } from "@/lib/prisma";
 import { postSchema } from "@/schemas/post.schema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextRequest } from "next/server";
+import { PostService } from "@/services/post.service";
+import { rateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
   try {
+    // 1. Rate Limiting Protection (GET requests - e.g. 100 per 10s)
+    const ip = req.headers.get("x-forwarded-for") || "anonymous";
+    const rl = rateLimit(`get_posts_${ip}`, { limit: 100, windowMs: 10000 });
+    if (!rl.success) {
+      return ApiUtils.error("Too Many Requests", 429, { ip });
+    }
+
     const { searchParams } = new URL(req.url);
     const cursor = searchParams.get("cursor");
-    const limit = parseInt(searchParams.get("limit") || "10");
+    const limitParams = searchParams.get("limit");
+    // Secure input validation on limit
+    const limit = limitParams ? Math.min(parseInt(limitParams), 50) : 10;
 
-    const posts = await prisma.post.findMany({
-      take: limit,
-      skip: cursor ? 1 : 0,
-      cursor: cursor ? { id: cursor } : undefined,
-      orderBy: { createdAt: "desc" },
-      include: { 
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-            role: true,
-            emailVerified: true
-          }
-        }
-      },
-    });
+    const result = await PostService.getPosts(limit, cursor);
 
-    const nextCursor = posts.length === limit ? posts[posts.length - 1].id : null;
-
-    return ApiUtils.success({ posts, nextCursor });
+    return ApiUtils.success(result);
   } catch (error) {
-    return ApiUtils.serverError(error);
+    return ApiUtils.serverError(error, { route: "GET /api/posts" });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
+    // 1. Rate Limiting Protection (POST requests - e.g. 5 per 10s)
+    const ip = req.headers.get("x-forwarded-for") || "anonymous";
+    const rl = rateLimit(`create_post_${ip}`, { limit: 5, windowMs: 10000 });
+    if (!rl.success) {
+      return ApiUtils.error("Too Many Requests. Please slow down.", 429, { ip });
+    }
+
+    // 2. Authentication Context
     const session = await getServerSession(authOptions);
-    
-    // API Level Protection
     if (!session || session.user.role !== "ADMIN") {
+      logger.warn("Unauthorized Post creation attempt", { user: session?.user?.id, ip });
       return ApiUtils.error("Unauthorized. Admin role required.", 403);
     }
 
-    const body = await request.json();
+    // 3. Request Validation
+    const body = await req.json();
     const validatedData = postSchema.safeParse(body);
     
     if (!validatedData.success) {
-      return ApiUtils.error(validatedData.error.issues[0].message, 400);
+      return ApiUtils.error(validatedData.error.issues[0].message, 400, {
+        validationErrors: validatedData.error.format()
+      });
     }
 
-    const post = await prisma.post.create({
-      data: {
-        ...validatedData.data,
-        published: true,
-        authorId: session.user.id,
-      },
-    });
+    // 4. Business Logic execution
+    const post = await PostService.createPost(validatedData.data, session.user.id);
 
+    logger.info("Post created successfully", { postId: post.id, authorId: session.user.id });
     return ApiUtils.success(post, "Post created successfully", 201);
   } catch (error) {
-    return ApiUtils.serverError(error);
+    return ApiUtils.serverError(error, { route: "POST /api/posts" });
   }
 }

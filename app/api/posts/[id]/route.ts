@@ -10,25 +10,48 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const post = await prisma.post.findUnique({
-      where: { id },
-      include: { 
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-            role: true,
-            emailVerified: true
-          }
-        }
-      },
-    });
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+
+    // Use parallel queries for better performance and type safety
+    const [postData, likesCount] = await Promise.all([
+      (prisma as any).post.findUnique({
+        where: { id },
+        include: { 
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+              role: true,
+              emailVerified: true
+            }
+          },
+          // Use type-safe lookup if possible, otherwise bypass stale types
+          ...(userId ? {
+            likes: {
+              where: { userId }
+            }
+          } : {})
+        } as any,
+      }),
+      (prisma as any).like.count({
+        where: { postId: id }
+      })
+    ]);
     
-    if (!post) return ApiUtils.error("Post not found", 404);
+    if (!postData) return ApiUtils.error("Post not found", 404);
+
+    // Explicitly cast to any or define return type if Prisma types are missing relations
+    // But since we want Best Practice,    // Transform with explicit type safety
+    const transformedPost = {
+      ...postData,
+      likes: likesCount,
+      isLiked: !!((postData as any).likes && (postData as any).likes.length > 0)
+    };
     
-    return ApiUtils.success(post);
+    return ApiUtils.success(transformedPost);
   } catch (error) {
     return ApiUtils.serverError(error);
   }

@@ -32,7 +32,7 @@ export const StandardPostCard = ({ post }: StandardPostCardProps) => {
                 <ImageIcon size={48} strokeWidth={1} />
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 property-padding via-slate-950/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
           </div>
 
           <div className="p-6 md:p-10 flex-1 flex flex-col relative">
