@@ -15,8 +15,35 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "Bao's Blog | Chia sẻ Kiến thức & Hành trình Công nghệ",
+  title: {
+    default: "Bao's Blog | Chia sẻ Kiến thức & Hành trình Công nghệ",
+    template: "%s | Bao's Blog",
+  },
   description: "Nơi mình chia sẻ về Cloud Computing, DevOps và những trải nghiệm thực tế trong ngành công nghệ.",
+  keywords: ["Cloud Computing", "AWS", "DevOps", "Next.js", "TypeScript", "Bao's Blog", "Blog lập trình"],
+  authors: [{ name: "Bao Nguyen" }],
+  creator: "Bao Nguyen",
+  metadataBase: new URL(process.env.NEXTAUTH_URL || "https://studymate.io.vn"),
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    url: process.env.NEXTAUTH_URL || "https://studymate.io.vn",
+    siteName: "Bao's Blog",
+    title: "Bao's Blog | Chia sẻ Kiến thức & Hành trình Công nghệ",
+    description: "Nơi mình chia sẻ về Cloud Computing, DevOps và những trải nghiệm thực tế trong ngành công nghệ.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "Bao's Blog" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bao's Blog | Chia sẻ Kiến thức & Hành trình Công nghệ",
+    description: "Nơi mình chia sẻ về Cloud Computing, DevOps và những trải nghiệm thực tế trong ngành công nghệ.",
+    images: ["/og-default.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
 };
 
 export const viewport = {
