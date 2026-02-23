@@ -1,5 +1,7 @@
 import { ApiUtils } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
+
+type TxClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -19,7 +21,7 @@ export async function POST(
     const userId = session.user.id;
 
     // Execute Like Toggle as a strict database transaction
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: TxClient) => {
       const existingLike = await tx.like.findUnique({
         where: {
           postId_userId: {
@@ -34,24 +36,20 @@ export async function POST(
         await tx.like.delete({
           where: { id: existingLike.id },
         });
-        // @ts-ignore: Prisma client needs to be reloaded by IDE to see likesCount
         const updatedPost = await tx.post.update({
           where: { id: postId },
           data: { likesCount: { decrement: 1 } },
         });
-        // @ts-ignore
         return { liked: false, likes: updatedPost.likesCount };
       } else {
         // Add like and increment count
         await tx.like.create({
           data: { postId, userId },
         });
-        // @ts-ignore: Prisma client needs to be reloaded by IDE to see likesCount
         const updatedPost = await tx.post.update({
           where: { id: postId },
           data: { likesCount: { increment: 1 } },
         });
-        // @ts-ignore
         return { liked: true, likes: updatedPost.likesCount };
       }
     });

@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { logger } from "@/lib/logger";
 
+type TxClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -81,7 +83,7 @@ export async function POST(
     }
 
     // Execute logic as a database transaction to increment commentsCount
-    const newComment = await prisma.$transaction(async (tx) => {
+    const newComment = await prisma.$transaction(async (tx: TxClient) => {
       const created = await tx.comment.create({
         data: {
           content,
@@ -100,10 +102,8 @@ export async function POST(
         },
       });
 
-      // @ts-ignore: Prisma IDE cache
       await tx.post.update({
         where: { id: postId },
-        // @ts-ignore
         data: { commentsCount: { increment: 1 } },
       });
 
