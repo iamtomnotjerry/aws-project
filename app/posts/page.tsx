@@ -13,7 +13,8 @@ const CATEGORIES = ["Tất cả", "Công nghệ", "Cuộc sống", "Sự nghiệ
 import { Magnetic } from "@/components/ui/Magnetic";
 
 export default function PostsPage() {
-  const { posts, loading, loadingMore, error, hasMore, loadMore } = usePosts(12);
+  const { data, isLoading: loading, isFetchingNextPage: loadingMore, error, hasNextPage: hasMore, fetchNextPage: loadMore } = usePosts(12);
+  const posts = useMemo(() => data?.pages.flatMap((page) => page.posts) || [], [data]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Tất cả");
 
@@ -155,7 +156,7 @@ export default function PostsPage() {
               <Button 
                 variant="secondary" 
                 size="lg" 
-                onClick={loadMore} 
+                onClick={() => loadMore()} 
                 loading={loadingMore}
                 className="min-w-[320px] h-20 text-xl font-black tracking-tighter hover:bg-primary/10 hover:text-primary transition-all rounded-3xl border-white/[0.08]"
               >
