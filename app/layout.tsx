@@ -6,6 +6,7 @@ import AuthProvider from "@/features/auth/components/AuthProvider";
 import VerificationBanner from "@/features/auth/components/VerificationBanner";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import Header from "@/components/ui/Header";
+import QueryProvider from "@/components/providers/QueryProvider";
 import Link from "next/link";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { Newsletter } from "@/components/ui/Newsletter";
@@ -62,10 +63,11 @@ export default function RootLayout({
     <html lang="vi" className="dark scroll-smooth">
       <body className={`${inter.variable} ${outfit.variable} font-sans bg-background text-foreground antialiased selection:bg-primary/30`}>
         <CustomCursor />
-        <AuthProvider>
-          <Toaster position="bottom-right" richColors />
-          <div className="relative min-h-screen flex flex-col">
-            <Header />
+        <QueryProvider>
+          <AuthProvider>
+            <Toaster position="bottom-right" richColors />
+            <div className="relative min-h-screen flex flex-col">
+              <Header />
 
             <VerificationBanner />
 
@@ -109,6 +111,7 @@ export default function RootLayout({
             </footer>
           </div>
         </AuthProvider>
+        </QueryProvider>
         
       </body>
     </html>
