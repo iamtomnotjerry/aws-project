@@ -20,11 +20,16 @@ export default function PostsPage() {
 
   const filteredPosts = useMemo(() => {
     return posts.filter(post => {
-      const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (post.content || "").toLowerCase().includes(searchQuery.toLowerCase());
+      if (!post || !post.title) return false;
+      
+      const title = post.title.toLowerCase();
+      const content = (post.content || "").toLowerCase();
+      const query = searchQuery.toLowerCase();
+      
+      const matchesSearch = title.includes(query) || content.includes(query);
       
       const matchesCategory = activeCategory === "Tất cả" || 
-                             (post.content || "").toLowerCase().includes(activeCategory.toLowerCase());
+                             content.includes(activeCategory.toLowerCase());
       
       return matchesSearch && matchesCategory;
     });
