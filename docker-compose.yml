@@ -6,7 +6,19 @@ services:
     ports:
       - "3000:3000"
     env_file: .env
-    # ENV will be read from the .env file on the server
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+    healthcheck:
+      test:
+        ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   nginx:
     image: nginx:alpine
@@ -18,7 +30,9 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     depends_on:
-      - nextjs
+      nextjs:
+        condition: service_healthy
+    restart: unless-stopped
 
   certbot:
     image: certbot/certbot

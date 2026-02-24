@@ -2,7 +2,7 @@
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
 class Logger {
-  private log(level: LogLevel, message: string, context?: Record<string, any>) {
+  private log(level: LogLevel, message: string, context?: Record<string, unknown>) {
     const timestamp = new Date().toISOString();
     const payload = {
       timestamp,
@@ -23,15 +23,15 @@ class Logger {
     }
   }
 
-  info(message: string, context?: Record<string, any>) {
+  info(message: string, context?: Record<string, unknown>) {
     this.log('info', message, context);
   }
 
-  warn(message: string, context?: Record<string, any>) {
+  warn(message: string, context?: Record<string, unknown>) {
     this.log('warn', message, context);
   }
 
-  error(message: string, error?: any, context?: Record<string, any>) {
+  error(message: string, error?: unknown, context?: Record<string, unknown>) {
     this.log('error', message, {
       ...context,
       error: error instanceof Error ? error.message : error,
@@ -39,7 +39,7 @@ class Logger {
     });
   }
 
-  debug(message: string, context?: Record<string, any>) {
+  debug(message: string, context?: Record<string, unknown>) {
     if (process.env.NODE_ENV !== 'production') {
       this.log('debug', message, context);
     }

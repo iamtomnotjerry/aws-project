@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { logger } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -17,7 +19,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!pendingUser) {
-      // Fallback for old flow or check VerificationToken for other purposes
+      // Fallback for legacy flow via VerificationToken
       const existingToken = await prisma.verificationToken.findUnique({
         where: { token },
       });
@@ -54,39 +56,38 @@ export async function GET(req: NextRequest) {
       return redirect("/auth/signin?error=TokenExpired");
     }
 
-    // Check if email was taken by another user during the pending period
-    const emailTaken = await prisma.user.findUnique({
-      where: { email: pendingUser.email },
-    });
-
-    if (emailTaken) {
-      await prisma.pendingUser.delete({ where: { token } });
-      return redirect("/auth/signin?error=EmailAlreadyTaken");
+    // Promote PendingUser to User — rely on unique constraint instead of TOCTOU check
+    try {
+      await prisma.$transaction([
+        prisma.user.create({
+          data: {
+            email: pendingUser.email,
+            name: pendingUser.name,
+            password: pendingUser.password,
+            emailVerified: new Date(),
+            image: `https://ui-avatars.com/api/?name=${encodeURIComponent(pendingUser.name || "User")}&background=random`,
+          },
+        }),
+        prisma.pendingUser.delete({
+          where: { token },
+        }),
+      ]);
+    } catch (txError: unknown) {
+      // P2002 = unique constraint violation → email was taken during pending period
+      if (txError instanceof Error && "code" in txError && (txError as { code: string }).code === "P2002") {
+        await prisma.pendingUser.delete({ where: { token } }).catch(() => {});
+        return redirect("/auth/signin?error=EmailAlreadyTaken");
+      }
+      throw txError;
     }
-
-    // Promote PendingUser to User
-    await prisma.$transaction([
-      prisma.user.create({
-        data: {
-          email: pendingUser.email,
-          name: pendingUser.name,
-          password: pendingUser.password,
-          emailVerified: new Date(),
-          image: `https://ui-avatars.com/api/?name=${pendingUser.name || "User"}&background=random`,
-        },
-      }),
-      prisma.pendingUser.delete({
-        where: { token },
-      }),
-    ]);
 
     return redirect("/auth/verify-success");
   } catch (error) {
-    // Next.js redirect() works by throwing a special error — re-throw it
-    if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+    // Next.js redirect() works by throwing — re-throw it
+    if (isRedirectError(error)) {
       throw error;
     }
-    console.error("Verification error:", error);
+    logger.error("Verification error", error);
     return redirect("/auth/signin?error=VerificationFailed");
   }
 }

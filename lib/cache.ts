@@ -22,8 +22,25 @@ if (!redisUrl) {
   });
 }
 
+// PROD-3: Periodic cleanup of expired memory cache entries to prevent leaks
+if (typeof setInterval !== 'undefined') {
+  setInterval(() => {
+    const now = Date.now();
+    let cleaned = 0;
+    for (const [key, val] of memoryFallback) {
+      if (now > val.expiresAt) {
+        memoryFallback.delete(key);
+        cleaned++;
+      }
+    }
+    if (cleaned > 0) {
+      logger.debug(`Memory cache cleanup: evicted ${cleaned} expired entries`);
+    }
+  }, 60_000);
+}
+
 export class CacheService {
-  static async set(key: string, value: any, ttlSeconds: number): Promise<void> {
+  static async set<T>(key: string, value: T, ttlSeconds: number): Promise<void> {
     try {
       const data = JSON.stringify(value);
       if (redis) {

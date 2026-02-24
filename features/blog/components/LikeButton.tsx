@@ -73,7 +73,7 @@ export const LikeButton = ({ postId, initialLikes, initialIsLiked = false }: Lik
         />
         
         <AnimatePresence>
-          {isLiking && !isLiked && (
+          {isLiking && isLiked && (
             <motion.span
               initial={{ opacity: 0, y: 0 }}
               animate={{ opacity: 1, y: -25 }}

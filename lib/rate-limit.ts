@@ -2,9 +2,18 @@ import { logger } from "./logger";
 import { redis } from "./cache";
 
 interface RateLimitOptions {
-  limit: number;     // Tokens added per window
+  limit: number;     // Max requests per window
   windowMs: number;  // Window size in milliseconds
 }
+
+// Atomic Lua script: INCR + conditional PEXPIRE in a single round-trip
+const RATE_LIMIT_LUA = `
+  local current = redis.call('INCR', KEYS[1])
+  if current == 1 then
+    redis.call('PEXPIRE', KEYS[1], ARGV[1])
+  end
+  return current
+`;
 
 // Memory fallback for token bucket
 interface RateLimitInfo {
@@ -17,18 +26,14 @@ export async function rateLimit(identifier: string, options: RateLimitOptions = 
   if (redis) {
     const key = `ratelimit:${identifier}`;
     try {
-      // Basic Redis fixed window (simpler than lua token bucket but effective)
-      const current = await redis.incr(key);
-      if (current === 1) {
-        await redis.pexpire(key, options.windowMs);
-      }
+      const current = await redis.eval(RATE_LIMIT_LUA, 1, key, options.windowMs) as number;
       if (current > options.limit) {
-        logger.warn('Rate limit exceeded (Redis)', { identifier, options, current });
+        logger.warn('Rate limit exceeded (Redis)', { identifier, current, limit: options.limit });
         return { success: false, remaining: 0 };
       }
       return { success: true, remaining: options.limit - current };
     } catch (err) {
-      logger.error('Redis Rate limiter error, falling back to accept', err);
+      logger.error('Redis rate limiter error, falling back to accept', err);
       return { success: true, remaining: 1 };
     }
   } else {
@@ -54,7 +59,7 @@ export async function rateLimit(identifier: string, options: RateLimitOptions = 
       return { success: true, remaining: info.tokens };
     }
 
-    logger.warn('Rate limit exceeded (Memory)', { identifier, options });
+    logger.warn('Rate limit exceeded (Memory)', { identifier });
     return { success: false, remaining: 0 };
   }
 }

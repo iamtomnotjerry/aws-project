@@ -55,22 +55,35 @@ export async function generateMetadata(
   };
 }
 
-type PostWithAuthorPayload = { id: string; title: string; content: string | null; coverImage: string | null; published: boolean; authorId: string | null; likesCount: number; commentsCount: number; createdAt: Date; updatedAt: Date; author: { id: string; name: string | null; email: string | null; image: string | null; role: string; emailVerified: Date | null; password: string | null; } | null; };
+type PostWithAuthorPayload = { id: string; title: string; content: string | null; coverImage: string | null; published: boolean; authorId: string | null; likesCount: number; commentsCount: number; createdAt: Date; updatedAt: Date; author: { id: string; name: string | null; email: string | null; image: string | null; role: string; emailVerified: Date | null; password: string | null; } | null; isLiked?: boolean; };
 
 
 export default async function PostDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await getServerSession(authOptions);
   const isAdmin = session?.user?.role === "ADMIN";
+  const userId = session?.user?.id;
 
-  const post: PostWithAuthorPayload | null = await prisma.post.findUnique({
-    where: { id },
-    include: { author: true },
-  });
+  const [postData, userLike] = await Promise.all([
+    prisma.post.findUnique({
+      where: { id },
+      include: { author: true },
+    }),
+    userId
+      ? prisma.like.findUnique({
+          where: { postId_userId: { postId: id, userId } },
+        })
+      : null,
+  ]);
 
-  if (!post) {
+  if (!postData) {
     notFound();
   }
+
+  const post: PostWithAuthorPayload = {
+    ...postData,
+    isLiked: !!userLike,
+  };
 
   return (
     <PostDetailClient 

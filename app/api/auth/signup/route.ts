@@ -1,63 +1,32 @@
 import { prisma } from "@/lib/prisma";
 import { ApiUtils } from "@/lib/api-response";
-import bcrypt from "bcryptjs";
-import { sendVerificationEmail } from "@/lib/resend";
-import crypto from "crypto";
 import { signupSchema } from "@/schemas/auth.schema";
+import { AuthService } from "@/services/auth.service";
+import { logger } from "@/lib/logger";
+import { NextRequest } from "next/server";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    
-    // 0. Use Zod validation
-    const validatedData = signupSchema.safeParse(body);
-    if (!validatedData.success) {
-      return ApiUtils.error(validatedData.error.issues[0].message, 400);
+    const result = signupSchema.safeParse(body);
+
+    if (!result.success) {
+      return ApiUtils.error(result.error.issues[0].message, 400);
     }
 
-    const { email, password, name } = validatedData.data;
+    const { email, name, password } = result.data;
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      return ApiUtils.error("User already exists", 409);
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-    
-    const token = crypto.randomUUID();
-    const expires = new Date(Date.now() + 3600000); // 1 hour
-
-    // Create or update PendingUser record (upsert = atomic find + update/create)
-    await prisma.pendingUser.upsert({
-      where: { email },
-      update: {
-        name: name || email.split("@")[0],
-        password: hashedPassword,
-        token,
-        expires,
-      },
-      create: {
-        email,
-        name: name || email.split("@")[0],
-        password: hashedPassword,
-        token,
-        expires,
-      },
-    });
-
-    // 3. Send Verification Email
     try {
-      await sendVerificationEmail(email, token);
-    } catch (emailError) {
-      console.error("Failed to send verification email:", emailError);
-      return ApiUtils.success(null, "Account registration successful, but verification email failed to send. Please try again later.", 201);
+      await AuthService.signupUser({ email, name, password });
+      return ApiUtils.success(null, "Please check your email to verify your account.");
+    } catch (e: unknown) {
+      if (e instanceof Error && e.message === "User already exists") {
+        return ApiUtils.error("Email is already registered", 400);
+      }
+      throw e;
     }
-
-    return ApiUtils.success(null, "Account initiated! Please check your email to verify and complete your registration.", 201);
   } catch (error) {
+    logger.error("Signup error", error, { route: "POST /api/auth/signup" });
     return ApiUtils.serverError(error);
   }
 }

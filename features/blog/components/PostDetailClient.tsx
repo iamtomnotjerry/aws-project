@@ -13,8 +13,31 @@ import { Magnetic } from "@/components/ui/Magnetic";
 import { LikeButton } from "./LikeButton";
 import { CommentSection } from "./comments/CommentSection";
 
+interface PostData {
+  id: string;
+  title: string;
+  content: string | null;
+  coverImage: string | null;
+  published: boolean;
+  authorId: string | null;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  isLiked?: boolean;
+  author: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+    role: string;
+    emailVerified: Date | null;
+    password: string | null;
+  } | null;
+}
+
 interface PostDetailClientProps {
-  post: any;
+  post: PostData;
   isAdmin: boolean;
   DeleteButton: React.ReactNode;
 }
@@ -161,7 +184,7 @@ export const PostDetailClient = ({ post, isAdmin, DeleteButton }: PostDetailClie
                   </p>
                   <LikeButton 
                     postId={post.id} 
-                    initialLikes={post.likes} 
+                    initialLikes={post.likesCount ?? 0} 
                     initialIsLiked={post.isLiked}
                   />
                 </section>

@@ -2,19 +2,46 @@ import { prisma } from "@/lib/prisma";
 import { CacheService } from "@/lib/cache";
 import { logger } from "@/lib/logger";
 
+interface TransformedPost {
+  id: string;
+  title: string;
+  content: string | null;
+  coverImage: string | null;
+  published: boolean;
+  authorId: string | null;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  likes: number;
+  author: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+    role: string;
+    emailVerified: Date | null;
+  } | null;
+}
+
+interface PostFeedResult {
+  posts: TransformedPost[];
+  nextCursor: string | null;
+}
+
 export class PostService {
   /**
    * Fetch paginated posts with author details utilizing Redis caching and denormalized counters.
    */
-  static async getPosts(limit: number, cursor?: string | null) {
+  static async getPosts(limit: number, cursor?: string | null): Promise<PostFeedResult> {
     const cacheKey = `posts:feed:limit=${limit}:cursor=${cursor || 'start'}`;
     
     // 1. Check Cache Layer first
     if (!cursor) {
-      const cachedFeed = await CacheService.get(cacheKey);
+      const cachedFeed = await CacheService.get<PostFeedResult>(cacheKey);
       if (cachedFeed) {
         logger.debug("Feed served from Redis target");
-        return cachedFeed as any; 
+        return cachedFeed;
       }
     }
 
@@ -23,8 +50,8 @@ export class PostService {
       take: limit,
       skip: cursor ? 1 : 0,
       ...(cursor && { cursor: { id: cursor } }),
-      where: { published: true }, // Index Hit
-      orderBy: { createdAt: "desc" }, // Index Hit
+      where: { published: true },
+      orderBy: { createdAt: "desc" },
       include: {
         author: {
           select: {
@@ -36,16 +63,15 @@ export class PostService {
             emailVerified: true,
           },
         },
-        // We removed _count: { likes: true } to save RDS CPU!
       },
     });
 
-    const transformedPosts = posts.map((post) => ({
+    const transformedPosts: TransformedPost[] = posts.map((post) => ({
       ...post,
-      likes: (post as any).likesCount || 0, // Bypass static lint until prisma generate
+      likes: post.likesCount,
     }));
 
-    const result = {
+    const result: PostFeedResult = {
       posts: transformedPosts,
       nextCursor: posts.length === limit ? posts[posts.length - 1].id : null,
     };
@@ -83,3 +109,4 @@ export class PostService {
     return post;
   }
 }
+

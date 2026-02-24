@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { postSchema } from "@/schemas/post.schema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { LikeService } from "@/services/like.service";
 
 export async function GET(
   req: Request,
@@ -13,45 +14,31 @@ export async function GET(
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
 
-    // Use parallel queries for better performance and type safety
-    const [postData, likesCount] = await Promise.all([
-      (prisma as any).post.findUnique({
-        where: { id },
-        include: { 
-          author: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              image: true,
-              role: true,
-              emailVerified: true
-            }
+    const post = await prisma.post.findUnique({
+      where: { id },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            role: true,
+            emailVerified: true,
           },
-          // Use type-safe lookup if possible, otherwise bypass stale types
-          ...(userId ? {
-            likes: {
-              where: { userId }
-            }
-          } : {})
-        } as any,
-      }),
-      (prisma as any).like.count({
-        where: { postId: id }
-      })
-    ]);
-    
-    if (!postData) return ApiUtils.error("Post not found", 404);
+        },
+      },
+    });
 
-    // Explicitly cast to any or define return type if Prisma types are missing relations
-    // But since we want Best Practice,    // Transform with explicit type safety
-    const transformedPost = {
-      ...postData,
-      likes: likesCount,
-      isLiked: !!((postData as any).likes && (postData as any).likes.length > 0)
-    };
-    
-    return ApiUtils.success(transformedPost);
+    if (!post) return ApiUtils.error("Post not found", 404);
+
+    const isLiked = userId ? await LikeService.hasUserLiked(id, userId) : false;
+
+    return ApiUtils.success({
+      ...post,
+      likes: post.likesCount,
+      isLiked,
+    });
   } catch (error) {
     return ApiUtils.serverError(error);
   }

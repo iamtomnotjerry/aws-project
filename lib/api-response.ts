@@ -17,7 +17,7 @@ export class ApiUtils {
     );
   }
 
-  static error(error: string, status = 400, context?: Record<string, any>) {
+  static error(error: string, status = 400, context?: Record<string, unknown>) {
     if (status >= 500) {
       logger.error(`API Error: ${error}`, undefined, context);
     } else {
@@ -29,7 +29,7 @@ export class ApiUtils {
     );
   }
 
-  static serverError(error: unknown, context?: Record<string, any>) {
+  static serverError(error: unknown, context?: Record<string, unknown>) {
     logger.error("Internal Server Error caught by ApiUtils", error, context);
     return NextResponse.json(
       { success: false, error: "Internal Server Error" },
