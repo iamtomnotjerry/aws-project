@@ -1,8 +1,31 @@
-export { requestIdMiddleware as middleware } from "@/lib/middleware";
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
+import { requestIdMiddleware } from "@/lib/middleware";
+
+export default withAuth(
+  function middleware(req) {
+    if (req.nextUrl.pathname.startsWith("/api")) {
+      return requestIdMiddleware(req as any);
+    }
+
+    if (req.nextauth.token?.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+    
+    return NextResponse.next();
+  },
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        if (req.nextUrl.pathname.startsWith("/api")) {
+          return true;
+        }
+        return !!token;
+      },
+    },
+  }
+);
 
 export const config = {
-  matcher: [
-    // Apply request ID middleware to all API routes
-    "/api/:path*",
-  ],
+  matcher: ["/new-post", "/post/:path*/edit", "/api/:path*"],
 };
