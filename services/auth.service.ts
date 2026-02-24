@@ -2,6 +2,17 @@ import { prisma } from "@/lib/prisma";
 import { hash } from "bcryptjs";
 import { randomBytes } from "crypto";
 import { sendVerificationEmail } from "@/lib/resend";
+import { logger } from "@/lib/logger";
+
+// Helper to fire-and-forget or fast-fail network calls
+async function fireEmailWithTimeout(email: string, token: string) {
+  try {
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Email sending timeout')), 3000));
+    await Promise.race([sendVerificationEmail(email, token), timeout]);
+  } catch (err: unknown) {
+    logger.warn(`Email sending to ${email} timed out or failed. Registration continues.`, { error: err instanceof Error ? err.message : String(err) });
+  }
+}
 
 export class AuthService {
   static async signupUser({ email, name, password }: { email: string; name?: string; password?: string }) {
@@ -34,7 +45,8 @@ export class AuthService {
       },
     });
 
-    await sendVerificationEmail(email, token);
+    // Fire email in background without blocking the HTTP response indefinitely
+    fireEmailWithTimeout(email, token);
 
     return pendingUser;
   }
@@ -53,7 +65,7 @@ export class AuthService {
       data: { token, expires },
     });
 
-    await sendVerificationEmail(email, token);
+    fireEmailWithTimeout(email, token);
 
     return updatedUser;
   }

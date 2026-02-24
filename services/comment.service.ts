@@ -20,52 +20,33 @@ interface CommentWithUser {
 
 export class CommentService {
   /**
-   * Fetch paginated root-level comments with first batch of replies.
+   * Fetch paginated root-level comments with exactly 1 level of replies (max 5 replies per root)
+   * This bounds memory allocation strictly to prevent OOM under DDoS or viral threads.
    */
-  static async getComments(postId: string, page: number = 0, pageSize: number = 20): Promise<CommentWithUser[]> {
-    const allComments = await prisma.comment.findMany({
-      where: { postId },
+  static async getComments(postId: string, page: number = 0, pageSize: number = 20) {
+    const start = page * pageSize;
+    
+    // Fetch only ROOT comments, paginated, and eagerly load up to 5 replies per root.
+    const roots = await prisma.comment.findMany({
+      where: { postId, parentId: null },
+      orderBy: { createdAt: "desc" },
+      skip: start,
+      take: pageSize,
       include: {
         user: {
-          select: {
-            name: true,
-            image: true,
-            role: true,
-          },
+          select: { name: true, image: true, role: true },
         },
-      },
-      orderBy: { createdAt: "desc" },
-      // Pagination: could be added at root level,
-      // but for threaded comments, fetching all and building tree is simpler
-      // unless the post has 10k+ comments. For now, cap at 500.
-      take: 500,
-    });
-
-    // Build comment tree in memory
-    const commentMap = new Map<string, CommentWithUser>();
-    const roots: CommentWithUser[] = [];
-
-    allComments.forEach((c) => {
-      commentMap.set(c.id, { ...c, replies: [] });
-    });
-
-    allComments.forEach((c) => {
-      const node = commentMap.get(c.id)!;
-      if (c.parentId) {
-        const parent = commentMap.get(c.parentId);
-        if (parent) {
-          parent.replies.push(node);
-        } else {
-          roots.push(node);
+        replies: {
+          take: 5,
+          orderBy: { createdAt: "asc" },
+          include: {
+            user: { select: { name: true, image: true, role: true } },
+          }
         }
-      } else {
-        roots.push(node);
-      }
+      },
     });
 
-    // Apply pagination to root-level comments only
-    const start = page * pageSize;
-    return roots.slice(start, start + pageSize);
+    return roots;
   }
 
   /**

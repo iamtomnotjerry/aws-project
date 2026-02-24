@@ -1,5 +1,6 @@
 import { logger } from "./logger";
 import { redis } from "./cache";
+import { LRUCache } from "lru-cache";
 
 interface RateLimitOptions {
   limit: number;     // Max requests per window
@@ -20,7 +21,42 @@ interface RateLimitInfo {
   tokens: number;
   lastRefill: number;
 }
-const rateLimiterCache = new Map<string, RateLimitInfo>();
+
+// L1 Bounded Cache for DDoS Protection: 
+// A raw Map would leak memory if an attacker hits us from 1M fake IPs when Redis is down.
+// This restricts to the top 10k active IPs, automatically evicting oldest.
+const rateLimiterCache = new LRUCache<string, RateLimitInfo>({
+  max: 10000,
+  ttl: 1000 * 60 * 5, // Auto-evict items after a while
+});
+
+function applyMemoryRateLimit(identifier: string, options: RateLimitOptions) {
+  const now = Date.now();
+  const info = rateLimiterCache.get(identifier);
+
+  if (!info) {
+    rateLimiterCache.set(identifier, { tokens: options.limit - 1, lastRefill: now });
+    return { success: true, remaining: options.limit - 1 };
+  }
+
+  const timePassed = now - info.lastRefill;
+  const tokensToAdd = Math.floor(timePassed / options.windowMs) * options.limit;
+
+  if (tokensToAdd > 0) {
+    info.tokens = Math.min(options.limit, info.tokens + tokensToAdd);
+    info.lastRefill = now;
+  }
+
+  if (info.tokens > 0) {
+    info.tokens -= 1;
+    // Re-set to update LRU access time
+    rateLimiterCache.set(identifier, info);
+    return { success: true, remaining: info.tokens };
+  }
+
+  logger.warn('Rate limit exceeded (Memory Fallback)', { identifier });
+  return { success: false, remaining: 0 };
+}
 
 export async function rateLimit(identifier: string, options: RateLimitOptions = { limit: 10, windowMs: 10000 }) {
   if (redis) {
@@ -33,33 +69,10 @@ export async function rateLimit(identifier: string, options: RateLimitOptions = 
       }
       return { success: true, remaining: options.limit - current };
     } catch (err) {
-      logger.error('Redis rate limiter error, falling back to accept', err);
-      return { success: true, remaining: 1 };
+      logger.error('Redis rate limiter error, falling back to L1 Memory Token Bucket', err);
+      return applyMemoryRateLimit(identifier, options);
     }
-  } else {
-    // Memory fallback (token bucket)
-    const now = Date.now();
-    const info = rateLimiterCache.get(identifier);
-
-    if (!info) {
-      rateLimiterCache.set(identifier, { tokens: options.limit - 1, lastRefill: now });
-      return { success: true, remaining: options.limit - 1 };
-    }
-
-    const timePassed = now - info.lastRefill;
-    const tokensToAdd = Math.floor(timePassed / options.windowMs) * options.limit;
-
-    if (tokensToAdd > 0) {
-      info.tokens = Math.min(options.limit, info.tokens + tokensToAdd);
-      info.lastRefill = now;
-    }
-
-    if (info.tokens > 0) {
-      info.tokens -= 1;
-      return { success: true, remaining: info.tokens };
-    }
-
-    logger.warn('Rate limit exceeded (Memory)', { identifier });
-    return { success: false, remaining: 0 };
   }
+
+  return applyMemoryRateLimit(identifier, options);
 }

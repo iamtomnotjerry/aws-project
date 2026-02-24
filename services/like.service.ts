@@ -5,8 +5,8 @@ type TxClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
 export class LikeService {
   /**
-   * Toggle like on a post. Uses a transaction to atomically update the denormalized counter.
-   * Returns the new liked state and total likes count.
+   * Toggle like directly in the database. 
+   * Uses a transaction to atomically update the denormalized counter.
    */
   static async toggleLike(postId: string, userId: string): Promise<{ liked: boolean; likesCount: number }> {
     const result = await prisma.$transaction(async (tx: TxClient) => {
@@ -33,12 +33,12 @@ export class LikeService {
       }
     });
 
-    logger.debug("Like toggled", { postId, userId, liked: result.liked });
+    logger.debug("Like toggled atomically in DB", { postId, userId, liked: result.liked });
     return result;
   }
 
   /**
-   * Check if a user has liked a specific post.
+   * Check if a user has liked a specific post directly via database.
    */
   static async hasUserLiked(postId: string, userId: string): Promise<boolean> {
     const like = await prisma.like.findUnique({
@@ -66,14 +66,8 @@ export class LikeService {
           data: { likesCount: actualCount },
         });
         fixedCount++;
-        logger.info("Reconciled likesCount", {
-          postId: post.id,
-          was: post.likesCount,
-          now: actualCount,
-        });
       }
     }
-
     return fixedCount;
   }
 }

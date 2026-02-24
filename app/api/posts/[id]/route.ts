@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { postSchema } from "@/schemas/post.schema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 import { LikeService } from "@/services/like.service";
 
 export async function GET(
@@ -34,11 +35,17 @@ export async function GET(
 
     const isLiked = userId ? await LikeService.hasUserLiked(id, userId) : false;
 
-    return ApiUtils.success({
-      ...post,
-      likes: post.likesCount,
-      isLiked,
-    });
+    return NextResponse.json(
+      ApiUtils.success({
+        ...post,
+        likes: post.likesCount,
+        isLiked,
+      }), {
+        headers: {
+          'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',
+        },
+      }
+    );
   } catch (error) {
     return ApiUtils.serverError(error);
   }

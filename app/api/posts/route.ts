@@ -2,7 +2,7 @@ import { ApiUtils } from "@/lib/api-response";
 import { postSchema } from "@/schemas/post.schema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PostService } from "@/services/post.service";
 import { rateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
@@ -24,7 +24,13 @@ export async function GET(req: NextRequest) {
 
     const result = await PostService.getPosts(limit, cursor);
 
-    return ApiUtils.success(result);
+    return NextResponse.json(
+      ApiUtils.success(result)
+    , {
+      headers: {
+        'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',
+      },
+    });
   } catch (error) {
     return ApiUtils.serverError(error, { route: "GET /api/posts" });
   }
