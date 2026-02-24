@@ -6,11 +6,16 @@ import { CircuitBreaker } from "./circuit-breaker";
 // Instantiate the Redis client safely. 
 const redisUrl = process.env.REDIS_URL;
 export const redis = redisUrl ? new Redis(redisUrl, {
-  connectTimeout: 2000,
+  connectTimeout: 5000, // Increase timeout for initial handshake
   maxRetriesPerRequest: 1,
-  commandTimeout: 1000, // Fail fast on slow commands
+  commandTimeout: 2000, 
+  tls: redisUrl.startsWith("rediss") ? {
+    // AWS ElastiCache Serverless requires TLS.
+    // ioredis typically handles rediss:// automatically, but explicit {} ensures it.
+    rejectUnauthorized: false // Bypass self-signed/internal cert issues if any
+  } : undefined,
   retryStrategy(times) {
-    if (times > 2) return null; // Stop retrying after 2 attempts
+    if (times > 2) return null;
     return Math.min(times * 100, 2000);
   }
 }) : null;
