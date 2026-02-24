@@ -6,6 +6,8 @@ import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { fetcher } from "@/lib/fetcher";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface LikeButtonProps {
   postId: string;
@@ -21,6 +23,8 @@ interface LikeState {
 export const LikeButton = ({ postId, initialLikes, initialIsLiked = false }: LikeButtonProps) => {
   const { status } = useSession();
   const queryClient = useQueryClient();
+  const pathname = usePathname();
+  const router = useRouter();
   const queryKey = ['post-like', postId];
 
   const { data: likeState } = useQuery<LikeState>({
@@ -64,7 +68,7 @@ export const LikeButton = ({ postId, initialLikes, initialIsLiked = false }: Lik
 
   const handleLike = () => {
     if (status === "unauthenticated") {
-      toast.error("Sign in to like this post");
+      router.push(`/auth/signin?callbackUrl=${encodeURIComponent(pathname)}`);
       return;
     }
     if (status === "loading" || mutation.isPending) return;
@@ -81,13 +85,15 @@ export const LikeButton = ({ postId, initialLikes, initialIsLiked = false }: Lik
         whileTap={{ scale: 0.95 }}
         onClick={handleLike}
         disabled={status === "loading" || mutation.isPending}
-        className={`group relative w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 disabled:opacity-50 ${
-          isLiked 
+        aria-label={isLiked ? "Unlike post" : "Like post"}
+        aria-pressed={isLiked}
+        className={`group relative min-w-[44px] min-h-[44px] p-2 rounded-xl flex items-center justify-center border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 ${
+           isLiked 
             ? "bg-primary/10 border-primary/30 text-primary" 
-            : "bg-white/[0.02] border-white/[0.05] text-slate-600 hover:border-primary/20 hover:text-primary"
+            : "bg-white/[0.02] border-white/[0.05] text-slate-400 hover:border-primary/20 hover:text-primary"
         }`}
       >
-        <Heart size={18} fill={isLiked ? "currentColor" : "none"} className="transition-transform duration-300" />
+        <Heart size={20} fill={isLiked ? "currentColor" : "none"} className="transition-transform duration-300" />
         <AnimatePresence>
           {mutation.isPending && isLiked && (
             <motion.span
@@ -101,12 +107,12 @@ export const LikeButton = ({ postId, initialLikes, initialIsLiked = false }: Lik
           )}
         </AnimatePresence>
       </motion.button>
-      <div className="flex flex-col">
+      <div className="flex flex-col justify-center">
         <div className="flex items-baseline gap-1.5">
           <motion.span key={likes} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-white text-2xl font-bold tracking-tight">
             {likes}
           </motion.span>
-          <span className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">Hearts</span>
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Hearts</span>
         </div>
       </div>
     </div>
