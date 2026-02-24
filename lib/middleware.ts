@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * Request ID middleware for Next.js.
@@ -9,7 +8,7 @@ import { v4 as uuidv4 } from "uuid";
  *   export { requestIdMiddleware as middleware } from "@/lib/middleware";
  */
 export function requestIdMiddleware(request: NextRequest) {
-  const requestId = request.headers.get("x-request-id") || uuidv4();
+  const requestId = request.headers.get("x-request-id") || crypto.randomUUID();
   
   // Clone the request headers and add request ID
   const requestHeaders = new Headers(request.headers);
