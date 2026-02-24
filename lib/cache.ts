@@ -4,21 +4,26 @@ import { LRUCache } from "lru-cache";
 import { CircuitBreaker } from "./circuit-breaker";
 
 // Instantiate the Redis client safely. 
-const redisUrl = process.env.REDIS_URL;
-export const redis = redisUrl ? new Redis(redisUrl, {
-  connectTimeout: 5000, // Increase timeout for initial handshake
+const redisUrl = process.env.REDIS_URL?.replace(/"/g, ''); 
+const isAwsRedis = redisUrl?.includes('cache.amazonaws.com');
+const isLocal = process.env.NODE_ENV === 'development';
+
+// Nếu là AWS Redis nhưng chạy ở Local (không có VPN/Tunnel) thì bỏ qua để tránh treo máy
+export const redis = (redisUrl && (!isLocal || !isAwsRedis)) ? new Redis(redisUrl, {
+  connectTimeout: 5000, // Giảm timeout xuống 5s cho đỡ chờ lâu
   maxRetriesPerRequest: 1,
   commandTimeout: 2000, 
+  family: 4, 
   tls: redisUrl.startsWith("rediss") ? {
-    // AWS ElastiCache Serverless requires TLS.
-    // ioredis typically handles rediss:// automatically, but explicit {} ensures it.
-    rejectUnauthorized: false // Bypass self-signed/internal cert issues if any
+    rejectUnauthorized: false
   } : undefined,
-  retryStrategy(times) {
-    if (times > 2) return null;
-    return Math.min(times * 100, 2000);
-  }
+  retryStrategy: (times) => times > 1 ? null : 1000
 }) : null;
+
+if (isLocal && isAwsRedis) {
+  console.warn('⚠️ [Redis] Detected AWS Redis URL in Local Dev. Bypassing to avoid ETIMEDOUT. Use local Redis or leave REDIS_URL empty for dev.');
+}
+
 
 // L1 Cache: Bounded memory to prevent OOM. Max 5000 items, TTL handled by LRU.
 const l1Cache = new LRUCache<string, string>({
@@ -34,8 +39,24 @@ const redisCircuitBreaker = new CircuitBreaker("RedisCache", {
 if (!redisUrl) {
   logger.warn("REDIS_URL is strictly required for Production! Using L1 LRU fallback locally.");
 } else if (redis) {
-  redis.on('error', (err) => {
-    logger.error('Redis connection error:', err);
+  redis.on('connect', () => {
+    console.log('[Redis] Connection attempt initiated to:', new URL(redisUrl).hostname);
+  });
+
+  redis.on('ready', () => {
+    console.log('[Redis] Status: READY');
+  });
+
+  redis.on('error', (err: any) => {
+    console.error('[Redis] Connection Error:', {
+      code: err.code,
+      message: err.message,
+      host: err.address
+    });
+  });
+
+  redis.on('close', () => {
+    console.warn('[Redis] Connection CLOSED');
   });
 }
 
