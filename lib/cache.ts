@@ -81,7 +81,11 @@ export class CacheService {
       // 1. Check L1 Cache (Instant, no network overhead)
       const l1Data = l1Cache.get(key);
       if (l1Data) {
-        return JSON.parse(l1Data);
+        try {
+          return JSON.parse(l1Data);
+        } catch {
+          return l1Data as unknown as T; // Fallback for raw strings
+        }
       }
 
       // 2. Check L2 Redis
@@ -90,7 +94,11 @@ export class CacheService {
         if (cached) {
            // Backfill L1
            l1Cache.set(key, cached, { ttl: 1000 * 60 }); 
-           return JSON.parse(cached);
+           try {
+             return JSON.parse(cached);
+           } catch {
+             return cached as unknown as T;
+           }
         }
       }
       
@@ -98,6 +106,19 @@ export class CacheService {
     } catch (err) {
       logger.error(`Cache GET error for key ${key}`, err);
       return null; // Graceful degradation on Redis failure
+    }
+  }
+
+  static async increment(key: string): Promise<number> {
+    try {
+      l1Cache.delete(key);
+      if (redis && !redisCircuitBreaker.isOpen()) {
+        return await redisCircuitBreaker.fire(() => redis.incr(key));
+      }
+      return 0;
+    } catch (err) {
+      logger.error(`Cache INCR error for key ${key}`, err);
+      return 0;
     }
   }
 

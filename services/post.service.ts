@@ -34,18 +34,21 @@ export class PostService {
    * Fetch paginated posts with author details utilizing Redis caching and denormalized counters.
    */
   static async getPosts(limit: number, cursor?: string | null): Promise<PostFeedResult> {
-    const cacheKey = `posts:feed:limit=${limit}:cursor=${cursor || 'start'}`;
+    // 1. Versioned Cache Key to allow $O(1)$ global invalidation
+    const versionKey = "posts:version";
+    const version = await CacheService.get<string>(versionKey) || "0";
+    const cacheKey = `posts:v${version}:limit=${limit}:cursor=${cursor || 'start'}`;
     
-    // 1. Check Cache Layer first
+    // 2. Check Cache Layer first
     if (!cursor) {
       const cachedFeed = await CacheService.get<PostFeedResult>(cacheKey);
       if (cachedFeed) {
-        logger.debug("Feed served from Redis target");
+        logger.debug("Feed served from Redis target", { version });
         return cachedFeed;
       }
     }
 
-    // 2. Query RDS
+    // 3. Query RDS
     const posts = await prisma.post.findMany({
       take: limit,
       skip: cursor ? 1 : 0,
@@ -76,9 +79,10 @@ export class PostService {
       nextCursor: posts.length === limit ? posts[posts.length - 1].id : null,
     };
 
-    // 3. Populate Cache - Stale-While-Revalidate TTL (60s)
+    // 4. Populate Cache - Stale-While-Revalidate TTL (300s)
+    // We can set a longer TTL since we invalid aggressively now!
     if (!cursor) {
-      await CacheService.set(cacheKey, result, 60);
+      await CacheService.set(cacheKey, result, 300);
     }
 
     return result;
@@ -103,8 +107,9 @@ export class PostService {
       },
     });
 
-    // Strategy: Invalidate global cache for first-page of feed
-    await CacheService.invalidate(`posts:feed:limit=10:cursor=start`);
+    // 1. Atomic Version Bump: instantly invalidates ALL infinite scroll/limit permutations
+    // This is $O(1)$ compared to expensive Redis key scanning.
+    await CacheService.increment("posts:version");
     
     return post;
   }

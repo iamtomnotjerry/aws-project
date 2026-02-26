@@ -40,7 +40,7 @@ export async function GET(
       likes: post.likesCount,
       isLiked,
     }, undefined, 200, {
-      'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',
+      'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=59',
     });
   } catch (error) {
     return ApiUtils.serverError(error);

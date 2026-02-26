@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PostService } from "@/services/post.service";
 import { rateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { revalidatePath } from "next/cache";
 
 export async function GET(req: NextRequest) {
   try {
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
     const result = await PostService.getPosts(limit, cursor);
 
     return ApiUtils.success(result, undefined, 200, {
-      'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',
+      'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=59',
     });
   } catch (error) {
     return ApiUtils.serverError(error, { route: "GET /api/posts" });
@@ -60,6 +61,10 @@ export async function POST(req: NextRequest) {
 
     // 4. Business Logic execution
     const post = await PostService.createPost(validatedData.data, session.user.id);
+
+    // 5. On-Demand Revalidation: clear Next.js Full Route Cache for key pages
+    revalidatePath("/");
+    revalidatePath("/posts");
 
     logger.info("Post created successfully", { postId: post.id, authorId: session.user.id });
     return ApiUtils.success(post, "Post created successfully", 201);
