@@ -1,107 +1,137 @@
-# 🚀 Bao's Blog - Production-Grade Next.js 15 CMS
+# 🚀 Bao's Blog: Production-Grade Next.js 15 CMS
 
-![Deploy Status](https://github.com/iamtomnotjerry/aws-project/actions/workflows/deploy.yml/badge.svg)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js&logoColor=white)
-![React Query](https://img.shields.io/badge/React_Query-FF4154?style=flat-square&logo=react-query&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-EC2%20%7C%20RDS%20%7C%20S3-FF9900?style=flat-square&logo=amazon-aws&logoColor=white)
-
-A high-performance, professional Blog CMS engineered for scalability and ultimate UX. Built with **Next.js 15 (App Router)**, **TypeScript Strict**, and **AWS Cloud Services**. This project demonstrates a production-ready 3-tier architecture capable of handling 50k-100k MAU.
-
-### 🌐 Live Production Demo
-
-**URL**: [http://3.26.39.100](http://3.26.39.100) (AWS EC2 / Auto-deployed via GitHub Actions)
+<p align="center">
+  <img src="https://img.shields.io/github/actions/workflow/status/iamtomnotjerry/aws-project/deploy.yml?branch=main&style=for-the-badge&logo=github-actions&logoColor=white" alt="Deploy Status" />
+  <img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript-Strict-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Tailwind-v4-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/AWS-Infrastructure-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS" />
+</p>
 
 ---
 
-## 🏗️ Technical Architecture & Stack
+## 📖 Overview
 
-### Frontend & UI/UX
+A high-performance, professional Blog CMS engineered for extreme scalability and premium UX. Built with **Next.js 15 (App Router)**, **React 19**, and a robust **AWS 3-tier cloud architecture**. This system is designed for high-concurrency production environments (50k+ MAU).
 
-- **Framework**: Next.js 15 (App Router, Server Components + Client Components).
-- **Core Language**: Strict TypeScript (100% type safety, zero `any`).
-- **State Management**: `@tanstack/react-query` for robust server state, caching, deduplication, and stale-while-revalidate.
-- **Styling & Motion**: TailwindCSS + Framer Motion for 60fps micro-animations.
-- **UX Parity**: Mobile-first tap targets (≥ 44px), WCAG AA color contrast, Debounced auto-save drafts, Infinite scroll architecture.
-
-### Backend & Infrastructure
-
-- **Database**: PostgreSQL hosted on AWS RDS (`db.t4g.micro`).
-- **ORM**: Prisma ORM with automated schema migrations.
-- **Storage**: AWS S3 for object storage (images) + CloudFront for edge caching.
-- **Server**: AWS EC2 (`t3.micro`) running Ubuntu 24.04 LTS.
-- **Containerization**: Docker & Docker Compose with automated multi-stage builds.
-- **CI/CD**: GitHub Actions for automated zero-downtime deployment.
+> [!IMPORTANT]
+> **Live Production Demo**: [http://3.26.39.100](http://3.26.39.100)
+> _Auto-deployed via GitHub Actions to AWS EC2._
 
 ---
 
-## 🚀 Key Production Features
+## ✨ Features & Technical Excellence
 
-- 🔐 **NextAuth.js Integration**: Secure OAuth/Credential login with proper callback redirects and session handling.
-- 🛡️ **Race-Condition & Memory Safe**: Custom `fetch` wrapper with `AbortController`, hard 10-second timeouts, and `URL.revokeObjectURL` garbage collection.
-- ⚡ **Optimistic UI Mutations**: Instant feedback for interactions (Likes, Comments) with robust snapshot rollback on server error.
-- 💾 **Editor Auto-Save**: Infinity Editor features debounced `localStorage` drafts to prevent data loss.
-- ♿ **Accessibility (A11y)**: Fully semantic HTML, ARIA labels, focus rings, and screen-reader-friendly interactions.
-- 🔄 **Hydration Safety**: Advanced handling of SSR/Client mismatches (e.g., safe localized Date rendering).
+### 🎨 Frontend Performance
+
+- **React 19 & Compiler**: Leverages the new React Compiler for automatic memoization and 0ms-runtime overhead.
+- **60FPS Motion**: Framer Motion orchestrating hardware-accelerated micro-animations.
+- **Optimistic Mutations**: Zero-latency UI updates for social interactions with automatic server-state rollback.
+- **Hydration Safety**: Advanced handling of server/client mismatches for localized content.
+
+### �️ Backend & Resilience
+
+- **Multi-Layer Rate Limiting**: Redis-backed global limiting with a local L1 LRU memory fallback for DDoS mitigation.
+- **Resilience**: Custom `fetch` wrappers with `AbortController` and 10s strict timeouts.
+- **Transactional Auth**: Atomic user creation and verification token promotion to prevent orphaned states.
+- **Security Hardened**: Strict CSP headers, X-Frame-Options, and automated Next.js 15 security patterns.
+
+### ☁️ Infrastructure & DevOps
+
+- **AWS Stack**: RDS (PostgreSQL), S3 (Object Storage), CloudFront (CDN), EC2 (Server).
+- **Containerization**: Optimized multi-stage Docker builds for minimal image size.
+- **CI/CD**: Fully automated deployment pipeline via GitHub Actions.
 
 ---
 
-## 🛠️ Local Development Setup
+## 🏗️ Architecture
 
-1. **Clone the repository**:
+```mermaid
+graph TD
+    User((User)) --> CF[Amazon CloudFront]
+    CF --> S3[Amazon S3 - Assets]
+    CF --> ALB[Amazon EC2 - Next.js App]
+    ALB --> Redis[(Redis - Rate Limiting)]
+    ALB --> RDS[(AWS RDS - PostgreSQL)]
+```
+
+---
+
+## 🛠️ Local Development
+
+### Prerequisites
+
+- Node.js 20+
+- Docker & Docker Compose
+- PostgreSQL (Local or Remote)
+
+### Setup
+
+1. **Clone & Install**:
 
    ```bash
    git clone https://github.com/iamtomnotjerry/aws-project.git
    cd aws-project
-   ```
-
-2. **Install dependencies**:
-
-   ```bash
    npm install
    ```
 
-3. **Configure Environment Variables**:
-   Create a `.env` file in the root directory:
+2. **Environment Configuration**:
+   Create a `.env` file based on the implementation requirements:
 
    ```env
-   DATABASE_URL="postgresql://user:password@aws-rds-endpoint:5432/dbname"
+   # Database
+   DATABASE_URL="postgresql://user:password@localhost:5432/blog"
+
+   # Auth
    NEXTAUTH_URL="http://localhost:3000"
    NEXTAUTH_SECRET="your_secret_key"
-   # S3 / CloudFront configs...
+
+   # AWS (S3/CloudFront)
+   AWS_ACCESS_KEY_ID="xxx"
+   AWS_SECRET_ACCESS_KEY="xxx"
+   AWS_REGION="ap-southeast-1"
+   AWS_S3_BUCKET="xxx"
    ```
 
-4. **Initialize Database**:
+3. **Database Initialization**:
 
    ```bash
-   npx prisma generate
    npx prisma db push
    ```
 
-5. **Run Development Server**:
+4. **Launch**:
    ```bash
    npm run dev
    ```
 
 ---
 
-## 🚢 Deployment (AWS EC2 via Docker)
+## 🚢 Deployment (Production)
 
-This repository is configured for automated CI/CD via GitHub Actions.
-
-For manual deployment on an Ubuntu EC2 instance:
+Optimized for **AWS EC2** using Docker Standalone output.
 
 ```bash
-# 1. Ensure Swap Memory is configured (Critical for t3.micro 1GB RAM)
-sudo fallocate -l 2G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
+# 1. Setup Swap (Critical for t3.micro/t4g.micro)
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
 
-# 2. Build and run containers
+# 2. Deploy
 docker compose up -d --build
 ```
 
 ---
 
-_Architected and Refactored by Antigravity AI Assistant._
+## 📜 Scripts
+
+| Command         | Description                                         |
+| :-------------- | :-------------------------------------------------- |
+| `npm run dev`   | Starts development server with HMR.                 |
+| `npm run build` | Builds the application for production (Standalone). |
+| `npm run start` | Runs the built production server.                   |
+| `npm run lint`  | Executes ESLint for code quality checks.            |
+
+---
+
+<p align="center">
+  <i>Architected and Maintained by Antigravity AI.</i>
+</p>
