@@ -10,6 +10,7 @@ if (!accessKeyId || !secretAccessKey) {
 
 export const s3Client = new S3Client({
   region,
+  requestChecksumCalculation: "WHEN_REQUIRED",
   ...(accessKeyId && secretAccessKey
     ? { credentials: { accessKeyId, secretAccessKey } }
     : {}),

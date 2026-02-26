@@ -54,7 +54,6 @@ export async function POST(request: Request) {
       Bucket: bucketName,
       Key: key,
       ContentType: contentType,
-      ContentLength: MAX_FILE_SIZE, // S3 enforces max upload size
     });
 
     const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 60 });
