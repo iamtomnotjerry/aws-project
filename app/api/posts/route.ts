@@ -24,12 +24,8 @@ export async function GET(req: NextRequest) {
 
     const result = await PostService.getPosts(limit, cursor);
 
-    return NextResponse.json(
-      ApiUtils.success(result)
-    , {
-      headers: {
-        'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',
-      },
+    return ApiUtils.success(result, undefined, 200, {
+      'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',
     });
   } catch (error) {
     return ApiUtils.serverError(error, { route: "GET /api/posts" });

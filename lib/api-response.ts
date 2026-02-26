@@ -10,10 +10,10 @@ export type ApiResponse<T = unknown> = {
 };
 
 export class ApiUtils {
-  static success<T>(data: T, message?: string, status = 200) {
+  static success<T>(data: T, message?: string, status = 200, headers?: Record<string, string>) {
     return NextResponse.json(
       { success: true, data, message },
-      { status }
+      { status, headers }
     );
   }
 

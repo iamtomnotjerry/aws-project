@@ -35,17 +35,13 @@ export async function GET(
 
     const isLiked = userId ? await LikeService.hasUserLiked(id, userId) : false;
 
-    return NextResponse.json(
-      ApiUtils.success({
-        ...post,
-        likes: post.likesCount,
-        isLiked,
-      }), {
-        headers: {
-          'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',
-        },
-      }
-    );
+    return ApiUtils.success({
+      ...post,
+      likes: post.likesCount,
+      isLiked,
+    }, undefined, 200, {
+      'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',
+    });
   } catch (error) {
     return ApiUtils.serverError(error);
   }
