@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, User, Calendar, Clock, ImageIcon, Edit3, Share2 } from "lucide-react";
+import { ArrowLeft, User, Calendar, ImageIcon, Edit3, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -12,32 +12,10 @@ import { ReadingProgress } from "@/components/ui/ReadingProgress";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { LikeButton } from "./LikeButton";
 import { CommentSection } from "./comments/CommentSection";
-
-interface PostData {
-  id: string;
-  title: string;
-  content: string | null;
-  coverImage: string | null;
-  published: boolean;
-  authorId: string | null;
-  likesCount: number;
-  commentsCount: number;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-  isLiked?: boolean;
-  author: {
-    id: string;
-    name: string | null;
-    email: string | null;
-    image: string | null;
-    role: string;
-    emailVerified: Date | null;
-    password: string | null;
-  } | null;
-}
+import { PostWithAuthor } from "@/types";
 
 interface PostDetailClientProps {
-  post: PostData;
+  post: PostWithAuthor;
   isAdmin: boolean;
   DeleteButton: React.ReactNode;
 }

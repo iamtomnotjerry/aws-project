@@ -34,11 +34,14 @@ export interface Post {
   title: string;
   content?: string | null;
   coverImage?: string | null;
-  likes: number;
+  likesCount: number;
+  commentsCount: number;
   published: boolean;
   authorId?: string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
+  // Transformed field for UI
+  likes: number; 
 }
 
 export interface PostWithAuthor extends Post {

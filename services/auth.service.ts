@@ -4,13 +4,12 @@ import { randomBytes } from "crypto";
 import { sendVerificationEmail } from "@/lib/resend";
 import { logger } from "@/lib/logger";
 
-// Helper to fire-and-forget or fast-fail network calls
 async function fireEmailWithTimeout(email: string, token: string) {
   try {
     const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Email sending timeout')), 3000));
     await Promise.race([sendVerificationEmail(email, token), timeout]);
   } catch (err: unknown) {
-    logger.warn(`Email sending to ${email} timed out or failed. Registration continues.`, { error: err instanceof Error ? err.message : String(err) });
+    logger.warn(`Email sending to ${email} timed out or failed.`, { error: err instanceof Error ? err.message : String(err) });
   }
 }
 
@@ -23,7 +22,7 @@ export class AuthService {
 
     const hashedPassword = password ? await hash(password, 12) : null;
     const token = randomBytes(32).toString("hex");
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); 
 
     const finalName = name || email.split("@")[0];
     const finalPassword = hashedPassword || "";
@@ -45,28 +44,49 @@ export class AuthService {
       },
     });
 
-    // Fire email in background without blocking the HTTP response indefinitely
     fireEmailWithTimeout(email, token);
-
     return pendingUser;
   }
 
-  static async resendVerification(email: string) {
-    const pendingUser = await prisma.pendingUser.findUnique({ where: { email } });
+  static async verifyToken(token: string) {
+    const pendingUser = await prisma.pendingUser.findUnique({ where: { token } });
+    
     if (!pendingUser) {
-      throw new Error("No pending registration found");
+      // Legacy flow support if needed, but primarily we check PendingUser
+      return null;
     }
 
-    const token = randomBytes(32).toString("hex");
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    if (new Date(pendingUser.expires) < new Date()) {
+      await prisma.pendingUser.delete({ where: { token } });
+      throw new Error("Token expired");
+    }
 
-    const updatedUser = await prisma.pendingUser.update({
-      where: { email },
-      data: { token, expires },
+    try {
+      const user = await prisma.$transaction(async (tx) => {
+        const created = await tx.user.create({
+          data: {
+            email: pendingUser.email,
+            name: pendingUser.name,
+            password: pendingUser.password,
+            emailVerified: new Date(),
+            image: `https://ui-avatars.com/api/?name=${encodeURIComponent(pendingUser.name || "User")}&background=random`,
+          },
+        });
+        await tx.pendingUser.delete({ where: { token } });
+        return created;
+      });
+      return user;
+    } catch (err: any) {
+      if (err.code === "P2002") throw new Error("Email already taken");
+      throw err;
+    }
+  }
+
+  static async cleanupExpiredPendingUsers() {
+    const result = await prisma.pendingUser.deleteMany({
+      where: { expires: { lt: new Date() } }
     });
-
-    fireEmailWithTimeout(email, token);
-
-    return updatedUser;
+    logger.info("Cleaned up expired pending users", { count: result.count });
+    return result.count;
   }
 }

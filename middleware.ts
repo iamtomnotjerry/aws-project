@@ -5,7 +5,7 @@ import { requestIdMiddleware } from "@/lib/middleware";
 export default withAuth(
   function middleware(req) {
     if (req.nextUrl.pathname.startsWith("/api")) {
-      return requestIdMiddleware(req as any);
+      return requestIdMiddleware(req);
     }
 
     if (req.nextauth.token?.role !== "ADMIN") {

@@ -1,32 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
+import { CacheService } from "@/lib/cache";
+import { Comment } from "@/types";
 
 type TxClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
-interface CommentWithUser {
-  id: string;
-  content: string;
-  postId: string;
-  userId: string;
-  parentId: string | null;
-  createdAt: Date;
-  user: {
-    name: string | null;
-    image: string | null;
-    role: string;
-  };
-  replies: CommentWithUser[];
-}
-
 export class CommentService {
-  /**
-   * Fetch paginated root-level comments with exactly 1 level of replies (max 5 replies per root)
-   * This bounds memory allocation strictly to prevent OOM under DDoS or viral threads.
-   */
-  static async getComments(postId: string, page: number = 0, pageSize: number = 20) {
+  static async getComments(postId: string, page: number = 0, pageSize: number = 20): Promise<Comment[]> {
     const start = page * pageSize;
     
-    // Fetch only ROOT comments, paginated, and eagerly load up to 5 replies per root.
     const roots = await prisma.comment.findMany({
       where: { postId, parentId: null },
       orderBy: { createdAt: "desc" },
@@ -46,18 +28,15 @@ export class CommentService {
       },
     });
 
-    return roots;
+    return roots as unknown as Comment[];
   }
 
-  /**
-   * Create a comment and atomically increment the denormalized counter.
-   */
   static async createComment(
     postId: string,
     userId: string,
     content: string,
     parentId?: string | null
-  ) {
+  ): Promise<Comment> {
     const newComment = await prisma.$transaction(async (tx: TxClient) => {
       const created = await tx.comment.create({
         data: {
@@ -68,11 +47,7 @@ export class CommentService {
         },
         include: {
           user: {
-            select: {
-              name: true,
-              image: true,
-              role: true,
-            },
+            select: { name: true, image: true, role: true },
           },
         },
       });
@@ -85,20 +60,19 @@ export class CommentService {
       return created;
     });
 
-    logger.debug("Comment created", { postId, userId, commentId: newComment.id });
-    return newComment;
+    // Invalidate global posts version so the homepage feed shows updated comment counts
+    await CacheService.increment("posts:version");
+
+    logger.debug("Comment created and cache version bumped", { postId, userId });
+    return newComment as unknown as Comment;
   }
 
-  /**
-   * Reconcile denormalized commentsCount with actual Comment records.
-   */
   static async reconcileCounters(): Promise<number> {
     const posts = await prisma.post.findMany({
       select: { id: true, commentsCount: true },
     });
 
     let fixedCount = 0;
-
     for (const post of posts) {
       const actualCount = await prisma.comment.count({ where: { postId: post.id } });
       if (actualCount !== post.commentsCount) {
@@ -107,11 +81,6 @@ export class CommentService {
           data: { commentsCount: actualCount },
         });
         fixedCount++;
-        logger.info("Reconciled commentsCount", {
-          postId: post.id,
-          was: post.commentsCount,
-          now: actualCount,
-        });
       }
     }
 

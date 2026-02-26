@@ -1,17 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, GraduationCap, Briefcase, Users, Activity, Heart, HomeIcon, BookOpen } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/Button";
+import { Sparkles, BookOpen } from "lucide-react";
 import { PostCard } from "@/features/blog/components/PostCard";
-import { SpotlightCard } from "@/features/core/components/SpotlightCard";
-import { Magnetic } from "@/components/ui/Magnetic";
+import { PostWithAuthor } from "@/types";
 
-export default function HomePageClient({ initialPosts, initialCursor }: { initialPosts: any[], initialCursor: string | null }) {
-  // Client component now immediately renders visually complete data passed from RSC
-  // Further pagination/infinite scroll can be implemented gracefully here
+interface HomePageClientProps {
+  initialPosts: PostWithAuthor[];
+  initialCursor: string | null;
+}
 
+export default function HomePageClient({ initialPosts, initialCursor }: HomePageClientProps) {
   return (
     <div className="min-h-screen pb-48">
       {/* Hero Section */}
@@ -23,7 +22,7 @@ export default function HomePageClient({ initialPosts, initialCursor }: { initia
             className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full glass-morphism border-white/[0.08] text-primary text-[9px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/10"
           >
             <Sparkles size={12} className="animate-pulse" />
-             RSC Caching Optimized
+             RSC & Cache Optimized
           </motion.div>
           
           <motion.h1 
@@ -68,7 +67,7 @@ export default function HomePageClient({ initialPosts, initialCursor }: { initia
                 <div className="md:col-span-12">
                   <PostCard post={initialPosts[0]} featured />
                 </div>
-                {initialPosts.slice(1, 4).map((post, idx) => (
+                {initialPosts.slice(1, 4).map((post) => (
                   <div key={post.id} className="md:col-span-4">
                     <PostCard post={post} />
                   </div>

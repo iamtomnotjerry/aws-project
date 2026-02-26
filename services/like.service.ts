@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
+import { CacheService } from "@/lib/cache";
 
 type TxClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
 export class LikeService {
   /**
-   * Toggle like directly in the database. 
-   * Uses a transaction to atomically update the denormalized counter.
+   * Toggle like and invalidate post feed cache to keep counters fresh.
    */
   static async toggleLike(postId: string, userId: string): Promise<{ liked: boolean; likesCount: number }> {
     const result = await prisma.$transaction(async (tx: TxClient) => {
@@ -33,13 +33,13 @@ export class LikeService {
       }
     });
 
-    logger.debug("Like toggled atomically in DB", { postId, userId, liked: result.liked });
+    // Invalidate global posts version so the homepage feed shows updated like counts
+    await CacheService.increment("posts:version");
+    
+    logger.debug("Like toggled and cache version bumped", { postId, userId });
     return result;
   }
 
-  /**
-   * Check if a user has liked a specific post directly via database.
-   */
   static async hasUserLiked(postId: string, userId: string): Promise<boolean> {
     const like = await prisma.like.findUnique({
       where: { postId_userId: { postId, userId } },
@@ -47,17 +47,12 @@ export class LikeService {
     return !!like;
   }
 
-  /**
-   * Reconcile denormalized likesCount with actual Like records.
-   * Should be called periodically (e.g., cron job) to fix any counter drift.
-   */
   static async reconcileCounters(): Promise<number> {
     const posts = await prisma.post.findMany({
       select: { id: true, likesCount: true },
     });
 
     let fixedCount = 0;
-
     for (const post of posts) {
       const actualCount = await prisma.like.count({ where: { postId: post.id } });
       if (actualCount !== post.likesCount) {

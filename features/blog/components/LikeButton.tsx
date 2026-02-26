@@ -27,42 +27,65 @@ export const LikeButton = ({ postId, initialLikes, initialIsLiked = false }: Lik
   const router = useRouter();
   const queryKey = ['post-like', postId];
 
+  // We use useQuery to manage the local "truth" of the like state, 
+  // initialized with props but updated via mutations.
   const { data: likeState } = useQuery<LikeState>({
     queryKey,
-    queryFn: () => ({ isLiked: initialIsLiked, likes: initialLikes }),
+    // Provide initial data from the SSR/RSC props
     initialData: { isLiked: initialIsLiked, likes: initialLikes },
-    staleTime: Infinity, 
+    // If the query is invalidated, we don't want it to just "reset" to props 
+    // unless we actually fetch something. For now, we manually manage it.
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 5, // Keep in memory for 5 mins
   });
 
   const mutation = useMutation({
     mutationFn: async () => {
-      return fetcher<{ liked: boolean; likesCount: number }>(`/api/posts/${postId}/like`, { 
+      // API returns: { success: true, data: { liked: boolean, likes: number } }
+      // fetcher returns just the "data" part.
+      return fetcher<{ liked: boolean; likes: number }>(`/api/posts/${postId}/like`, { 
         method: "POST",
         headers: { "X-Idempotency-Key": crypto.randomUUID() },
       });
     },
     onMutate: async () => {
+      // 1. Cancel outgoing fetches
       await queryClient.cancelQueries({ queryKey });
+      
+      // 2. Snapshot the current state
       const previousState = queryClient.getQueryData<LikeState>(queryKey);
       
+      // 3. Optimistically update to the new state
       queryClient.setQueryData<LikeState>(queryKey, (old) => {
-        const safeOld = old || { isLiked: false, likes: 0 };
+        if (!old) return { isLiked: !initialIsLiked, likes: initialIsLiked ? initialLikes - 1 : initialLikes + 1 };
         return {
-          isLiked: !safeOld.isLiked,
-          likes: safeOld.isLiked ? Math.max(0, safeOld.likes - 1) : safeOld.likes + 1,
-        }
+          isLiked: !old.isLiked,
+          likes: old.isLiked ? Math.max(0, old.likes - 1) : old.likes + 1,
+        };
       });
       
       return { previousState };
     },
+    onSuccess: (data) => {
+      // 4. Update with the definitive server state
+      // Note: Data from API uses "liked" and "likes" keys.
+      queryClient.setQueryData<LikeState>(queryKey, {
+        isLiked: data.liked,
+        likes: data.likes,
+      });
+    },
     onError: (err, variables, context) => {
+      // 5. Rollback to safe state on error
       if (context?.previousState) {
         queryClient.setQueryData(queryKey, context.previousState);
       }
       toast.error(err instanceof Error ? err.message : "Failed to sync like status");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
+      // We DON'T invalidate globally here to prevent the "jump" back to props
+      // since we already have the fresh server state in onSuccess.
+      // But we might want to invalidate the home feed if we used a separate query for it.
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
 
@@ -75,8 +98,8 @@ export const LikeButton = ({ postId, initialLikes, initialIsLiked = false }: Lik
     mutation.mutate();
   };
 
-  const isLiked = likeState?.isLiked || false;
-  const likes = likeState?.likes || 0;
+  const isLiked = likeState?.isLiked ?? initialIsLiked;
+  const likes = likeState?.likes ?? initialLikes;
 
   return (
     <div className="flex items-center gap-4">
@@ -95,10 +118,10 @@ export const LikeButton = ({ postId, initialLikes, initialIsLiked = false }: Lik
       >
         <Heart size={20} fill={isLiked ? "currentColor" : "none"} className="transition-transform duration-300" />
         <AnimatePresence>
-          {mutation.isPending && isLiked && (
+          {mutation.isPending && !isLiked && (
             <motion.span
-              initial={{ opacity: 0, y: 0 }}
-              animate={{ opacity: 1, y: -25 }}
+              initial={{ opacity: 0, scale: 0.5, y: 0 }}
+              animate={{ opacity: 1, scale: 1.2, y: -30 }}
               exit={{ opacity: 0 }}
               className="absolute pointer-events-none text-primary font-bold text-[10px]"
             >

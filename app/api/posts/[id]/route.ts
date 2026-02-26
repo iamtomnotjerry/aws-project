@@ -1,13 +1,14 @@
 import { ApiUtils } from "@/lib/api-response";
-import { prisma } from "@/lib/prisma";
 import { postSchema } from "@/schemas/post.schema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { NextRequest, NextResponse } from "next/server";
-import { LikeService } from "@/services/like.service";
+import { NextRequest } from "next/server";
+import { PostService } from "@/services/post.service";
+import { logger } from "@/lib/logger";
+import { revalidatePath } from "next/cache";
 
 export async function GET(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -15,31 +16,11 @@ export async function GET(
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
 
-    const post = await prisma.post.findUnique({
-      where: { id },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-            role: true,
-            emailVerified: true,
-          },
-        },
-      },
-    });
+    const post = await PostService.getPostById(id, userId);
 
     if (!post) return ApiUtils.error("Post not found", 404);
 
-    const isLiked = userId ? await LikeService.hasUserLiked(id, userId) : false;
-
-    return ApiUtils.success({
-      ...post,
-      likes: post.likesCount,
-      isLiked,
-    }, undefined, 200, {
+    return ApiUtils.success(post, undefined, 200, {
       'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=59',
     });
   } catch (error) {
@@ -48,7 +29,7 @@ export async function GET(
 }
 
 export async function DELETE(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -58,9 +39,11 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    await prisma.post.delete({
-      where: { id },
-    });
+    await PostService.deletePost(id);
+    
+    revalidatePath("/");
+    revalidatePath("/posts");
+
     return ApiUtils.success({ message: "Post deleted" });
   } catch (error) {
     return ApiUtils.serverError(error);
@@ -68,7 +51,7 @@ export async function DELETE(
 }
 
 export async function PATCH(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -85,12 +68,11 @@ export async function PATCH(
       return ApiUtils.error(validatedData.error.issues[0].message, 400);
     }
 
-    const post = await prisma.post.update({
-      where: { id },
-      data: {
-        ...validatedData.data,
-      },
-    });
+    const post = await PostService.updatePost(id, validatedData.data);
+
+    revalidatePath("/");
+    revalidatePath("/posts");
+    revalidatePath(`/post/${id}`);
 
     return ApiUtils.success(post);
   } catch (error) {
