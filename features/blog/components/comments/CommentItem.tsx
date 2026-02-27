@@ -5,18 +5,20 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { User as UserIcon, Reply, ShieldCheck } from "lucide-react";
 
-interface CommentItemProps {
-  comment: {
-    id: string;
-    content: string;
-    createdAt: Date | string;
-    user: {
-      name: string | null;
-      image: string | null;
-      role: string;
-    };
-    replies?: any[];
+interface CommentData {
+  id: string;
+  content: string;
+  createdAt: Date | string;
+  user: {
+    name: string | null;
+    image: string | null;
+    role: string;
   };
+  replies?: CommentData[];
+}
+
+interface CommentItemProps {
+  comment: CommentData;
   onReply?: (commentId: string, name: string) => void;
   isReply?: boolean;
 }

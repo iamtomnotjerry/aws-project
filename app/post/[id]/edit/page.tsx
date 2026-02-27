@@ -46,9 +46,20 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
     loadPost();
   }, [id, reset]);
 
+  useEffect(() => {
+    return () => {
+      if (preview && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (preview && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
       setImageFile(file);
       setPreview(URL.createObjectURL(file));
     }
@@ -104,7 +115,14 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
                 <div className="relative aspect-video rounded-2xl overflow-hidden group border border-white/10">
                   <img src={preview} alt="Upload Preview" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                    <Button variant="danger" size="sm" onClick={() => { setPreview(null); setImageFile(null); setValue("coverImage", null); }}>
+                    <Button variant="danger" size="sm" onClick={() => { 
+                      if (preview && preview.startsWith('blob:')) {
+                        URL.revokeObjectURL(preview);
+                      }
+                      setPreview(null); 
+                      setImageFile(null); 
+                      setValue("coverImage", null); 
+                    }}>
                       <Trash2 size={18} /> Remove Image
                     </Button>
                     <label className="cursor-pointer">

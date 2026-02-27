@@ -1,35 +1,34 @@
-import { NextResponse } from "next/server";
+import { ApiUtils } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/cache";
+import { logger } from "@/lib/logger";
 
 export async function GET() {
-  const checks: Record<string, string> = {
-    status: "ok",
-    uptime: `${Math.floor(process.uptime())}s`,
+  const status = {
+    database: "down",
+    redis: "down",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
   };
 
   try {
-    // Probe PostgreSQL
+    // Check DB
     await prisma.$queryRaw`SELECT 1`;
-    checks.database = "connected";
-  } catch {
-    checks.database = "disconnected";
-    checks.status = "degraded";
-  }
+    status.database = "up";
 
-  try {
-    // Probe Redis
+    // Check Redis
     if (redis) {
-      const pong = await redis.ping();
-      checks.redis = pong === "PONG" ? "connected" : "error";
-    } else {
-      checks.redis = "not_configured";
+      await redis.ping();
+      status.redis = "up";
+    } else if (process.env.NODE_ENV === 'development') {
+      status.redis = "bypassed (local)";
     }
-  } catch {
-    checks.redis = "disconnected";
-    checks.status = "degraded";
-  }
 
-  const httpStatus = checks.status === "ok" ? 200 : 503;
-  return NextResponse.json(checks, { status: httpStatus });
+    const isHealthy = status.database === "up" && (status.redis === "up" || process.env.NODE_ENV === 'development');
+
+    return ApiUtils.success(status, isHealthy ? "System healthy" : "System degraded", isHealthy ? 200 : 503);
+  } catch (error) {
+    logger.error("Health check failed", error);
+    return ApiUtils.error("System Unhealthy", 503, status);
+  }
 }

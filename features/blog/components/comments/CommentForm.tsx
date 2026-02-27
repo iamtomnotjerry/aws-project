@@ -10,7 +10,7 @@ import { useSession } from "next-auth/react";
 
 interface CommentFormProps {
   postId: string;
-  onSuccess: (newComment: any) => void;
+  onSuccess: (newComment: unknown) => void;
   parentId?: string | null;
   replyToName?: string | null;
   onCancelReply?: () => void;
@@ -47,8 +47,8 @@ export const CommentForm = ({
       } else {
         throw new Error(data.error || "Gửi bình luận thất bại");
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setIsSubmitting(false);
     }

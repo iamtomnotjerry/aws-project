@@ -21,11 +21,13 @@ export async function GET(req: NextRequest) {
     }
 
     return redirect("/auth/verify-success");
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (isRedirectError(error)) throw error;
     
-    if (error.message === "Token expired") return redirect("/auth/signin?error=TokenExpired");
-    if (error.message === "Email already taken") return redirect("/auth/signin?error=EmailAlreadyTaken");
+    if (error instanceof Error) {
+      if (error.message === "Token expired") return redirect("/auth/signin?error=TokenExpired");
+      if (error.message === "Email already taken") return redirect("/auth/signin?error=EmailAlreadyTaken");
+    }
 
     logger.error("Verification error", error);
     return redirect("/auth/signin?error=VerificationFailed");

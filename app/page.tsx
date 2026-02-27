@@ -18,8 +18,8 @@ export default async function Home() {
     
     // 2. Pass strictly typed initial payload to the Client Component
     return <HomePageClient initialPosts={posts} initialCursor={nextCursor} />;
-  } catch (err: any) {
-    const errorMessage = err?.message || String(err);
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
     logger.error("Failed to load homepage feed", { error: errorMessage });
     return (
       <div className="flex flex-col items-center justify-center min-h-screen text-slate-500 font-bold uppercase tracking-widest gap-4 p-8">

@@ -20,9 +20,7 @@ export async function GET(
 
     if (!post) return ApiUtils.error("Post not found", 404);
 
-    return ApiUtils.success(post, undefined, 200, {
-      'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=59',
-    });
+    return ApiUtils.success(post, undefined, 200);
   } catch (error) {
     return ApiUtils.serverError(error);
   }

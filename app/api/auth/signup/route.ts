@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { ApiUtils } from "@/lib/api-response";
 import { signupSchema } from "@/schemas/auth.schema";
 import { AuthService } from "@/services/auth.service";

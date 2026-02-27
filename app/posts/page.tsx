@@ -155,7 +155,7 @@ export default function PostsPage() {
         </motion.div>
 
         {/* Infinite Scroll Load More */}
-        {!loading && hasMore && !searchQuery && (
+        {!loading && hasMore && (
           <div className="mt-40 flex justify-center">
             <Magnetic strength={0.1}>
               <Button 

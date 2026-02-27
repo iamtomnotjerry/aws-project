@@ -29,8 +29,8 @@ export const Newsletter = () => {
       } else {
         throw new Error(data.error || "Có lỗi xảy ra");
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setLoading(false);
     }

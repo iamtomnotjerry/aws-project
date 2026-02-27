@@ -42,7 +42,10 @@ export const fetcher = async <T>(url: string, options: FetchOptions = {}): Promi
     }
     
     const data = await response.json();
-    return data.data !== undefined ? data.data : data;
+    if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
+      return data.data;
+    }
+    return data;
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       throw new TimeoutError();

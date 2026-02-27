@@ -19,10 +19,12 @@ export const ApiService = {
       if (cursor) params.set("cursor", cursor);
       
       const res = await fetch(`/api/posts?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
       return res.json();
     },
     getOne: async (id: string): Promise<ApiResponse<PostWithAuthor>> => {
       const res = await fetch(`/api/posts/${id}`);
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
       return res.json();
     },
     create: async (data: PostInput): Promise<ApiResponse<PostWithAuthor>> => {
@@ -31,6 +33,7 @@ export const ApiService = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
       return res.json();
     },
     update: async (id: string, data: PostInput): Promise<ApiResponse<PostWithAuthor>> => {
@@ -39,12 +42,14 @@ export const ApiService = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
       return res.json();
     },
     delete: async (id: string): Promise<ApiResponse<{ message: string }>> => {
       const res = await fetch(`/api/posts/${id}`, {
         method: "DELETE",
       });
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
       return res.json();
     },
   },
@@ -55,6 +60,7 @@ export const ApiService = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filename, contentType }),
       });
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
       return res.json();
     },
     directUpload: async (url: string, file: File): Promise<void> => {

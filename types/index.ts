@@ -40,8 +40,6 @@ export interface Post {
   authorId?: string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
-  // Transformed field for UI
-  likes: number; 
 }
 
 export interface PostWithAuthor extends Post {

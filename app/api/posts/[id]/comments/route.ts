@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { logger } from "@/lib/logger";
 import { CommentService } from "@/services/comment.service";
+import { revalidatePath } from "next/cache";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function GET(
   req: NextRequest,
@@ -29,6 +31,12 @@ export async function POST(
       return ApiUtils.error("Authentication required to comment", 401);
     }
 
+    const ip = req.headers.get("x-forwarded-for") || "anonymous";
+    const rl = await rateLimit(`comment_${ip}`, { limit: 5, windowMs: 60000 });
+    if (!rl.success) {
+      return ApiUtils.error("Too many comments. Please try again later.", 429);
+    }
+
     const { id: postId } = await params;
     const { content, parentId } = await req.json();
 
@@ -46,6 +54,10 @@ export async function POST(
       content,
       parentId
     );
+
+    revalidatePath("/");
+    revalidatePath("/posts");
+    revalidatePath(`/post/${postId}`);
 
     return ApiUtils.success(newComment, "Comment created", 201);
   } catch (error) {

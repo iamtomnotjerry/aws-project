@@ -1,7 +1,8 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import Image from "next/image";
 import { 
   User, Mail, Shield, CheckCircle2, ChevronRight, 
@@ -50,16 +51,19 @@ function SettingsRow({ icon: Icon, label, value, action = false, destructive = f
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
-  if (status === "loading") {
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/signin");
+    }
+  }, [status, router]);
+
+  if (status === "loading" || status === "unauthenticated") {
     return <div className="min-h-screen bg-background" />;
   }
 
-  if (!session) {
-    redirect("/auth/signin");
-  }
-
-  const user = session.user;
+  const user = session!.user;
 
   return (
     <div className="min-h-screen bg-background pt-24 md:pt-32 pb-16 md:pb-24 px-4 md:px-0 relative overflow-hidden">
