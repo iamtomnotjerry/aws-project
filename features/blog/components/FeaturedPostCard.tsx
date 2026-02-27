@@ -53,7 +53,7 @@ export const FeaturedPostCard = ({ post }: FeaturedPostCardProps) => {
               </div>
             </div>
 
-            <h2 className="text-3xl md:text-4xl lg:text-7xl font-black mb-6 md:mb-10 tracking-tightest leading-[1] md:leading-[0.9] group-hover:text-primary transition-colors duration-700 italic uppercase">
+            <h2 className="text-3xl md:text-4xl lg:text-7xl font-black mb-6 md:mb-10 tracking-tightest leading-[1] md:leading-[0.9] group-hover:text-primary transition-colors duration-700 italic uppercase line-clamp-2">
               {post.title}
             </h2>
             

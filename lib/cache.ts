@@ -10,14 +10,15 @@ const isLocal = process.env.NODE_ENV === 'development';
 
 // Nếu là AWS Redis nhưng chạy ở Local (không có VPN/Tunnel) thì bỏ qua để tránh treo máy
 export const redis = (redisUrl && (!isLocal || !isAwsRedis)) ? new Redis(redisUrl, {
-  connectTimeout: 5000, // Giảm timeout xuống 5s cho đỡ chờ lâu
+  connectTimeout: 5000, 
   maxRetriesPerRequest: 1,
   commandTimeout: 2000, 
   family: 4, 
+  lazyConnect: true, // Don't block on startup
   tls: redisUrl.startsWith("rediss") ? {
     rejectUnauthorized: false
   } : undefined,
-  retryStrategy: (times) => times > 1 ? null : 1000
+  retryStrategy: (times) => times > 2 ? null : 1000
 }) : null;
 
 if (isLocal && isAwsRedis) {
@@ -35,6 +36,26 @@ const redisCircuitBreaker = new CircuitBreaker("RedisCache", {
   failureThreshold: 3,
   resetTimeout: 15000,
 });
+
+// Pub/Sub Client for invalidation
+const pubClient = redis ? redis.duplicate() : null;
+const subClient = redis ? redis.duplicate() : null;
+
+const INVALIDATION_CHANNEL = "cache:invalidation";
+
+if (subClient) {
+  subClient.subscribe(INVALIDATION_CHANNEL, (err) => {
+    if (err) logger.error("Failed to subscribe to invalidation channel", err);
+  });
+
+  subClient.on("message", (channel, message) => {
+    if (channel === INVALIDATION_CHANNEL) {
+      const { key, action } = JSON.parse(message);
+      l1Cache.delete(key);
+      logger.debug(`L1 Cache sync: ${action} for key ${key}`);
+    }
+  });
+}
 
 if (!redisUrl) {
   logger.warn("REDIS_URL is strictly required for Production! Using L1 LRU fallback locally.");
@@ -61,6 +82,16 @@ if (!redisUrl) {
 }
 
 export class CacheService {
+  private static async broadcast(key: string, action: 'invalidate' | 'increment'): Promise<void> {
+    if (pubClient && !redisCircuitBreaker.isOpen()) {
+      try {
+        await pubClient.publish(INVALIDATION_CHANNEL, JSON.stringify({ key, action }));
+      } catch (err) {
+        logger.error(`Failed to broadcast invalidation for ${key}`, err);
+      }
+    }
+  }
+
   static async set<T>(key: string, value: T, ttlSeconds: number): Promise<void> {
     try {
       const data = JSON.stringify(value);
@@ -111,11 +142,21 @@ export class CacheService {
 
   static async increment(key: string): Promise<number> {
     try {
-      l1Cache.delete(key);
+      // 1. Proactively increment local L1 state to handle non-Redis environments
+      const current = l1Cache.get(key);
+      const nextVal = (parseInt(current || "0") + 1);
+      l1Cache.set(key, nextVal.toString());
+
+      let newVal = nextVal;
+      // 2. Atomic increment in Redis if available (truth)
       if (redis && !redisCircuitBreaker.isOpen()) {
-        return await redisCircuitBreaker.fire(() => redis.incr(key));
+        newVal = await redisCircuitBreaker.fire(() => redis.incr(key));
+        l1Cache.set(key, newVal.toString()); // Re-sync L1 with Redis truth
       }
-      return 0;
+      
+      // 3. Broadcast to other instances
+      await this.broadcast(key, 'increment');
+      return newVal;
     } catch (err) {
       logger.error(`Cache INCR error for key ${key}`, err);
       return 0;
@@ -129,6 +170,9 @@ export class CacheService {
       if (redis && !redisCircuitBreaker.isOpen()) {
         await redisCircuitBreaker.fire(() => redis.del(key));
       }
+
+      // Broadcast to other instances
+      await this.broadcast(key, 'invalidate');
       logger.debug(`Cache invalidated: ${key}`);
     } catch (err) {
       logger.error(`Cache INVALIDATE error for key ${key}`, err);

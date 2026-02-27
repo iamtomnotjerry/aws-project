@@ -60,19 +60,27 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await req.json();
+    const { version, ...rest } = body;
 
-    const validatedData = postSchema.safeParse(body);
+    const validatedData = postSchema.safeParse(rest);
     if (!validatedData.success) {
       return ApiUtils.error(validatedData.error.issues[0].message, 400);
     }
 
-    const post = await PostService.updatePost(id, validatedData.data);
+    try {
+      const post = await PostService.updatePost(id, validatedData.data, version);
 
-    revalidatePath("/");
-    revalidatePath("/posts");
-    revalidatePath(`/post/${id}`);
+      revalidatePath("/");
+      revalidatePath("/posts");
+      revalidatePath(`/post/${id}`);
 
-    return ApiUtils.success(post);
+      return ApiUtils.success(post);
+    } catch (err: any) {
+       if (err.message.includes("CONFLICT")) {
+         return ApiUtils.error("This post was updated by another administrator. Please refresh and try again.", 409);
+       }
+       throw err;
+    }
   } catch (error) {
     return ApiUtils.serverError(error);
   }

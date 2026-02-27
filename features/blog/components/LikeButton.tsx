@@ -31,6 +31,8 @@ export const LikeButton = ({ postId, initialLikes, initialIsLiked = false }: Lik
   // initialized with props but updated via mutations.
   const { data: likeState } = useQuery<LikeState>({
     queryKey,
+    // Safely return initial data if query is triggered without a fetch
+    queryFn: () => ({ isLiked: initialIsLiked, likes: initialLikes }),
     // Provide initial data from the SSR/RSC props
     initialData: { isLiked: initialIsLiked, likes: initialLikes },
     // If the query is invalidated, we don't want it to just "reset" to props 
@@ -82,10 +84,10 @@ export const LikeButton = ({ postId, initialLikes, initialIsLiked = false }: Lik
       toast.error(err instanceof Error ? err.message : "Failed to sync like status");
     },
     onSettled: () => {
-      // We DON'T invalidate globally here to prevent the "jump" back to props
-      // since we already have the fresh server state in onSuccess.
-      // But we might want to invalidate the home feed if we used a separate query for it.
+      // Invalidate React Query
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      // Invalidate Next.js Router Cache for RSCs (Homepage, Detail, etc.)
+      router.refresh();
     },
   });
 

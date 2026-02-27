@@ -15,9 +15,11 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Card } from "@/components/ui/Card";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function EditPost({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const queryClient = useQueryClient();
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const { upload, uploading } = useS3Upload();
@@ -37,6 +39,7 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
           content: post.content ?? undefined,
           coverImage: post.coverImage ?? undefined,
           published: post.published,
+          version: (post as any).version,
         });
         if (post.coverImage) setPreview(post.coverImage);
       } else {
@@ -76,8 +79,14 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
       const res = await ApiService.posts.update(id, { ...data, coverImage });
       if (res.success) {
         toast.success("Post updated successfully");
-        router.push(`/post/${id}`);
+        
+        // Invalidate React Query cache
+        await queryClient.invalidateQueries({ queryKey: ["posts"] });
+        await queryClient.invalidateQueries({ queryKey: ["post-like", id] });
+        
+        // Force a refresh of all server data before navigating to the target
         router.refresh();
+        router.push(`/post/${id}`);
       } else {
         toast.error(res.error || "Update failed");
       }

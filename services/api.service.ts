@@ -36,7 +36,7 @@ export const ApiService = {
       if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
       return res.json();
     },
-    update: async (id: string, data: PostInput): Promise<ApiResponse<PostWithAuthor>> => {
+    update: async (id: string, data: PostInput & { version?: number }): Promise<ApiResponse<PostWithAuthor>> => {
       const res = await fetch(`/api/posts/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -47,6 +47,50 @@ export const ApiService = {
     },
     delete: async (id: string): Promise<ApiResponse<{ message: string }>> => {
       const res = await fetch(`/api/posts/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+      return res.json();
+    },
+  },
+  admin: {
+    getStats: async (): Promise<ApiResponse<any>> => {
+      const res = await fetch("/api/admin/stats");
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+      return res.json();
+    },
+    getPosts: async (limit?: number, cursor?: string): Promise<ApiResponse<any>> => {
+      const params = new URLSearchParams();
+      if (limit) params.set("limit", limit.toString());
+      if (cursor) params.set("cursor", cursor);
+      const res = await fetch(`/api/admin/posts?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+      return res.json();
+    },
+    togglePublish: async (id: string): Promise<ApiResponse<any>> => {
+      const res = await fetch(`/api/admin/posts/${id}/publish`, {
+        method: "PATCH",
+      });
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+      return res.json();
+    },
+    getUsers: async (limit?: number, cursor?: string): Promise<ApiResponse<any>> => {
+      const params = new URLSearchParams();
+      if (limit) params.set("limit", limit.toString());
+      if (cursor) params.set("cursor", cursor);
+      const res = await fetch(`/api/admin/users?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+      return res.json();
+    },
+    toggleUserRole: async (id: string): Promise<ApiResponse<any>> => {
+      const res = await fetch(`/api/admin/users/${id}/role`, {
+        method: "PATCH",
+      });
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+      return res.json();
+    },
+    deleteUser: async (id: string): Promise<ApiResponse<any>> => {
+      const res = await fetch(`/api/admin/users/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);

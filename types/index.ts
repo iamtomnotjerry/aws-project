@@ -40,6 +40,7 @@ export interface Post {
   authorId?: string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
+  version: number;
 }
 
 export interface PostWithAuthor extends Post {

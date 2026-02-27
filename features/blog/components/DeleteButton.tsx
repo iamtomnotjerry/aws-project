@@ -3,12 +3,14 @@
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { ApiService } from "@/services/api.service";
 import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
 
 export default function DeleteButton({ id }: { id: string }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
@@ -19,6 +21,10 @@ export default function DeleteButton({ id }: { id: string }) {
       const res = await ApiService.posts.delete(id);
       if (res.success) {
         toast.success("Đã xóa bài viết thành công");
+        
+        // Invalidate React Query cache
+        await queryClient.invalidateQueries({ queryKey: ['posts'] });
+        
         router.push("/");
         router.refresh();
       } else {

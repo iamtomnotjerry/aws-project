@@ -54,16 +54,28 @@ export class CommentService {
 
       await tx.post.update({
         where: { id: postId },
-        data: { commentsCount: { increment: 1 } },
+        data: { 
+          commentsCount: { increment: 1 },
+          version: { increment: 1 }
+        } as any,
       });
 
       return created;
     });
 
-    // Invalidate global posts version so the homepage feed shows updated comment counts
-    await CacheService.increment("posts:version");
+    // Invalidate global posts version and specific post cache
+    await Promise.all([
+      CacheService.increment("posts:version"),
+      CacheService.invalidate(`post:${postId}`)
+    ]);
 
-    logger.debug("Comment created and cache version bumped", { postId, userId });
+    // Bust Next.js Router/Data Cache
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath("/");
+    revalidatePath("/posts");
+    revalidatePath(`/post/${postId}`);
+
+    logger.debug("Comment created and caches invalidated", { postId, userId });
     return newComment as unknown as Comment;
   }
 

@@ -59,6 +59,7 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
+      router.refresh();
     }
   });
 

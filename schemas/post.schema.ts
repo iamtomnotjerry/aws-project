@@ -5,6 +5,7 @@ export const postSchema = z.object({
   content: z.string().min(1, "Content is required"),
   coverImage: z.string().url("Invalid image URL").nullish(),
   published: z.boolean().optional(),
+  version: z.number().optional(),
 });
 
 export type PostInput = z.infer<typeof postSchema>;

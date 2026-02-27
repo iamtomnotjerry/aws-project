@@ -20,23 +20,38 @@ export class LikeService {
         await tx.like.delete({ where: { id: existingLike.id } });
         const updatedPost = await tx.post.update({
           where: { id: postId },
-          data: { likesCount: { decrement: 1 } },
+          data: { 
+            likesCount: { decrement: 1 },
+            version: { increment: 1 } 
+          } as any,
         });
-        return { liked: false, likesCount: Math.max(0, updatedPost.likesCount) };
+        return { liked: false, likesCount: Math.max(0, (updatedPost as any).likesCount) };
       } else {
         await tx.like.create({ data: { postId, userId } });
         const updatedPost = await tx.post.update({
           where: { id: postId },
-          data: { likesCount: { increment: 1 } },
+          data: { 
+            likesCount: { increment: 1 },
+            version: { increment: 1 }
+          } as any,
         });
-        return { liked: true, likesCount: updatedPost.likesCount };
+        return { liked: true, likesCount: (updatedPost as any).likesCount };
       }
     });
 
-    // Invalidate global posts version so the homepage feed shows updated like counts
-    await CacheService.increment("posts:version");
+    // Invalidate global version (for feed) AND specific post cache (for detail view)
+    await Promise.all([
+      CacheService.increment("posts:version"),
+      CacheService.invalidate(`post:${postId}`)
+    ]);
     
-    logger.debug("Like toggled and cache version bumped", { postId, userId });
+    // Bust Next.js Router/Data Cache
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath("/");
+    revalidatePath("/posts");
+    revalidatePath(`/post/${postId}`);
+
+    logger.debug("Like toggled and caches invalidated", { postId, userId });
     return result;
   }
 

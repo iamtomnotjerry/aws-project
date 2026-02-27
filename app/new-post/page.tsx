@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, ImageIcon, Loader2, X, Sparkles, Zap, Edit3, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -31,6 +32,7 @@ export default function NewPost() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { upload, uploading } = useS3Upload();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   
@@ -126,6 +128,10 @@ export default function NewPost() {
       });
 
       localStorage.removeItem(DRAFT_KEY);
+      
+      // Invalidate React Query cache so /posts updates correctly
+      await queryClient.invalidateQueries({ queryKey: ['posts'] });
+      
       router.push("/");
       router.refresh();
       setTimeout(() => toast.success("Post published successfully!"), 100);

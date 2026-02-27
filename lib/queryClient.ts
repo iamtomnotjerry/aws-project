@@ -11,7 +11,7 @@ export function makeQueryClient() {
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 15,
-        refetchOnWindowFocus: false,
+        refetchOnWindowFocus: true,
       },
       mutations: {
         retry: 0,

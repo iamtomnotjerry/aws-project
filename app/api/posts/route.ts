@@ -26,7 +26,9 @@ export async function GET(req: NextRequest) {
     const result = await PostService.getPosts(limit, cursor);
 
     return ApiUtils.success(result, undefined, 200, {
-      'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=59',
+      'Cache-Control': process.env.NODE_ENV === 'development' 
+        ? 'no-store, max-age=0' 
+        : 'public, s-maxage=1, stale-while-revalidate=59',
     });
   } catch (error) {
     return ApiUtils.serverError(error, { route: "GET /api/posts" });
