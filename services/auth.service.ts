@@ -76,8 +76,10 @@ export class AuthService {
         return created;
       });
       return user;
-    } catch (err: any) {
-      if (err.code === "P2002") throw new Error("Email already taken");
+    } catch (err: unknown) {
+      if (err !== null && typeof err === 'object' && 'code' in err && err.code === "P2002") {
+        throw new Error("Email already taken");
+      }
       throw err;
     }
   }

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Home, Book, Info } from "lucide-react";
 import { Magnetic } from "@/components/ui/Magnetic";
 import AuthButton from "@/features/auth/components/AuthButton";
+import { MobileMenuPortal } from "@/components/ui/MobileMenuPortal";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -20,7 +21,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.05] bg-background/60 backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-[90] border-b border-white/[0.05] bg-[#0B0C0E]/60 backdrop-blur-xl">
       <nav className="max-w-7xl mx-auto px-4 md:px-6 h-18 md:h-22 flex items-center justify-between">
         <Link href="/" className="group flex items-center gap-2">
           <span className="text-xl md:text-2xl font-black tracking-tight text-white group-hover:text-primary transition-colors duration-300">
@@ -50,7 +51,9 @@ export default function Header() {
             </Magnetic>
           </div>
           <div className="h-6 w-px bg-white/10 hidden md:block" />
-          <AuthButton />
+          <div className="hidden md:block">
+            <AuthButton />
+          </div>
 
           {/* Mobile Menu Toggle */}
           <button 
@@ -64,69 +67,106 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* Mobile Drawer */}
+      {/* Premium Apple-Style Fullscreen Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden"
-            />
-            <motion.div 
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-[280px] bg-background border-l border-white/[0.05] z-[70] md:hidden p-8 flex flex-col"
+          <MobileMenuPortal>
+            <div 
+              className="md:hidden"
+              style={{ position: 'fixed', inset: 0, zIndex: 2147483647, pointerEvents: 'auto' }}
             >
-              <div className="flex items-center justify-between mb-12">
-                <span className="text-xl font-black tracking-tightest leading-none text-white italic">
-                  BAO<span className="text-primary not-italic">.DEV</span>
-                </span>
-                <button 
-                  aria-label="Close mobile menu drawer"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center text-slate-400"
-                >
-                  <X aria-hidden="true" size={20} />
-                </button>
-              </div>
-
-              <nav className="flex flex-col gap-4">
-                <Link 
-                  href="/" 
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-sm font-black uppercase tracking-widest text-slate-400 hover:text-white"
-                >
-                  <Home size={18} className="text-primary" /> Trang chủ
-                </Link>
-                <Link 
-                  href="/posts" 
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-sm font-black uppercase tracking-widest text-slate-400 hover:text-white"
-                >
-                  <Book size={18} className="text-primary" /> Bài viết
-                </Link>
-                <Link 
-                  href="/about" 
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-sm font-black uppercase tracking-widest text-slate-400 hover:text-white"
-                >
-                  <Info size={18} className="text-primary" /> Giới thiệu
-                </Link>
-              </nav>
-
-              <div className="mt-auto">
-                <div className="p-6 rounded-3xl bg-primary/5 border border-primary/10">
-                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2">Trạng thái hệ thống</p>
-                  <p className="text-xs font-medium text-slate-500 italic">Phiên bản di động đã được tối ưu hóa cho hiệu suất.</p>
+              {/* Full Screen Container */}
+              <motion.div 
+                initial={{ opacity: 0, y: -20, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.98 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  backgroundColor: 'rgba(5, 5, 7, 0.98)',
+                  backdropFilter: 'blur(32px)',
+                  WebkitBackdropFilter: 'blur(32px)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  zIndex: 2,
+                }}
+              >
+                {/* Header inside Menu */}
+                <div className="flex items-center justify-between h-18 md:h-22 px-4 border-b border-white/[0.05]">
+                  <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
+                    <span className="text-xl font-black tracking-tight text-white italic">
+                      BAO<span className="text-[#5E6AD2] not-italic">.DEV</span>
+                    </span>
+                  </Link>
+                  <button 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(255,255,255,0.05)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      border: '1px solid rgba(255,255,255,0.05)'
+                    }}
+                  >
+                    <X size={20} />
+                  </button>
                 </div>
-              </div>
-            </motion.div>
-          </>
+
+                {/* Navigation Links */}
+                <div className="flex-1 flex flex-col justify-center px-6 gap-8 pb-12 overflow-y-auto">
+                  <nav className="flex flex-col gap-6">
+                    <Link 
+                      href="/" 
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="group"
+                    >
+                      <span className="text-4xl sm:text-5xl font-black tracking-tighter text-white group-hover:text-[#5E6AD2] transition-colors uppercase">
+                        TRANG CHỦ
+                      </span>
+                    </Link>
+                    <Link 
+                      href="/posts" 
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="group"
+                    >
+                      <span className="text-4xl sm:text-5xl font-black tracking-tighter text-white group-hover:text-[#5E6AD2] transition-colors uppercase">
+                        BÀI VIẾT
+                      </span>
+                    </Link>
+                    <Link 
+                      href="/about" 
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="group"
+                    >
+                      <span className="text-4xl sm:text-5xl font-black tracking-tighter text-white group-hover:text-[#5E6AD2] transition-colors uppercase">
+                        GIỚI THIỆU
+                      </span>
+                    </Link>
+                  </nav>
+
+                  <div className="w-16 h-1 bg-gradient-to-r from-[#5E6AD2] to-transparent rounded-full my-4" />
+                  
+                  <div className="w-full">
+                    <AuthButton variant="mobile" onMobileClick={() => setIsMobileMenuOpen(false)} />
+                  </div>
+                </div>
+
+                {/* Footer Indicator */}
+                <div className="px-6 pb-8 mt-auto flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse ring-4 ring-green-500/20" />
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Server Online</span>
+                  </div>
+                  <div className="text-[10px] font-medium italic text-slate-600">v1.0.0</div>
+                </div>
+              </motion.div>
+            </div>
+          </MobileMenuPortal>
         )}
       </AnimatePresence>
     </header>

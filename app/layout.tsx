@@ -17,11 +17,11 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
   title: {
-    default: "Bao's Blog | Chia sẻ Kiến thức & Hành trình Công nghệ",
+    default: "Bản tin của Bảo | Nhật ký Cuộc sống & Trải nghiệm",
     template: "%s | Bao's Blog",
   },
-  description: "Nơi mình chia sẻ về Cloud Computing, DevOps và những trải nghiệm thực tế trong ngành công nghệ.",
-  keywords: ["Cloud Computing", "AWS", "DevOps", "Next.js", "TypeScript", "Bao's Blog", "Blog lập trình"],
+  description: "Nơi Bảo chia sẻ về cuộc sống, học tập, công việc, thể thao, gia đình và những khoảnh khắc đáng nhớ.",
+  keywords: ["Nhật ký", "Cuộc sống", "Trải nghiệm", "Bao's Blog", "Blog cá nhân", "Chia sẻ", "Đời sống"],
   authors: [{ name: "Bao Nguyen" }],
   creator: "Bao Nguyen",
   metadataBase: new URL(process.env.NEXTAUTH_URL || "https://studymate.io.vn"),
@@ -30,14 +30,14 @@ export const metadata: Metadata = {
     locale: "vi_VN",
     url: process.env.NEXTAUTH_URL || "https://studymate.io.vn",
     siteName: "Bao's Blog",
-    title: "Bao's Blog | Chia sẻ Kiến thức & Hành trình Công nghệ",
-    description: "Nơi mình chia sẻ về Cloud Computing, DevOps và những trải nghiệm thực tế trong ngành công nghệ.",
+    title: "Bản tin của Bảo | Nhật ký Cuộc sống & Trải nghiệm",
+    description: "Nơi Bảo chia sẻ về cuộc sống, học tập, công việc, thể thao, gia đình và những khoảnh khắc đáng nhớ.",
     images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "Bao's Blog" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bao's Blog | Chia sẻ Kiến thức & Hành trình Công nghệ",
-    description: "Nơi mình chia sẻ về Cloud Computing, DevOps và những trải nghiệm thực tế trong ngành công nghệ.",
+    title: "Bản tin của Bảo | Nhật ký Cuộc sống & Trải nghiệm",
+    description: "Nơi Bảo chia sẻ về cuộc sống, học tập, công việc, thể thao, gia đình và những khoảnh khắc đáng nhớ.",
     images: ["/og-default.png"],
   },
   robots: {
@@ -66,7 +66,7 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             <Toaster position="bottom-right" richColors />
-            <div className="relative min-h-screen flex flex-col">
+            <div className="min-h-screen flex flex-col">
               <Header />
 
             <VerificationBanner />
@@ -90,7 +90,7 @@ export default function RootLayout({
                     </span>
                   </Link>
                   <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed max-w-md italic">
-                    "Kiến tạo giá trị từ những dòng code. <br /> Hành trình chinh phục Cloud & DevOps."
+                    "Sống trọn vẹn từng khoảnh khắc. <br /> Lưu giữ những kỷ niệm đẹp đẽ của tuổi trẻ."
                   </p>
                 </div>
 
@@ -101,11 +101,11 @@ export default function RootLayout({
 
               <div className="max-w-7xl mx-auto mt-16 md:mt-32 pt-8 md:pt-12 border-t border-white/[0.03] flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8">
                 <p className="text-slate-600 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-center md:text-left">
-                  © 2026 Bảo.Nguyễn — All Space Dedicated to Code.
+                  © 2026 Bảo.Nguyễn — Góc nhỏ lưu giữ thanh xuân.
                 </p>
                 <div className="flex gap-6 md:gap-10">
                   <span className="text-slate-600 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em]">Saigon</span>
-                  <span className="text-slate-600 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em]">AWS Cloud</span>
+                  <span className="text-slate-600 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em]">Live & Love</span>
                 </div>
               </div>
             </footer>

@@ -68,6 +68,14 @@
 }
 
 /* Linear Utilities */
+@utility bg-mobile-menu {
+  background-color: #0B0C0E;
+}
+
+@utility bg-mobile-overlay {
+  background-color: rgba(0, 0, 0, 0.95);
+}
+
 @utility glass-panel {
   @apply bg-[#131418]/80 backdrop-blur-md border border-[#2E2F33] shadow-xl;
 }
