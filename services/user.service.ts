@@ -35,21 +35,32 @@ export class UserService {
   }
 
   /**
-   * Toggle user role (ADMIN <-> USER).
+   * Toggle user role (ADMIN <-> USER) with optimistic locking.
    */
-  static async toggleUserRole(id: string) {
+  static async toggleUserRole(id: string, currentVersion: number) {
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) throw new Error("User not found");
 
     const newRole = user.role === Role.ADMIN ? Role.USER : Role.ADMIN;
     
-    const updated = await prisma.user.update({
-      where: { id },
-      data: { role: newRole },
+    const result = await prisma.user.updateMany({
+      where: { id, version: currentVersion },
+      data: { 
+        role: newRole,
+        version: { increment: 1 }
+      },
     });
 
-    logger.info("User role updated", { userId: id, newRole });
-    return updated;
+    if (result.count === 0) {
+      throw new Error("CONFLICT: User role was modified by another administrator");
+    }
+
+    // Invalidate next.js cache for any potential SSR pages using user data
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath("/admin/users");
+
+    logger.info("User role updated with optimistic lock", { userId: id, newRole, version: currentVersion + 1 });
+    return { id, role: newRole, version: currentVersion + 1 };
   }
 
   /**
@@ -57,6 +68,12 @@ export class UserService {
    */
   static async deleteUser(id: string) {
     await prisma.user.delete({ where: { id } });
-    logger.info("User deleted permanently", { userId: id });
+    
+    // Invalidate admin dashboard paths
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath("/admin/users");
+    revalidatePath("/admin"); // Re-trigger stats re-fetch
+
+    logger.info("User deleted permanently and caches invalidated", { userId: id });
   }
 }

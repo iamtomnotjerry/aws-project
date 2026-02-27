@@ -276,9 +276,14 @@ export class PostService {
   }
 
   /**
-   * Fetch admin stats: total posts, total likes, total comments.
+   * Fetch admin stats: total posts, total likes, total comments, total users.
+   * Cached for 60 seconds to prevent DB hammering on high dashboard activity.
    */
   static async getAdminStats() {
+    const cacheKey = "admin:stats";
+    const cached = await CacheService.get<any>(cacheKey);
+    if (cached) return cached;
+
     const [totalPosts, totalLikes, totalComments, publishedPosts, totalUsers] = await Promise.all([
       prisma.post.count(),
       prisma.like.count(),
@@ -287,7 +292,7 @@ export class PostService {
       prisma.user.count(),
     ]);
 
-    return {
+    const stats = {
       totalPosts,
       publishedPosts,
       draftPosts: totalPosts - publishedPosts,
@@ -295,6 +300,9 @@ export class PostService {
       totalComments,
       totalUsers,
     };
+
+    await CacheService.set(cacheKey, stats, 60);
+    return stats;
   }
 
   /**
@@ -345,5 +353,33 @@ export class PostService {
     revalidatePath(`/post/${id}`);
 
     return updated;
+  }
+
+  /**
+   * Get global post version for lightweight client polling.
+   */
+  static async getGlobalVersion(): Promise<string> {
+    const versionKey = "posts:version";
+    const cache = await CacheService.get<string>(versionKey);
+    if (cache) return cache;
+
+    // Fallback recalculation
+    const [agg, count] = await Promise.all([
+      prisma.post.aggregate({
+        where: { published: true },
+        _max: { updatedAt: true }
+      }),
+      prisma.post.count({ where: { published: true } })
+    ]);
+    
+    const maxUpdate = (agg._max.updatedAt?.getTime() || 0).toString();
+    const version = `${count}_${maxUpdate}`;
+    
+    // Only cache if not in development to ensure dev-sync is perfect
+    if (process.env.NODE_ENV !== 'development') {
+      await CacheService.set(versionKey, version, 60);
+    }
+    
+    return version;
   }
 }

@@ -6,12 +6,17 @@ import { NextRequest } from "next/server";
 import { PostService } from "@/services/post.service";
 import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const ip = req.headers.get("x-forwarded-for") || "anonymous";
+    const rl = await rateLimit(`get_post_detail_${ip}`, { limit: 100, windowMs: 10000 });
+    if (!rl.success) return ApiUtils.error("Too Many Requests", 429);
+
     const { id } = await params;
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
@@ -31,6 +36,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const ip = req.headers.get("x-forwarded-for") || "anonymous";
+    const rl = await rateLimit(`delete_post_${ip}`, { limit: 5, windowMs: 60000 });
+    if (!rl.success) return ApiUtils.error("Too many deletion attempts.", 429);
+
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== "ADMIN") {
       return ApiUtils.error("Unauthorized. Admin role required.", 403);
@@ -53,6 +62,10 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const ip = req.headers.get("x-forwarded-for") || "anonymous";
+    const rl = await rateLimit(`patch_post_${ip}`, { limit: 10, windowMs: 60000 });
+    if (!rl.success) return ApiUtils.error("Too many update attempts.", 429);
+
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== "ADMIN") {
       return ApiUtils.error("Unauthorized. Admin role required.", 403);

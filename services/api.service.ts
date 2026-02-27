@@ -82,9 +82,10 @@ export const ApiService = {
       if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
       return res.json();
     },
-    toggleUserRole: async (id: string): Promise<ApiResponse<any>> => {
+    toggleUserRole: async (id: string, version: number): Promise<ApiResponse<any>> => {
       const res = await fetch(`/api/admin/users/${id}/role`, {
         method: "PATCH",
+        body: JSON.stringify({ version }),
       });
       if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
       return res.json();

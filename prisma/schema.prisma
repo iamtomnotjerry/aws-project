@@ -28,6 +28,9 @@ model User {
   posts         Post[]
   comments      Comment[]
   likes         Like[]
+
+  // Optimistic locking
+  version       Int       @default(0)
 }
 
 model Account {

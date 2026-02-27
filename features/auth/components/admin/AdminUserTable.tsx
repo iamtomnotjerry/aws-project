@@ -27,11 +27,17 @@ export const AdminUserTable = () => {
   });
 
   const roleMutation = useMutation({
-    mutationFn: (id: string) => ApiService.admin.toggleUserRole(id),
+    mutationFn: ({ id, version }: { id: string, version: number }) => 
+      ApiService.admin.toggleUserRole(id, version),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
       toast.success("User role updated");
     },
+    onError: (err: any) => {
+      if (err.message.includes("409")) {
+        toast.error("Conflict: Updated by another admin");
+      }
+    }
   });
 
   const deleteMutation = useMutation({
@@ -93,7 +99,7 @@ export const AdminUserTable = () => {
                 <button
                   onClick={() => {
                     if(window.confirm(`Sovereignty change: ${user.role === 'ADMIN' ? 'Demote to User?' : 'Promote to Admin?'}`)) {
-                       roleMutation.mutate(user.id);
+                       roleMutation.mutate({ id: user.id, version: user.version });
                     }
                   }}
                   disabled={roleMutation.isPending}
