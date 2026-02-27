@@ -9,30 +9,16 @@ export class PostService {
    */
   static async getPosts(limit: number, cursor?: string | null): Promise<PaginatedPosts> {
     const versionKey = "posts:version";
-    // Important: In local dev (No Redis), L1 cache is isolated per process. 
-    // To maintain synchronization, we MUST bypass L1 for the global version key 
-    // and rely on the Database as the single source of truth for all processes.
     const isRedisActive = !!await CacheService.get<string>("health:redis").catch(() => null);
     
-    // Always recalculate from DB if Redis is missing to ensure perfect cross-process sync
+    // Always recalibrate from DB if Redis version is missing
     let version = isRedisActive ? await CacheService.get<string>(versionKey) : null;
     
     if (!version) {
-       const [agg, count] = await Promise.all([
-         prisma.post.aggregate({
-           where: { published: true },
-           _max: { updatedAt: true }
-         }),
-         prisma.post.count({ where: { published: true } })
-       ]);
-       
-       const maxUpdate = (agg._max.updatedAt?.getTime() || 0).toString();
-       version = `${count}_${maxUpdate}`;
-       
-       // Only backfill cache if Redis is active (for global distribution)
-       // If local-only, we skip cache write for the version key to keep it "live" from DB
+       // Use a simple Unix timestamp as the fallback version seed
+       version = Date.now().toString();
        if (isRedisActive) {
-         await CacheService.set(versionKey, version, 60); 
+         await CacheService.set(versionKey, version, 86400); // 1 day TTL for version seed
        }
     }
 
@@ -360,24 +346,12 @@ export class PostService {
    */
   static async getGlobalVersion(): Promise<string> {
     const versionKey = "posts:version";
-    const cache = await CacheService.get<string>(versionKey);
-    if (cache) return cache;
-
-    // Fallback recalculation
-    const [agg, count] = await Promise.all([
-      prisma.post.aggregate({
-        where: { published: true },
-        _max: { updatedAt: true }
-      }),
-      prisma.post.count({ where: { published: true } })
-    ]);
+    let version = await CacheService.get<string>(versionKey);
     
-    const maxUpdate = (agg._max.updatedAt?.getTime() || 0).toString();
-    const version = `${count}_${maxUpdate}`;
-    
-    // Only cache if not in development to ensure dev-sync is perfect
-    if (process.env.NODE_ENV !== 'development') {
-      await CacheService.set(versionKey, version, 60);
+    // If missing OR NOT numeric (legacy string format), force reset to numeric
+    if (!version || isNaN(Number(version))) {
+      version = Date.now().toString();
+      await CacheService.set(versionKey, version, 86400);
     }
     
     return version;

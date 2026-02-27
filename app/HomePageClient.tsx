@@ -6,6 +6,8 @@ import { ArrowUpRight, BookOpen, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { PostCard } from "@/features/blog/components/PostCard";
 import { motion } from "framer-motion";
+import { usePosts } from "@/hooks/use-posts";
+import { useMemo } from "react";
 
 interface HomePageClientProps {
   initialPosts: PostWithAuthor[];
@@ -13,6 +15,12 @@ interface HomePageClientProps {
 }
 
 export default function HomePageClient({ initialPosts, initialCursor }: HomePageClientProps) {
+  // Integrate real-time polling while using server-side initial data for instant load
+  const { data } = usePosts(6, { posts: initialPosts, nextCursor: initialCursor });
+  
+  const posts = useMemo(() => {
+    return data?.pages?.[0]?.posts || initialPosts;
+  }, [data, initialPosts]);
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -86,7 +94,7 @@ export default function HomePageClient({ initialPosts, initialCursor }: HomePage
 
           {/* Posts Grid */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 mb-20 md:mb-32">
-            {initialPosts.length > 0 ? (
+            {posts.length > 0 ? (
               <>
                 {/* Featured Post */}
                 <motion.div 
@@ -96,11 +104,11 @@ export default function HomePageClient({ initialPosts, initialCursor }: HomePage
                   transition={{ duration: 0.8 }}
                   className="md:col-span-12"
                 >
-                  <PostCard post={initialPosts[0]} featured />
+                  <PostCard post={posts[0]} featured />
                 </motion.div>
 
                 {/* Sub-posts with stagger */}
-                {initialPosts.slice(1, 4).map((post, index) => (
+                {posts.slice(1, 4).map((post, index) => (
                   <motion.div 
                     key={post.id}
                     initial={{ opacity: 0, y: 30 }}

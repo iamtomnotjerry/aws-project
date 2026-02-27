@@ -12,14 +12,14 @@ interface VersionResponse {
   version: string;
 }
 
-export const usePosts = (limit: number = 6) => {
+export const usePosts = (limit: number = 6, initialData?: any) => {
   const queryClient = useQueryClient();
 
   // 1. Poll for global version every 10 seconds
   const { data: versionData } = useQuery<VersionResponse>({
     queryKey: ['posts-version'],
     queryFn: () => fetcher<VersionResponse>('/api/posts/version'),
-    refetchInterval: 10000, // 10s polling
+    refetchInterval: 10000, 
     refetchOnWindowFocus: true,
   });
 
@@ -34,8 +34,13 @@ export const usePosts = (limit: number = 6) => {
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
     initialPageParam: null,
-    // Keep data fresh between version changes if needed, but the key change handles it
-    staleTime: 60000, 
+    staleTime: 60000,
+    ...(initialData && {
+       initialData: {
+         pages: [initialData],
+         pageParams: [null],
+       }
+    })
   });
 
   // 3. Effect to invalidate old versions whenever version changes
