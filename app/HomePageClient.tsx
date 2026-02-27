@@ -12,7 +12,7 @@ interface HomePageClientProps {
 
 export default function HomePageClient({ initialPosts, initialCursor }: HomePageClientProps) {
   return (
-    <div className="min-h-screen pb-48">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative pt-12 md:pt-24 pb-16 md:pb-24 px-4 md:px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto text-center relative z-10">

@@ -76,7 +76,7 @@ export default function RootLayout({
             </main>
 
             {/* Asymmetrical Infinity Footer */}
-            <footer className="relative py-16 md:py-48 px-4 md:px-6 border-t border-white/[0.05] mt-32 md:mt-64 overflow-hidden">
+            <footer className="relative py-16  px-4  border-t border-white/[0.05] overflow-hidden">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
               
               <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-24 relative z-10">
