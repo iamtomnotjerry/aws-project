@@ -1,9 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Sparkles, BookOpen } from "lucide-react";
-import { PostCard } from "@/features/blog/components/PostCard";
 import { PostWithAuthor } from "@/types";
+import { Magnetic } from "@/components/ui/Magnetic";
+import { ArrowUpRight, BookOpen, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { PostCard } from "@/features/blog/components/PostCard";
+import { motion } from "framer-motion";
 
 interface HomePageClientProps {
   initialPosts: PostWithAuthor[];
@@ -48,35 +50,83 @@ export default function HomePageClient({ initialPosts, initialCursor }: HomePage
         </div>
       </section>
 
-      <div id="pillars" className="max-w-7xl mx-auto px-6 relative scroll-mt-32">
+      <div id="pillars" className="max-w-7xl mx-auto px-4 md:px-6 relative scroll-mt-32">
         <section id="posts" className="scroll-mt-40">
-          <div className="flex flex-col mb-24">
-            <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-primary/10 rounded-full text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-8 w-fit">
+          {/* Section Header */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col mb-16 md:mb-24"
+          >
+            <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-primary/10 rounded-full text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-6 md:mb-8 w-fit border border-primary/20">
               <BookOpen size={12} /> Bài viết mới nhất
             </div>
-            <div className="flex flex-col md:flex-row justify-between items-end gap-12">
-              <h2 className="text-6xl md:text-8xl font-black tracking-tightest leading-none italic uppercase drop-shadow-2xl">
+            
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-12">
+              <h2 className="text-5xl md:text-8xl font-black tracking-tightest leading-[0.85] md:leading-none italic uppercase">
                 BÀI <span className="text-gradient not-italic">VIẾT.</span>
               </h2>
+              <div className="flex flex-col gap-6 md:gap-8 items-start md:items-end">
+                <p className="text-slate-500 text-sm md:text-base font-medium max-w-sm italic md:text-right">
+                  Những suy ngẫm, kinh nghiệm và lát cắt thú vị về cuộc sống quanh mình.
+                </p>
+                <Magnetic strength={0.2}>
+                  <Link 
+                    href="/posts" 
+                    className="group flex items-center gap-2 px-6 py-3 bg-white/[0.03] border border-white/[0.08] rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-white hover:bg-primary hover:border-primary transition-all duration-300"
+                  >
+                    Xem tất cả <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </Link>
+                </Magnetic>
+              </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-20">
+          {/* Posts Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 mb-20 md:mb-32">
             {initialPosts.length > 0 ? (
               <>
-                <div className="md:col-span-12">
+                {/* Featured Post */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                  className="md:col-span-12"
+                >
                   <PostCard post={initialPosts[0]} featured />
-                </div>
-                {initialPosts.slice(1, 4).map((post) => (
-                  <div key={post.id} className="md:col-span-4">
+                </motion.div>
+
+                {/* Sub-posts with stagger */}
+                {initialPosts.slice(1, 4).map((post, index) => (
+                  <motion.div 
+                    key={post.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+                    className="md:col-span-4"
+                  >
                     <PostCard post={post} />
-                  </div>
+                  </motion.div>
                 ))}
               </>
             ) : (
-              <div className="col-span-full text-center py-64 glass-card rounded-[3rem] border-white/[0.03] opacity-50">
-                <p className="text-slate-500 text-2xl font-black uppercase tracking-widest italic">Kho kiến thức đang được hoàn thiện...</p>
-              </div>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="col-span-full text-center py-32 md:py-64 glass-card rounded-[2rem] md:rounded-[3rem] border-white/[0.03] flex flex-col items-center justify-center"
+              >
+                <div className="w-16 h-16 bg-white/[0.02] rounded-full flex items-center justify-center mb-6 border border-white/[0.05]">
+                  <BookOpen size={24} className="text-slate-600" />
+                </div>
+                <p className="text-slate-500 text-xl md:text-2xl font-black uppercase tracking-widest italic">
+                  Kho kiến thức đang được hoàn thiện...
+                </p>
+                <p className="text-slate-600 text-xs mt-4 font-bold uppercase tracking-widest opacity-60"> Quay lại sau bạn nhé </p>
+              </motion.div>
             )}
           </div>
         </section>
